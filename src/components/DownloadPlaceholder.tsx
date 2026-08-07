@@ -135,7 +135,7 @@ export const DownloadPlaceholder: React.FC = () => {
 
               <div className="space-y-3">
                 <a
-                  href="/StudioZIOTempoDelay-v4.0.1-RC1-macOS-arm64.pkg"
+                  href="https://github.com/StudioZIO/TempoDelay/releases/download/v4.0.1-RC1/StudioZIOTempoDelay-v4.0.1-RC1-macOS-arm64.pkg"
                   download
                   className="w-full py-4 px-6 rounded-xl bg-[#22D3EE] hover:bg-[#06B6D4] text-[#14161A] font-extrabold text-sm transition-all shadow-xl shadow-[#22D3EE]/25 flex items-center justify-center space-x-2 text-center block"
                   aria-label="Download for MacOS"
