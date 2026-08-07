@@ -1428,10 +1428,18 @@ const SupportContact = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('/api/contact', {
+      const response = await fetch('https://formspree.io/f/mrpzbbzp', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          name: form.fullName,
+          email: form.email,
+          category: form.subject,
+          os: form.operatingSystem,
+          daw: form.daw,
+          message: form.message,
+          _subject: 'StudioZIO Support Inquiry: ' + form.subject + ' - ' + form.fullName
+        }),
       }).catch(() => null);
 
       setForm((prev) => ({ ...prev, submitted: true }));
