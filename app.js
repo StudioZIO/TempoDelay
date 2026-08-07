@@ -1319,14 +1319,22 @@ const DownloadPlaceholder = () => {
                 </span>
               </div>
 
-              <button
-                type="button"
-                onClick={() => setNotifyModalOpen(true)}
-                className="w-full py-4 px-6 rounded-xl bg-[#22D3EE] hover:bg-[#06B6D4] text-[#14161A] font-extrabold text-sm transition-all shadow-xl shadow-[#22D3EE]/25 flex items-center justify-center space-x-2 cursor-pointer"
-                aria-label="Notify Me When It Launches"
-              >
-                <span>Notify Me When It Launches</span>
-              </button>
+              <div className="space-y-3">
+                <a
+                  href="/StudioZIOTempoDelay-v4.0.1-RC1-macOS-arm64.pkg"
+                  download
+                  className="w-full py-4 px-6 rounded-xl bg-[#22D3EE] hover:bg-[#06B6D4] text-[#14161A] font-extrabold text-sm transition-all shadow-xl shadow-[#22D3EE]/25 flex items-center justify-center space-x-2 text-center block"
+                  aria-label="Download for MacOS"
+                >
+                  <svg className="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  <span>Download for MacOS</span>
+                </a>
+                <p className="text-xs text-amber-400/90 bg-amber-500/10 p-3 rounded-xl border border-amber-500/20 text-center leading-relaxed">
+                  This is a pre-release version intended for evaluation and testing. While fully code-signed and notarized by Apple, minor issues may still exist.
+                </p>
+              </div>
               <span className="text-[11px] text-gray-400 text-center block">Requires macOS 11 or later • Apple Silicon (arm64)</span>
             </div>
           </div>
