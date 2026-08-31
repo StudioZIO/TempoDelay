@@ -1,6 +1,9 @@
 [build]
-  publish = "."
-  command = "echo 'Static production build ready.'"
+  publish = "dist"
+  command = "npm run typecheck && npm run build && npm run verify:dist"
+
+[build.environment]
+  NODE_VERSION = "22"
 
 [[redirects]]
   from = "/*"

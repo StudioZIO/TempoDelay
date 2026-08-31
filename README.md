@@ -60,13 +60,22 @@
 
 ## 🚀 Deployment Quickstart
 
+The website toolchain requires Node.js 22.12 or newer within the Node 22 release line.
+
 ```bash
 git clone https://github.com/StudioZIO/TempoDelay.git
 cd TempoDelay
+npm ci
+npm run typecheck
+npm run build
+npm run verify:dist
 ```
 
+Use `npm run dev` for local development and `npm run preview` to serve the generated production output.
+
 ### Vercel Deployment
-Pre-configured for zero-config Vercel static hosting (`.vercelignore` handles pure static serving).
+
+The production workflow installs the committed lockfile, typechecks and builds the application, then verifies both `dist/` and the static payload created by the pinned Vercel CLI. CI uploads that exact `.vercel/output` as a commit-addressed artifact. A source-free deployment job downloads and publishes only that verified artifact with `vercel deploy --prebuilt`; it does not install dependencies or rebuild the application. The repository root and raw TypeScript source are not public deployment artifacts.
 
 ---
 

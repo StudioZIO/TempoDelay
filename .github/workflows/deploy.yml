@@ -1,49 +1,250 @@
-name: StudioZIO Tempo Delay Production Deployment Pipeline
+name: StudioZIO Tempo Delay Manual Preview Deployment
 
 on:
-  push:
-    branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tempo-delay-preview-${{ github.sha }}-${{ github.run_id }}
+  cancel-in-progress: false
 
 jobs:
-  build-and-verify:
+  tooling:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Source Code
-        uses: actions/checkout@v3
+      - name: Checkout source for the committed lockfile
+        # actions/checkout v4.4.0
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
 
-      - name: Setup Node.js Environment
-        uses: actions/setup-node@v3
+      - name: Set up Node.js 22
+        # actions/setup-node v4.4.0
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
-          node-version: '18'
+          node-version: '22.x'
+          cache: npm
 
-      - name: Verify HTML & JS Syntax Integrity
+      - name: Install the locked tool capsule without lifecycle scripts
         run: |
-          echo "Verifying application file structure..."
-          test -f index.html
-          test -f app.js
-          echo "Syntax verification completed successfully."
+          set -euo pipefail
+          node -e "const p=require('./package.json'); const blocked=['preinstall','install','postinstall','prepare','prepublish','prepublishOnly']; for (const name of blocked) if (p.scripts?.[name]) throw new Error('Root lifecycle script is prohibited in tooling job: '+name)"
+          npm ci --ignore-scripts
+          test "$(node -p "require('./node_modules/vercel/package.json').version")" = "59.10.0"
+          ./node_modules/.bin/vercel --version
 
-      - name: Calculate SHA-256 Checksums
+      - name: Create deterministic Vercel CLI capsule and digest
         run: |
-          echo "Calculating checksums for static assets..."
-          sha256sum index.html app.js || true
+          set -euo pipefail
+          node --check scripts/verify_tar_archive.mjs
+          mkdir -p .workflow-artifacts
+          tar --format=posix --sort=name --mtime='UTC 1970-01-01' --owner=0 --group=0 --numeric-owner \
+            --pax-option=delete=atime,delete=ctime -czf .workflow-artifacts/vercel-cli-node-modules.tgz node_modules
+          cp scripts/verify_tar_archive.mjs .workflow-artifacts/verify_tar_archive.mjs
+          (cd .workflow-artifacts && sha256sum vercel-cli-node-modules.tgz > vercel-cli-node-modules.tgz.sha256)
+          (cd .workflow-artifacts && sha256sum verify_tar_archive.mjs > verify_tar_archive.mjs.sha256)
 
-  deploy-vercel:
-    needs: build-and-verify
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+      - name: Upload immutable Vercel CLI capsule
+        # actions/upload-artifact v4.6.2
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: tempo-delay-vercel-cli-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            .workflow-artifacts/vercel-cli-node-modules.tgz
+            .workflow-artifacts/vercel-cli-node-modules.tgz.sha256
+            .workflow-artifacts/verify_tar_archive.mjs
+            .workflow-artifacts/verify_tar_archive.mjs.sha256
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 7
+
+  preview-project-settings:
+    needs: tooling
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Source Code
-        uses: actions/checkout@v3
-
-      - name: Deploy to Vercel Action
-        uses: amondnet/vercel-action@v20
+      - name: Set up Node.js 22
+        # actions/setup-node v4.4.0
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-args: '--prod'
+          node-version: '22.x'
+
+      - name: Download immutable Vercel CLI capsule
+        # actions/download-artifact v4.3.0
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: tempo-delay-vercel-cli-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .tooling-capsule
+
+      - name: Verify and restore the locked official Vercel CLI
+        run: |
+          set -euo pipefail
+          (cd .tooling-capsule && sha256sum --check vercel-cli-node-modules.tgz.sha256)
+          (cd .tooling-capsule && sha256sum --check verify_tar_archive.mjs.sha256)
+          node .tooling-capsule/verify_tar_archive.mjs .tooling-capsule/vercel-cli-node-modules.tgz node_modules
+          mkdir -p .preview-tooling
+          tar -xzf .tooling-capsule/vercel-cli-node-modules.tgz -C .preview-tooling
+          test "$(node -p "require('./.preview-tooling/node_modules/vercel/package.json').version")" = "59.10.0"
+          ./.preview-tooling/node_modules/.bin/vercel --version
+          mkdir -p "$RUNNER_TEMP/tempo-delay-preview-link"
+
+      - name: Pull exact preview project settings
+        working-directory: ${{ runner.temp }}/tempo-delay-preview-link
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_TELEMETRY_DISABLED: '1'
+        run: '"$GITHUB_WORKSPACE/.preview-tooling/node_modules/.bin/vercel" pull --yes --environment=preview --token="$VERCEL_TOKEN"'
+
+      - name: Verify pulled preview project identity
+        working-directory: ${{ runner.temp }}/tempo-delay-preview-link
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          set -euo pipefail
+          node -e "const fs=require('node:fs'); const p=JSON.parse(fs.readFileSync('.vercel/project.json','utf8')); if (p.orgId!==process.env.VERCEL_ORG_ID || p.projectId!==process.env.VERCEL_PROJECT_ID) throw new Error('Pulled preview project identity does not match the configured project')"
+
+  build-preview-artifact:
+    needs: [tooling, preview-project-settings]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        # actions/checkout v4.4.0
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+
+      - name: Set up Node.js 22
+        # actions/setup-node v4.4.0
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22.x'
+          cache: npm
+
+      - name: Install locked application dependencies without deployment credentials
+        run: |
+          set -euo pipefail
+          test -z "${VERCEL_TOKEN:-}"
+          npm ci
+
+      - name: Verify the preview-only workflow contract
+        run: |
+          set -euo pipefail
+          test -z "${VERCEL_TOKEN:-}"
+          npm run verify:preview-workflow
+          npm run verify:tar-archive:test
+
+      - name: Typecheck without deployment credentials
+        run: |
+          set -euo pipefail
+          test -z "${VERCEL_TOKEN:-}"
+          npm run typecheck
+
+      - name: Build the single authoritative application output
+        run: |
+          set -euo pipefail
+          test -z "${VERCEL_TOKEN:-}"
+          npm run build
+
+      - name: Verify static output and adversarial rejection contracts
+        run: |
+          set -euo pipefail
+          test -z "${VERCEL_TOKEN:-}"
+          npm run verify:dist
+          npm run verify:dist:test
+
+      - name: Construct and verify the deterministic Build Output API artifact
+        run: |
+          set -euo pipefail
+          test -z "${VERCEL_TOKEN:-}"
+          npm run assemble:vercel
+          npm run verify:vercel-config
+          npm run verify:vercel-config:test
+          npm run verify:dist -- .vercel/output/static
+          diff --recursive --brief --no-dereference dist .vercel/output/static
+
+      - name: Create deterministic prebuilt archive and digest
+        run: |
+          set -euo pipefail
+          test -z "${VERCEL_TOKEN:-}"
+          mkdir -p .workflow-artifacts
+          tar --format=posix --sort=name --mtime='UTC 1970-01-01' --owner=0 --group=0 --numeric-owner \
+            --pax-option=delete=atime,delete=ctime -czf .workflow-artifacts/vercel-prebuilt-output.tgz .vercel/output
+          (cd .workflow-artifacts && sha256sum vercel-prebuilt-output.tgz > vercel-prebuilt-output.tgz.sha256)
+
+      - name: Upload immutable verified preview artifact
+        # actions/upload-artifact v4.6.2
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: tempo-delay-vercel-prebuilt-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            .workflow-artifacts/vercel-prebuilt-output.tgz
+            .workflow-artifacts/vercel-prebuilt-output.tgz.sha256
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 7
+
+  deploy-preview:
+    needs: [tooling, preview-project-settings, build-preview-artifact]
+    runs-on: ubuntu-latest
+    outputs:
+      preview-url: ${{ steps.deploy.outputs.url }}
+
+    steps:
+      - name: Set up Node.js 22
+        # actions/setup-node v4.4.0
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22.x'
+
+      - name: Download immutable Vercel CLI capsule
+        # actions/download-artifact v4.3.0
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: tempo-delay-vercel-cli-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .cli-artifact
+
+      - name: Download immutable prebuilt preview artifact
+        # actions/download-artifact v4.3.0
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: tempo-delay-vercel-prebuilt-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .prebuilt-artifact
+
+      - name: Verify both transferred artifacts before use
+        run: |
+          set -euo pipefail
+          (cd .cli-artifact && sha256sum --check vercel-cli-node-modules.tgz.sha256)
+          (cd .cli-artifact && sha256sum --check verify_tar_archive.mjs.sha256)
+          (cd .prebuilt-artifact && sha256sum --check vercel-prebuilt-output.tgz.sha256)
+          node .cli-artifact/verify_tar_archive.mjs .cli-artifact/vercel-cli-node-modules.tgz node_modules
+          node .cli-artifact/verify_tar_archive.mjs .prebuilt-artifact/vercel-prebuilt-output.tgz .vercel/output
+          mkdir -p .deployment-tools
+          tar -xzf .cli-artifact/vercel-cli-node-modules.tgz -C .deployment-tools
+          tar -xzf .prebuilt-artifact/vercel-prebuilt-output.tgz -C .
+          test "$(node -p "require('./.deployment-tools/node_modules/vercel/package.json').version")" = "59.10.0"
+          ./.deployment-tools/node_modules/.bin/vercel --version
+
+      - name: Verify extracted deployment boundary without application source
+        run: |
+          set -euo pipefail
+          test -z "$(find .vercel/output -type l -print -quit)"
+          node -e "const fs=require('node:fs'); const root='.vercel/output'; const entries=fs.readdirSync(root).sort(); if (JSON.stringify(entries)!==JSON.stringify(['config.json','static'])) throw new Error('Unexpected Build Output API entries: '+entries.join(', ')); const c=JSON.parse(fs.readFileSync(root+'/config.json','utf8')); const e={version:3,routes:[{handle:'filesystem'},{src:'/(.*)',dest:'/index.html'}]}; if (JSON.stringify(c)!==JSON.stringify(e)) throw new Error('Build Output API config contract mismatch'); if (!fs.lstatSync(root+'/static').isDirectory()) throw new Error('Static payload is missing')"
+
+      - name: Deploy the verified prebuilt output to preview
+        id: deploy
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_TELEMETRY_DISABLED: '1'
+        run: |
+          set -euo pipefail
+          preview_output="$("$GITHUB_WORKSPACE/.deployment-tools/node_modules/.bin/vercel" deploy --prebuilt --target=preview --yes --token="$VERCEL_TOKEN" --no-color --skip-domain)"
+          preview_url="$(printf '%s\n' "$preview_output" | tail -n 1)"
+          case "$preview_url" in https://*) ;; *) echo "Vercel did not return a preview URL" >&2; exit 1 ;; esac
+          printf '%s\n' "$preview_output"
+          printf 'url=%s\n' "$preview_url" >> "$GITHUB_OUTPUT"
+          printf '### Verified preview deployment\n\n[%s](%s)\n' "$preview_url" "$preview_url" >> "$GITHUB_STEP_SUMMARY"

@@ -3,8 +3,35 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
+  "engines": {
+    "node": "^22.12.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "verify:dist": "node scripts/verify_dist.mjs",
+    "verify:dist:test": "node scripts/test_verify_dist.mjs",
+    "assemble:vercel": "node scripts/assemble_vercel_output.mjs",
+    "verify:vercel-config": "node scripts/verify_vercel_config.mjs",
+    "verify:vercel-config:test": "node scripts/test_verify_vercel_config.mjs",
+    "verify:preview-workflow": "node scripts/verify_preview_workflow.mjs",
+    "verify:tar-archive:test": "node scripts/test_verify_tar_archive.mjs"
+  },
   "dependencies": {
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "18.3.31",
+    "@types/react-dom": "18.3.7",
+    "@vitejs/plugin-react": "6.1.1",
+    "autoprefixer": "10.5.4",
+    "postcss": "8.5.26",
+    "tailwindcss": "3.4.19",
+    "typescript": "7.0.2",
+    "vercel": "59.10.0",
+    "vite": "8.2.2"
   }
 }

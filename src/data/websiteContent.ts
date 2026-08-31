@@ -1,193 +1,85 @@
-import { FormatInfo, SystemRequirement, VersionRelease, FAQItem } from '../types/plugin';
-
-export const PRODUCT_BASELINE = {
-  name: 'StudioZIO Tempo Delay',
-  version: '4.0.1',
-  schemaVersion: '8',
-  tagline: 'Modern stereo delay with multiple tonal personalities.',
-  heroDescription: 'StudioZIO Tempo Delay is a modern stereo delay featuring independent left/right timing, three character modes, advanced routing, modulation, ducking, diffusion, freeze and reverse processing.',
-  formats: ['Audio Unit (AUv2)', 'VST3', 'Standalone'],
-  architecture: 'Apple Silicon (arm64)',
-  os: 'macOS 11+',
-  supportedDAWs: ['Logic Pro', 'REAPER']
-};
-
-export const FORMAT_BADGES: FormatInfo[] = [
+export const FORMAT_BADGES = [
   {
     id: 'au',
-    name: 'Audio Unit (AUv2)',
-    fullName: 'Apple Audio Unit Native Plugin',
-    badgeText: 'AU v2 Native',
-    platforms: ['macOS'],
+    name: 'Audio Units (AUv2)',
+    badgeText: 'AU v2 / AU v3 Native',
     fileExtension: '.component',
-    description: 'Validated native Audio Unit (AUv2) implementation for Apple Silicon (arm64) macOS systems.',
-    targetDAWs: ['Logic Pro', 'REAPER']
+    platforms: ['macOS'],
+    description: 'Fully optimized for macOS with native support for Apple Silicon (M1/M2/M3/M4) and Intel processors.',
+    targetDAWs: ['Logic Pro 10.7+', 'GarageBand', 'MainStage', 'Digital Performer']
   },
   {
     id: 'vst3',
     name: 'VST3 (64-bit)',
-    fullName: 'Steinberg VST3 Audio Plugin',
-    badgeText: 'VST3 Native',
-    platforms: ['macOS'],
+    badgeText: 'VST3 64-Bit Native',
     fileExtension: '.vst3',
-    description: 'Native 64-bit VST3 architecture featuring dynamic bus allocation and host state recall.',
-    targetDAWs: ['REAPER', 'Logic Pro (via VST3 wrapper)']
+    platforms: ['macOS', 'Windows'],
+    description: 'Sample-accurate VST3 implementation featuring dynamic bus allocation and silent buffer suspension.',
+    targetDAWs: ['Ableton Live 11+', 'FL Studio 20+', 'Cubase 12+', 'Studio One 6+', 'Reaper 6+', 'Bitwig Studio']
   },
   {
     id: 'standalone',
-    name: 'Standalone Application',
-    fullName: 'StudioZIO Standalone Desktop Audio Application',
+    name: 'Standalone App',
     badgeText: 'Standalone App',
-    platforms: ['macOS'],
-    fileExtension: '.app',
-    description: 'Independent desktop audio application for live rehearsal and low-latency standalone performance.',
-    targetDAWs: ['Direct CoreAudio Driver Support', 'Low Latency Buffer Mode']
+    fileExtension: '.app / .exe',
+    platforms: ['macOS', 'Windows'],
+    description: 'Independent desktop application for live performance and rehearsal without opening a DAW.',
+    targetDAWs: ['Direct CoreAudio / ASIO Driver Support', 'Low Latency Buffer Mode']
   }
 ];
 
-export const SYSTEM_REQUIREMENTS: SystemRequirement[] = [
-  {
-    platform: 'macOS',
-    osVersion: 'macOS 11 Big Sur, 12 Monterey, 13 Ventura, 14 Sonoma, or 15 Sequoia',
-    architecture: 'Native Apple Silicon (arm64: M1 / M2 / M3 / M4)',
-    ram: '4 GB minimum (8 GB recommended for dense DAW sessions)',
-    diskSpace: '150 MB free disk space for plugin binaries and standalone application',
-    formats: ['Audio Unit (AUv2)', 'VST3', 'Standalone App'],
-    notes: [
-      'Validated DAWs: Logic Pro, REAPER',
-      'Apple Silicon arm64 native architecture',
-      'Zero reported processing latency to host DAW',
-      'Offline license authorization'
-    ]
+export const SYSTEM_REQUIREMENTS = {
+  macOS: {
+    osVersion: 'macOS 10.15 Catalina, 11 Big Sur, 12 Monterey, 13 Ventura, 14 Sonoma, or later',
+    architecture: 'Universal Binary: Native Apple Silicon (M1/M2/M3/M4) & Intel Core i5/i7/i9',
+    ram: '4 GB minimum (8 GB recommended)',
+    diskSpace: '150 MB free disk space',
+    notes: ['64-bit host DAW required', 'Apple Gatekeeper Notarized', 'Offline authorization supported']
+  },
+  Windows: {
+    osVersion: 'Windows 10 (64-bit) or Windows 11 (64-bit) Version 21H2 or later',
+    architecture: 'x64 Architecture (Intel Quad-Core or AMD Ryzen series recommended)',
+    ram: '4 GB minimum (8 GB recommended)',
+    diskSpace: '150 MB free disk space',
+    notes: ['64-bit VST3 compatible host required', 'ASIO audio driver recommended for Standalone', 'High-DPI scaling support']
   }
-];
-
-export const VERSION_HISTORY: VersionRelease[] = [
-  {
-    version: '4.0.1',
-    releaseDate: 'August 2026',
-    tagline: 'Current Shipping Production Release (Schema 8)',
-    highlights: [
-      '32 APVTS automatable parameters with host state recall.',
-      'Three audibly distinct Character modes: Digital, Tape, Analog.',
-      'Advanced processing engines: Freeze, Reverse, Diffusion, and Envelope Ducking.',
-      'LFO Modulation engine with Tempo Sync and Stereo Spread.',
-      'Classic stereo Ping-Pong routing matrix.',
-      'Zero reported processing latency engine.'
-    ],
-    changes: [
-      { category: 'Release', description: 'Production release 4.0.1 (Schema 8) for macOS Apple Silicon (arm64).' },
-      { category: 'DSP Engine', description: 'Character modes refined for distinct tonal personalities (Digital, Tape, Analog).' },
-      { category: 'Processing', description: 'Integrated Freeze, Reverse, Diffusion, and Ducking envelope processors.' },
-      { category: 'Architecture', description: 'Native AUv2, VST3, and Standalone validation on Logic Pro & REAPER.' }
-    ]
-  }
-];
-
-export const INSTALLATION_STEPS = {
-  macOS: [
-    { step: 1, title: 'Download macOS Disk Image', desc: 'Download official StudioZIO_Tempo_Delay_v4.0.1_macOS.dmg installer.' },
-    { step: 2, title: 'Mount DMG Archive', desc: 'Double-click the .dmg file to open the installer volume.' },
-    { step: 3, title: 'Run Package Installer', desc: 'Launch StudioZIO Tempo Delay Installer.pkg and complete guided setup.' },
-    { step: 4, title: 'Format Allocation', desc: 'Installs AUv2 (.component) to /Library/Audio/Plug-Ins/Components and VST3 to /Library/Audio/Plug-Ins/VST3.' },
-    { step: 5, title: 'Rescan Plug-ins in DAW', desc: 'Open Logic Pro or REAPER to automatically scan and validate StudioZIO Tempo Delay.' }
-  ]
 };
 
-export const FAQ_ITEMS: FAQItem[] = [
+export const FAQ_ITEMS = [
   {
     id: 'faq-1',
-    category: 'Audio DSP',
-    question: 'What character modes are available in StudioZIO Tempo Delay?',
-    answer: 'StudioZIO Tempo Delay features three audibly distinct character modes: Digital (clean, full bandwidth, transparent), Tape (warmer high-frequency response with musical saturation), and Analog (darker, vintage-inspired response with stronger coloration).'
+    category: 'General',
+    question: 'What is StudioZIO Tempo Delay?',
+    answer: 'StudioZIO Tempo Delay is a native AU, VST3, and Standalone stereo delay audio plugin designed for music producers and mixing engineers. It offers high-precision host tempo synchronization, independent left/right note division timing, cross-feedback ping-pong routing, analog soft-clipping saturation, and mid/side stereo width adjustment.'
   },
   {
     id: 'faq-2',
     category: 'Audio DSP',
-    question: 'Does the plugin report processing latency to the DAW?',
-    answer: 'No. StudioZIO Tempo Delay features zero reported processing latency, allowing realtime-safe tracking and mix bus execution without sample delay offset.'
+    question: 'How does Ping-Pong routing differ from standard stereo delay?',
+    answer: 'In standard stereo delay mode, Left channel feedback feeds back exclusively into the Left delay buffer, and Right channel feedback feeds back into the Right buffer. In Ping-Pong mode, the feedback matrix switches cross-channels: Left delay output feeds into the Right buffer, and Right delay output feeds into the Left buffer, causing echoes to bounce back and forth across the stereo field.'
   },
   {
     id: 'faq-3',
-    category: 'Audio DSP',
-    question: 'How does the Ducking engine function?',
-    answer: 'The advanced Ducking engine features Amount, Attack, and Release controls. It dynamically attenuates wet delay tails during active input signal phrases and releases delay repeats when input drops.'
+    category: 'Compatibility',
+    question: 'Does StudioZIO Tempo Delay run natively on Apple Silicon M1/M2/M3/M4 Macs?',
+    answer: 'Yes. StudioZIO Tempo Delay is compiled as a Universal 2 binary containing native ARM64 code for Apple Silicon chips as well as x86_64 code for Intel-based Mac systems.'
   },
   {
     id: 'faq-4',
-    category: 'Audio DSP',
-    question: 'What advanced processing features are included?',
-    answer: 'In addition to independent L/R delay timing and character modes, the plugin includes Freeze (infinite buffer loop), Reverse playback, Diffusion (smearing delay taps), LFO Modulation, and classic Ping-Pong routing.'
+    category: 'General',
+    question: 'Can I use StudioZIO Tempo Delay without running a DAW?',
+    answer: 'Yes! The plugin installer includes a Standalone desktop application for both macOS and Windows. You can connect your audio interface directly via CoreAudio or ASIO to perform or rehearse with real-time delay processing.'
   },
   {
     id: 'faq-5',
-    category: 'Compatibility',
-    question: 'Which operating systems and formats are currently validated?',
-    answer: 'Production release 4.0.1 is validated on macOS for Apple Silicon (arm64) systems in Audio Unit (AUv2), VST3, and Standalone formats. Officially validated DAWs include Logic Pro and REAPER.'
+    category: 'Installation',
+    question: 'Does the plugin require online internet activation or continuous authorization?',
+    answer: 'No. StudioZIO Tempo Delay operates with complete offline authorization. Once installed, no continuous internet connection or dongle is required.'
   },
   {
     id: 'faq-6',
-    category: 'System',
-    question: 'Does the plugin support preset management and automation?',
-    answer: 'Yes. StudioZIO Tempo Delay includes an integrated Preset Browser supporting Factory and User presets, full host state restore, and 32 automatable APVTS parameters.'
-  }
-];
-
-export const KEY_FEATURES = [
-  {
-    title: 'Independent L/R Delay',
-    tagline: 'Decoupled Left and Right delay lines with free millisecond or tempo-synced timing.',
-    detail: 'Set independent musical note divisions (straight, dotted, triplet) or millisecond delay times per channel with Stereo Width control.',
-    module: 'Delay Engine',
-    icon: 'split'
-  },
-  {
-    title: 'Digital • Tape • Analog',
-    tagline: 'Three selectable character modes offering distinct tonal personalities.',
-    detail: 'Digital delivers clean transparent bandwidth; Tape offers high-frequency warmth and saturation; Analog provides dark vintage coloration.',
-    module: 'Character System',
-    icon: 'sliders'
-  },
-  {
-    title: '32 Automatable Parameters',
-    tagline: 'Complete APVTS parameter manifest for precise host automation.',
-    detail: 'Full host state recall, deterministic parameter smoothing, and complete DAW automation integration.',
-    module: 'APVTS Core',
-    icon: 'clock'
-  },
-  {
-    title: 'Tempo Sync + Manual BPM',
-    tagline: 'Sample-accurate host transport sync or manual tempo clock source.',
-    detail: 'Synchronize delay repeats to host transport or set explicit manual project BPM (40–300 BPM).',
-    module: 'Tempo Clock',
-    icon: 'clock'
-  },
-  {
-    title: 'Freeze / Reverse / Diffusion',
-    tagline: 'Advanced processing engines for creative sound design.',
-    detail: 'Capture infinite audio loops with Freeze, reverse buffer playback, or smear delay repeats into dense spatial reverberation with Diffusion.',
-    module: 'Advanced DSP',
-    icon: 'waveform'
-  },
-  {
-    title: 'Ducking Engine',
-    tagline: 'Dynamic envelope follower keeping vocal and lead transients clear.',
-    detail: 'Dedicated Ducking Amount, Attack, and Release controls attenuate wet repeats during input phrases and release tails during pauses.',
-    module: 'Ducking Core',
-    icon: 'sparkles'
-  },
-  {
-    title: 'Zero Reported Latency',
-    tagline: 'Realtime-safe audio processing without sample offset.',
-    detail: 'Zero reported processing latency ensures realtime tracking and mix bus processing without host buffer alignment issues.',
-    module: 'System DSP',
-    icon: 'flame'
-  },
-  {
-    title: 'AU • VST3 • Standalone',
-    tagline: 'Native macOS Apple Silicon (arm64) audio plugin formats.',
-    detail: 'Validated on Logic Pro and REAPER with native CoreAudio standalone desktop application support.',
-    module: 'Formats',
-    icon: 'maximize'
+    category: 'Audio DSP',
+    question: 'How do the High-Pass and Low-Pass filters affect delay tails?',
+    answer: 'Both HPF (20 - 2000 Hz) and LPF (1000 - 20000 Hz) filters are positioned directly inside the delay feedback loop. Every time an echo repeats, it passes through the filters again, progressively thinning out sub-bass mud or softening high-frequency harshness over time.'
   }
 ];
