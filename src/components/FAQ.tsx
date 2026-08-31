@@ -26,7 +26,7 @@ export const FAQ = () => {
                   type="button"
                   onClick={() => setOpenId(isOpen ? null : item.id)}
                   aria-expanded={isOpen}
-                  aria-controls={`faq-answer-${item.id}`}
+                  {...(isOpen ? { 'aria-controls': `faq-answer-${item.id}` } : {})}
                   className="w-full px-6 py-5 text-left flex items-center justify-between text-white font-bold text-base"
                 >
                   <span>{item.question}</span>

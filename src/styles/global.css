@@ -85,3 +85,32 @@ body {
   outline: 2px solid #22D3EE;
   outline-offset: 2px;
 }
+
+/* Hero signal-preview sweep (compositor-driven; replaces the former 40 ms JS interval) */
+@keyframes heroSweep {
+  from { left: 0%; }
+  to { left: 100%; }
+}
+
+.hero-pulse-sweep {
+  animation: heroSweep 4s linear infinite;
+}
+
+.hero-pulse-sweep--offset {
+  animation-delay: -2s;
+}
+
+/* Respect users who ask for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

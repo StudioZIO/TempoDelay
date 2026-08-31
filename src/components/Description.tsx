@@ -1,6 +1,6 @@
 export const Description = () => {
   return (
-    <section id="overview" className="py-20 bg-[#14161A] border-b border-gray-800/60 scroll-mt-20">
+    <section id="overview-details" className="py-20 bg-[#14161A] border-b border-gray-800/60 scroll-mt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <div className="text-center max-w-3xl mx-auto mb-16">

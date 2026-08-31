@@ -103,6 +103,7 @@ export const InteractiveVisualizer = () => {
                 max="200"
                 value={bpm}
                 onChange={(e) => setBpm(parseInt(e.target.value))}
+                aria-label="Tempo in BPM"
                 className="w-full h-2 bg-gray-800 rounded-lg appearance-none accent-[#F5A524]"
               />
             </div>
@@ -115,6 +116,7 @@ export const InteractiveVisualizer = () => {
               <select
                 value={leftDiv}
                 onChange={(e) => setLeftDiv(e.target.value)}
+                aria-label="Left delay division"
                 className="w-full py-1.5 px-2 bg-[#1D2026] text-white border border-gray-700 rounded-lg font-mono text-xs"
               >
                 {['1/16', '1/8', '1/8D', '1/4', '1/4D', '1/2'].map(d => (
@@ -131,6 +133,7 @@ export const InteractiveVisualizer = () => {
               <select
                 value={rightDiv}
                 onChange={(e) => setRightDiv(e.target.value)}
+                aria-label="Right delay division"
                 className="w-full py-1.5 px-2 bg-[#1D2026] text-white border border-gray-700 rounded-lg font-mono text-xs"
               >
                 {['1/16', '1/8', '1/8D', '1/4', '1/4D', '1/2'].map(d => (

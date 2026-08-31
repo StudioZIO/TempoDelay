@@ -97,7 +97,6 @@ export const ParameterGuide = () => {
                   onClick={() => setActiveParamId(param.id)}
                   tabIndex={0}
                   role="button"
-                  aria-label={`Select ${param.name} parameter`}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
                       e.preventDefault();
@@ -113,7 +112,7 @@ export const ParameterGuide = () => {
                       <div className={`w-3 h-3 rounded-full ${isSelected ? 'bg-[#22D3EE]' : 'bg-gray-600'}`} />
                       <div>
                         <span className="font-bold text-white text-base block">{param.name}</span>
-                        <span className="text-[10px] font-mono text-gray-500">{param.id}</span>
+                        <span className="text-[10px] font-mono text-gray-400">{param.id}</span>
                       </div>
                     </div>
                     <span className="font-mono text-xs font-bold text-[#F5A524]">
@@ -131,7 +130,7 @@ export const ParameterGuide = () => {
               <div>
                 <span className="text-xs font-bold uppercase tracking-wider text-[#22D3EE]">{activeParam.category}</span>
                 <h3 className="text-2xl font-black text-white mt-1">{activeParam.name}</h3>
-                <code className="text-xs font-mono text-gray-500 block mt-0.5">{activeParam.id}</code>
+                <code className="text-xs font-mono text-gray-400 block mt-0.5">{activeParam.id}</code>
               </div>
 
               <div className="p-4 rounded-xl bg-[#14161A] border border-gray-800 space-y-3">

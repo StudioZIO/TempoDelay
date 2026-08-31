@@ -13,6 +13,7 @@
     "typecheck": "tsc --noEmit",
     "verify:dist": "node scripts/verify_dist.mjs",
     "verify:dist:test": "node scripts/test_verify_dist.mjs",
+    "verify:a11y": "node scripts/verify_a11y_contract.mjs",
     "assemble:vercel": "node scripts/assemble_vercel_output.mjs",
     "verify:vercel-config": "node scripts/verify_vercel_config.mjs",
     "verify:vercel-config:test": "node scripts/test_verify_vercel_config.mjs",

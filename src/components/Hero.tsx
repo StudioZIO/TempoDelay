@@ -1,15 +1,4 @@
-import { useEffect, useState } from 'react';
-
 export const Hero = () => {
-  const [pulsePos, setPulsePos] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setPulsePos((prev) => (prev + 1) % 100);
-    }, 40);
-    return () => clearInterval(interval);
-  }, []);
-
   return (
     <section id="overview" className="relative py-16 sm:py-24 bg-[#14161A] border-b border-gray-800/60 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -19,7 +8,7 @@ export const Hero = () => {
             <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-[#1D2026] border border-gray-800 text-xs font-mono">
               <span className="w-2 h-2 rounded-full bg-[#22D3EE] animate-ping"></span>
               <span className="text-[#22D3EE] font-bold">Release 4.0.1</span>
-              <span className="text-gray-500">•</span>
+              <span className="text-gray-400">•</span>
               <span className="text-gray-300">Schema 8 • Apple Silicon arm64</span>
             </div>
 
@@ -102,13 +91,13 @@ export const Hero = () => {
                 </div>
                 <div className="space-y-2 py-1">
                   <div className="h-2 rounded-full bg-gray-800 relative overflow-hidden">
-                    <div className="absolute top-0 bottom-0 w-12 bg-gradient-to-r from-transparent via-[#22D3EE] to-transparent rounded-full shadow-[0_0_12px_#22D3EE]" style={{ left: `${pulsePos}%` }}></div>
+                    <div className="hero-pulse-sweep absolute top-0 bottom-0 w-12 bg-gradient-to-r from-transparent via-[#22D3EE] to-transparent rounded-full shadow-[0_0_12px_#22D3EE]"></div>
                   </div>
                   <div className="h-2 rounded-full bg-gray-800 relative overflow-hidden">
-                    <div className="absolute top-0 bottom-0 w-12 bg-gradient-to-r from-transparent via-[#F5A524] to-transparent rounded-full shadow-[0_0_12px_#F5A524]" style={{ left: `${(pulsePos + 50) % 100}%` }}></div>
+                    <div className="hero-pulse-sweep hero-pulse-sweep--offset absolute top-0 bottom-0 w-12 bg-gradient-to-r from-transparent via-[#F5A524] to-transparent rounded-full shadow-[0_0_12px_#F5A524]"></div>
                   </div>
                 </div>
-                <div className="text-[10px] font-mono text-gray-500 text-right">
+                <div className="text-[10px] font-mono text-gray-400 text-right">
                   Zero Reported Latency Engine
                 </div>
               </div>

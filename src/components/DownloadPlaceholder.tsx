@@ -75,9 +75,9 @@ export const DownloadPlaceholder = () => {
               <div className="p-4 rounded-xl bg-[#14161A] border border-gray-800 space-y-2">
                 <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400 block">Installer Details</span>
                 <div className="space-y-1 text-xs text-gray-300 font-mono">
-                  <div className="flex justify-between"><span className="text-gray-500">File Name:</span><span className="text-white">StudioZIO_Tempo_Delay_v4.0.1_macOS.dmg</span></div>
-                  <div className="flex justify-between"><span className="text-gray-500">Target Build:</span><span className="text-[#22D3EE]">Release 4.0.1 (Schema 8)</span></div>
-                  <div className="flex justify-between"><span className="text-gray-500">Availability:</span><span className="text-[#F5A524]">Coming Soon</span></div>
+                  <div className="flex justify-between"><span className="text-gray-400">File Name:</span><span className="text-white">StudioZIO_Tempo_Delay_v4.0.1_macOS.dmg</span></div>
+                  <div className="flex justify-between"><span className="text-gray-400">Target Build:</span><span className="text-[#22D3EE]">Release 4.0.1 (Schema 8)</span></div>
+                  <div className="flex justify-between"><span className="text-gray-400">Availability:</span><span className="text-[#F5A524]">Coming Soon</span></div>
                 </div>
               </div>
 
@@ -87,7 +87,7 @@ export const DownloadPlaceholder = () => {
                     <span className="w-2 h-2 rounded-full bg-[#22D3EE]"></span>
                     <span>SHA-256 Checksum (Release 4.0.1 Placeholder)</span>
                   </span>
-                  <button type="button" onClick={() => copyToClipboard(macHash)} className="px-2.5 py-1 rounded-md bg-[#22D3EE]/10 hover:bg-[#22D3EE]/20 border border-[#22D3EE]/30 text-[#22D3EE] font-mono text-[10px] font-bold uppercase tracking-wider" aria-label="Copy macOS SHA-256 Checksum">
+                  <button type="button" onClick={() => copyToClipboard(macHash)} className="px-2.5 py-1 rounded-md bg-[#22D3EE]/10 hover:bg-[#22D3EE]/20 border border-[#22D3EE]/30 text-[#22D3EE] font-mono text-[10px] font-bold uppercase tracking-wider" aria-label="Copy Hash (macOS SHA-256 checksum)">
                     {copiedMac ? 'Copied!' : 'Copy Hash'}
                   </button>
                 </div>
