@@ -242,7 +242,7 @@ jobs:
           VERCEL_TELEMETRY_DISABLED: '1'
         run: |
           set -euo pipefail
-          preview_output="$("$GITHUB_WORKSPACE/.deployment-tools/node_modules/.bin/vercel" deploy --prebuilt --target=preview --yes --token="$VERCEL_TOKEN" --no-color --skip-domain)"
+          preview_output="$("$GITHUB_WORKSPACE/.deployment-tools/node_modules/.bin/vercel" deploy --prebuilt --target=preview --yes --token="$VERCEL_TOKEN" --no-color)"
           preview_url="$(printf '%s\n' "$preview_output" | tail -n 1)"
           case "$preview_url" in https://*) ;; *) echo "Vercel did not return a preview URL" >&2; exit 1 ;; esac
           printf '%s\n' "$preview_output"

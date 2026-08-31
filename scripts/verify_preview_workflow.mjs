@@ -32,8 +32,8 @@ const verify = async () => {
   if (count(workflow, /\bvercel"?\s+deploy\s+--prebuilt\s+--target=preview\s+--yes\s+--token="\$VERCEL_TOKEN"/g) !== 1) {
     fail('PREVIEW_DEPLOY', 'expected exactly one preview-only prebuilt deploy command');
   }
-  if (count(workflow, /--skip-domain/g) !== 1) {
-    fail('PREVIEW_DEPLOY', 'preview deployment must explicitly suppress domain aliasing');
+  if (/--skip-domain/.test(workflow)) {
+    fail('NO_PRODUCTION_PATH', '--skip-domain is production-only in the pinned Vercel CLI and must not appear in preview deployment');
   }
   if (/\bvercel"?\s+build\b/.test(workflow)) {
     fail('SINGLE_BUILD', 'vercel build is prohibited because the application has one authoritative Vite build');
