@@ -38,7 +38,6 @@ export const AudioDemo = ({
   const [processed, setProcessed] = useState(true);
   const [level, setLevel] = useState(0);
   const [progress, setProgress] = useState(0);
-  const [ready, setReady] = useState(false);
   const [failed, setFailed] = useState(false);
 
   const dryEl = useRef<HTMLAudioElement | null>(null);
@@ -161,17 +160,21 @@ export const AudioDemo = ({
 
   return (
     <div className="panel-float audio-demo">
-      <audio ref={dryEl} loop preload="metadata" onCanPlay={() => setReady(true)}>
+      {/* preload="none": nothing is fetched until someone asks to hear it.
+          With metadata preloading the two renders competed with the document
+          for bandwidth and pushed first contentful paint from 1.0s to 2.6s on
+          a throttled connection. */}
+      <audio ref={dryEl} loop preload="none">
         <Sources base={dryBase} />
       </audio>
-      <audio ref={wetEl} loop preload="metadata">
+      <audio ref={wetEl} loop preload="none">
         <Sources base={wetBase} />
       </audio>
 
       <div className="audio-demo-head">
         <span className="eyebrow eyebrow--muted mb-0">{title}</span>
         <span className="audio-demo-state">
-          {failed ? 'Playback blocked' : ready ? 'Real render · matched −12 LUFS' : 'Loading audio…'}
+          {failed ? 'Playback blocked' : 'Real render · matched −12 LUFS'}
         </span>
       </div>
 

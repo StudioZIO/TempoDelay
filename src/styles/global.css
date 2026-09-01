@@ -955,3 +955,37 @@ button.chip[aria-pressed="true"], button.chip[aria-selected="true"] {
 @media (prefers-reduced-motion: reduce) {
   .audio-level-fill { transition: none; }
 }
+
+/* ---------- plugin interface illustration ------------------------------
+   A drawn rendering of the real interface, not a screenshot, so it is
+   decorative: every load-bearing claim is stated in text elsewhere on the
+   page. Drawn rather than photographed because it stays crisp at any size,
+   sits in the site's own palette and costs a few KB. */
+.plugin-shot { overflow: hidden; }
+.plugin-shot-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.9rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-overlay);
+}
+.plugin-shot-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); }
+.plugin-shot-name {
+  margin-left: 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+.gui-render { display: block; width: 100%; height: auto; background: var(--background); }
+.plugin-shot figcaption {
+  border-top: 1px solid var(--border);
+  padding: 0.8rem 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
