@@ -3,7 +3,9 @@ import { Section } from './Section';
 import { MASTERING_SUITE_URL } from '../data/navigation';
 
 const MACOS_DOWNLOAD_URL =
-  'https://github.com/StudioZIO/TempoDelay/releases/download/v4.0.1-RC1/StudioZIOTempoDelay-v4.0.1-RC1-macOS-arm64.pkg';
+  'https://github.com/StudioZIO/StudioZIO-Releases/releases/tag/tempo-delay-v4.0.1-RC1';
+const MACOS_SHA256 =
+  '431e72768af9fdba855db3929bb63d347e9c418e1e6528aad629954ac695f250';
 
 export const Download = () => (
   <Section
@@ -15,6 +17,7 @@ export const Download = () => (
     <div className="panel-float download-row">
       <div>
         <div className="chip-row mb-3">
+          <Chip>Free</Chip>
           <Chip>macOS 11+</Chip>
           <Chip>arm64</Chip>
           <Chip tone="signal" dot>
@@ -22,13 +25,15 @@ export const Download = () => (
           </Chip>
         </div>
         <p className="text-sm text-muted-foreground">
-          StudioZIOTempoDelay-v4.0.1-RC1-macOS-arm64.pkg — approximately 24.5 MB, requiring 150 MB of
-          free disk space once installed.
+          Free to download and use &mdash; the installer is a signed, notarized .pkg on a public
+          release page, with no licence key and no account. It needs 150 MB of free disk space once
+          installed. Verify the download against the SHA-256 published on the release page first.
         </p>
+        <p className="sha mt-2 text-muted-foreground">{MACOS_SHA256}</p>
       </div>
 
       <div className="actions">
-        <a className="btn btn-primary" href={MACOS_DOWNLOAD_URL} download>
+        <a className="btn btn-primary" href={MACOS_DOWNLOAD_URL}>
           Download for macOS
         </a>
         <a className="btn" href="#parameters">

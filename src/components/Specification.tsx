@@ -2,12 +2,18 @@ import { Section } from './Section';
 
 /**
  * Every value below is restated from a fact the repository already asserts
- * (JSON-LD, the APVTS parameter manifest or the release metadata).
+ * (JSON-LD, the APVTS parameter manifest or the release metadata) -- with one
+ * exception: the Windows row is a scope decision by the owner, not something
+ * the code can corroborate. It is stated as planned with no date because that
+ * is exactly what is known, and saying nothing read as unfinished rather than
+ * deliberate.
  */
 const SPECIFICATION: { key: string; value: string }[] = [
   { key: 'Release', value: '4.0.1 (Schema 8)' },
   { key: 'Formats', value: 'Audio Unit (AUv2), VST3, Standalone' },
+  { key: 'Price', value: 'Free' },
   { key: 'Platform', value: 'macOS 11+, Apple Silicon (arm64)' },
+  { key: 'Windows', value: 'Planned, no date announced' },
   { key: 'Automatable parameters', value: '32 APVTS parameters' },
   { key: 'Sample rate', value: '44.1 – 192 kHz' },
   { key: 'Reported latency', value: '0 samples' },
@@ -16,7 +22,7 @@ const SPECIFICATION: { key: string; value: string }[] = [
   { key: 'Note divisions', value: '16 per channel, straight, dotted and triplet' },
   { key: 'Feedback filters', value: 'HPF 20 – 2000 Hz, LPF 1 – 20 kHz' },
   { key: 'Stereo width', value: '0 – 200% mid/side' },
-  { key: 'Installer', value: '~24.5 MB, 150 MB free disk space' },
+  { key: 'Installer', value: 'Signed .pkg, 150 MB free disk space' },
 ];
 
 export const Specification = () => (
