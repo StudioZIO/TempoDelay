@@ -14,6 +14,11 @@ const fingerprintedAssetPattern = /^assets\/index-([A-Za-z0-9_-]{8,})\.(js|css)$
 // Fonts are static, non-executable payload: never referenced from HTML, only
 // from the first-party stylesheet's @font-face rules.
 const fontAssetPattern = /^assets\/fonts\/(?:[a-z0-9-]+\.woff2|OFL-[a-z0-9-]+\.txt)$/;
+// Crawler metadata. Served as a real file so /robots.txt is not swallowed by
+// the SPA rewrite and returned as HTML, which is what made every audit report
+// an invalid robots.txt. Static, non-executable, and referenced by crawlers
+// rather than from the document, so it is exempt from the HTML-reference rule.
+const staticRootPattern = /^(?:robots\.txt|sitemap\.xml)$/;
 const woff2Signature = Buffer.from('wOF2', 'ascii');
 
 const fail = (contract, detail) => {
@@ -771,8 +776,9 @@ const verifyOutput = async (requestedDirectory) => {
     }
   }
 
+  const isSidecar = (file) => fontAssetPattern.test(file) || staticRootPattern.test(file);
   const fontFiles = files.filter((file) => fontAssetPattern.test(file));
-  const applicationFiles = files.filter((file) => !fontAssetPattern.test(file));
+  const applicationFiles = files.filter((file) => !isSidecar(file));
 
   for (const file of applicationFiles) {
     if (file === 'index.html') continue;

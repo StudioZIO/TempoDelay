@@ -26,6 +26,9 @@ export const Logo = ({ product, size = 'md', href = '#main-content' }: LogoProps
     <span className="logo-word">
       Studio<b>ZIO</b>
     </span>
-    {product ? <span className="logo-suffix">{product}</span> : null}
+    {/* A real space: the wordmark and the suffix are separate elements, so
+        without one the visible text reads "StudioZIOTempo Delay" while the
+        accessible name has a space, and the two no longer match. */}
+    {product ? <> <span className="logo-suffix">{product}</span></> : null}
   </a>
 );
