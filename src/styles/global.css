@@ -554,15 +554,6 @@ button.chip[aria-pressed="true"], button.chip[aria-selected="true"] {
 .lane-row--r .lane-sweep { background: linear-gradient(90deg, transparent, var(--signal), transparent); }
 .lane-sweep--offset { animation-delay: -2s; }
 
-/* meters */
-.meter-stack { display: flex; align-items: flex-end; gap: 4px; height: 100%; min-height: 96px; padding: 0.6rem; border: 1px solid var(--hairline); border-radius: 8px; background: var(--surface-control); }
-/* Held at one instant rather than drifting. The bars carry a level reading,
-   and a reading that never settles is decoration, not information — the panel
-   they sit in is a static representation of the plugin surface. */
-.meter { flex: 1; border-radius: 2px; background: var(--meter-low); height: 58%; }
-.meter:nth-child(2) { background: var(--meter-high); height: 82%; }
-.meter:nth-child(3) { background: var(--meter-low); height: 46%; }
-.meter:nth-child(4) { background: var(--meter-mid); height: 34%; }
 
 /* ---------- form controls ---------------------------------------------- */
 .field {

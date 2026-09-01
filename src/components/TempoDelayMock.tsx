@@ -56,39 +56,30 @@ export const TempoDelayMock = () => (
           </div>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_5.5rem]">
-          <div className="lane">
-            <div className="lane-head">
-              <span>Routing</span>
-              <span>Ping-Pong</span>
-            </div>
-            <div className="lane-row">
-              <span className="ch">L</span>
-              <div className="lane-track">
-                <span className="lane-sweep" aria-hidden="true" />
-                <span className="lane-tap" style={{ left: '32%' }} aria-hidden="true" />
-                <span className="lane-tap" style={{ left: '64%' }} aria-hidden="true" />
-              </div>
-            </div>
-            <div className="lane-row lane-row--r">
-              <span className="ch">R</span>
-              <div className="lane-track">
-                <span className="lane-sweep lane-sweep--offset" aria-hidden="true" />
-                <span className="lane-tap" style={{ left: '21%' }} aria-hidden="true" />
-                <span className="lane-tap" style={{ left: '48%' }} aria-hidden="true" />
-              </div>
-            </div>
-            <div className="lane-foot">
-              <span>120 BPM</span>
-              <span>Tape</span>
+        <div className="lane">
+          <div className="lane-head">
+            <span>Routing</span>
+            <span>Ping-Pong</span>
+          </div>
+          <div className="lane-row">
+            <span className="ch">L</span>
+            <div className="lane-track">
+              <span className="lane-sweep" aria-hidden="true" />
+              <span className="lane-tap" style={{ left: '32%' }} aria-hidden="true" />
+              <span className="lane-tap" style={{ left: '64%' }} aria-hidden="true" />
             </div>
           </div>
-
-          <div className="meter-stack" aria-hidden="true">
-            <span className="meter" />
-            <span className="meter" />
-            <span className="meter" />
-            <span className="meter" />
+          <div className="lane-row lane-row--r">
+            <span className="ch">R</span>
+            <div className="lane-track">
+              <span className="lane-sweep lane-sweep--offset" aria-hidden="true" />
+              <span className="lane-tap" style={{ left: '21%' }} aria-hidden="true" />
+              <span className="lane-tap" style={{ left: '48%' }} aria-hidden="true" />
+            </div>
+          </div>
+          <div className="lane-foot">
+            <span>120 BPM</span>
+            <span>Tape</span>
           </div>
         </div>
 
