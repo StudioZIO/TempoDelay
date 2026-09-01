@@ -17,6 +17,7 @@ export const Download = () => (
     <div className="panel-float download-row">
       <div>
         <div className="chip-row mb-3">
+          <Chip>Free</Chip>
           <Chip>macOS 11+</Chip>
           <Chip>arm64</Chip>
           <Chip tone="signal" dot>
@@ -24,8 +25,9 @@ export const Download = () => (
           </Chip>
         </div>
         <p className="text-sm text-muted-foreground">
-          Signed and notarized macOS installer, requiring 150 MB of free disk space once installed.
-          Verify the download against the SHA-256 published on the release page before installing.
+          Free to download and use &mdash; the installer is a signed, notarized .pkg on a public
+          release page, with no licence key and no account. It needs 150 MB of free disk space once
+          installed. Verify the download against the SHA-256 published on the release page first.
         </p>
         <p className="sha mt-2 text-muted-foreground">{MACOS_SHA256}</p>
       </div>
