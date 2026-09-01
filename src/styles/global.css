@@ -66,6 +66,11 @@
   --primary:            oklch(0.578 0.086 218);
   --primary-foreground: oklch(0.96  0.008 218);
   --primary-deep:       oklch(0.385 0.068 220);
+  /* Derived accent-text step, matching the hub and Mastering Suite. --primary
+     above is the brand accent and stays exactly as specified; at small sizes
+     it measures 4.3:1 on the base surface, so small mono accent text uses this
+     one-lightness-step variant instead. Same hue, same chroma. */
+  --primary-text:       oklch(0.700 0.086 218);
 
   /* signal amber — meters, clip, release flags, right channel. Never a CTA. */
   --signal:            oklch(0.735 0.135 68);
@@ -351,6 +356,13 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   border-color: var(--primary);
   color: var(--primary-foreground);
   box-shadow: var(--glow-primary);   /* ring + tight shadow, never a bloom */
+  /* The specified fill and label pair measures 3.72:1, which clears WCAG AA at
+     the large-text threshold but not below it. Rather than altering either
+     specified colour, the primary button sits at that scale — and "weight,
+     contrast and size carry emphasis" is the system's own first principle.
+     Same resolution as the hub and Mastering Suite. */
+  font-size: 1.1875rem;
+  font-weight: 700;
 }
 .btn-primary:hover, .btn-primary:focus-visible { filter: brightness(1.1); border-color: var(--primary); }
 .btn-sm { min-height: 36px; padding: 0.45rem 0.9rem; font-size: 0.8125rem; }
@@ -422,7 +434,7 @@ button.chip[aria-pressed="true"], button.chip[aria-selected="true"] {
   font-family: var(--font-mono);
   font-size: 0.6875rem;
   letter-spacing: 0.18em;
-  color: var(--primary);
+  color: var(--primary-text);   /* small mono accent text — see --primary-text */
 }
 .module-card p { color: var(--muted-foreground); font-size: 0.9375rem; margin: 0; }
 
@@ -564,6 +576,57 @@ button.chip[aria-pressed="true"], button.chip[aria-selected="true"] {
 .field::placeholder { color: var(--muted-foreground); }
 .field:hover { border-color: var(--border); }
 .field-mono { font-family: var(--font-mono); font-size: 0.8125rem; }
+.field-area { min-height: 9rem; resize: vertical; line-height: 1.6; }
+
+/* ---------- support form ------------------------------------------------ */
+/* .panel-float carries no padding of its own — the companion class supplies
+   it, the same way .download-row does. */
+.support-form { display: grid; gap: 1.25rem; padding: 2rem; }
+.form-grid { display: grid; gap: 1rem; }
+@media (min-width: 640px) {
+  .form-grid--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .form-grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+.form-row { display: grid; gap: 0.4rem; align-content: start; }
+.form-label {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+/* "required" reads better to a screen reader than a bare asterisk, and it
+   still has to look like a quiet marker rather than a second label. */
+.form-label .req {
+  margin-left: 0.4rem;
+  letter-spacing: 0.12em;
+  color: var(--primary-text);
+}
+.form-hint { font-size: 0.75rem; color: var(--muted-foreground); }
+.form-error {
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--destructive);
+  border-radius: 8px;
+  background: color-mix(in oklab, var(--destructive) 12%, transparent);
+  color: var(--foreground);
+  font-size: 0.8125rem;
+}
+/* Off-screen rather than display:none — a bot reading the DOM cannot tell the
+   difference, and nothing focusable is hidden from a keyboard user because the
+   input is taken out of the tab order instead. */
+.form-hp {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.form-result { display: grid; justify-items: start; padding: 2rem; }
+
+.link-card { display: block; text-decoration: none; color: inherit; }
+.link-card:hover { border-color: var(--border); }
+.link-card h3 { color: var(--foreground); }
 
 .range {
   width: 100%;
@@ -676,7 +739,7 @@ button.chip[aria-pressed="true"], button.chip[aria-selected="true"] {
   letter-spacing: 0.06em;
   color: var(--muted-foreground);
 }
-.param-row .p-val { font-family: var(--font-mono); font-size: 0.75rem; color: var(--primary); white-space: nowrap; }
+.param-row .p-val { font-family: var(--font-mono); font-size: 0.75rem; color: var(--primary-text); white-space: nowrap; }
 .param-row p { margin: 0; font-size: 0.8125rem; color: var(--muted-foreground); }
 
 .inspector { position: sticky; top: 5.5rem; display: grid; gap: 1.25rem; padding: 1.5rem; }
