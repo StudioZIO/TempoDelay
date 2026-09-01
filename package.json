@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "npm run build:client && npm run build:server && npm run prerender",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "verify:dist": "node scripts/verify_dist.mjs",
@@ -18,7 +18,10 @@
     "verify:vercel-config": "node scripts/verify_vercel_config.mjs",
     "verify:vercel-config:test": "node scripts/test_verify_vercel_config.mjs",
     "verify:preview-workflow": "node scripts/verify_preview_workflow.mjs",
-    "verify:tar-archive:test": "node scripts/test_verify_tar_archive.mjs"
+    "verify:tar-archive:test": "node scripts/test_verify_tar_archive.mjs",
+    "build:client": "vite build",
+    "build:server": "vite build --ssr src/entry-server.tsx --outDir dist-ssr",
+    "prerender": "node scripts/prerender.mjs dist dist-ssr"
   },
   "dependencies": {
     "react": "18.3.1",

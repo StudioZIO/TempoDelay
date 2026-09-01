@@ -795,12 +795,18 @@ const verifyOutput = async (requestedDirectory) => {
     }
   }
 
+  // The build inlines the stylesheet into the document, so a .css file in the
+  // output means the prerender step did not run and the document is still
+  // waiting on a separate request before it can paint.
   const jsFiles = files.filter((file) => file.endsWith('.js'));
   const cssFiles = files.filter((file) => file.endsWith('.css'));
-  if (jsFiles.length !== 1 || cssFiles.length !== 1 || applicationFiles.length !== 3) {
+  if (cssFiles.length !== 0) {
+    fail('STRUCTURAL_OUTPUT', `stylesheet must be inlined into the document; found ${cssFiles.join(', ')}`);
+  }
+  if (jsFiles.length !== 1 || applicationFiles.length !== 2) {
     fail(
       'STRUCTURAL_OUTPUT',
-      `expected index.html plus one fingerprinted JS and one fingerprinted CSS file; found ${applicationFiles.join(', ') || 'no files'}`,
+      `expected index.html plus one fingerprinted JS file; found ${applicationFiles.join(', ') || 'no files'}`,
     );
   }
 
@@ -872,9 +878,29 @@ const verifyOutput = async (requestedDirectory) => {
     }
     linkAssetReferences.push({ ...resolved, kind: expectsJavaScript ? 'js' : 'css' });
   }
-  const stylesheetReferences = linkAssetReferences.filter(({ kind }) => kind === 'css');
-  if (linkAssetReferences.length !== 1 || stylesheetReferences.length !== 1) {
-    fail('STRUCTURAL_OUTPUT', `expected exactly one first-party stylesheet link and no other local asset links; found ${linkAssetReferences.length}`);
+  if (linkAssetReferences.length !== 0) {
+    fail(
+      'STRUCTURAL_OUTPUT',
+      `expected no local asset links — the stylesheet is inlined — found ${linkAssetReferences.map(({ normalized }) => normalized).join(', ')}`,
+    );
+  }
+
+  // Exactly one first-party <style>, carrying the whole design system. More
+  // than one means something injected styles the build did not produce.
+  const styleTags = [...indexHtml.matchAll(/<style\b([^>]*)>([\s\S]*?)<\/style\s*>/gi)]
+    .map((match) => ({ attributes: parseAttributes(match[1]), content: match[2] }));
+  if (styleTags.length !== 1) {
+    fail('STRUCTURAL_OUTPUT', `expected exactly one inline stylesheet, found ${styleTags.length}`);
+  }
+  const inlineStyle = styleTags[0].content;
+  if (inlineStyle.trim().length === 0) {
+    fail('STRUCTURAL_OUTPUT', 'the inline stylesheet is empty');
+  }
+  // CSS cannot execute, but it can still reach out. Keep it first-party.
+  for (const pattern of [/@import\b/i, /url\(\s*['"]?\s*(?:https?:)?\/\//i, /javascript:/i, /expression\s*\(/i]) {
+    if (pattern.test(inlineStyle)) {
+      fail('THIRD_PARTY_SCRIPT_POLICY', `inline stylesheet reaches outside the origin: ${pattern}`);
+    }
   }
 
   const referencedPaths = [...localScriptReferences, ...linkAssetReferences].map(({ normalized }) => normalized);
@@ -972,10 +998,7 @@ const verifyOutput = async (requestedDirectory) => {
     const asset = textAssets.find(({ file }) => file === normalized);
     return total + gzipSync(Buffer.from(asset.text)).byteLength;
   }, 0);
-  const cssGzipBytes = stylesheetReferences.reduce((total, { normalized }) => {
-    const asset = textAssets.find(({ file }) => file === normalized);
-    return total + gzipSync(Buffer.from(asset.text)).byteLength;
-  }, 0);
+  const cssGzipBytes = gzipSync(Buffer.from(inlineStyle)).byteLength;
 
   if (jsGzipBytes > jsBudgetBytes) {
     fail('GZIP_BUDGET', `initial first-party JS is ${jsGzipBytes} bytes; budget is ${jsBudgetBytes} bytes`);
