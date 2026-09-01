@@ -1,5 +1,6 @@
 import { Logo } from './Logo';
 import { NAV_LINKS } from '../data/navigation';
+import { CONTACT_PATH } from '../router';
 
 export const SiteFooter = () => (
   <footer className="site-footer">
@@ -15,6 +16,16 @@ export const SiteFooter = () => (
               </a>
             </li>
           ))}
+        </ul>
+      </nav>
+
+      {/* Deliberately outside the four-link property nav above: support is a
+          page on this site, not a sibling property. */}
+      <nav aria-label="This site, footer">
+        <ul>
+          <li>
+            <a href={CONTACT_PATH}>Support</a>
+          </li>
         </ul>
       </nav>
 
