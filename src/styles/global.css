@@ -556,10 +556,13 @@ button.chip[aria-pressed="true"], button.chip[aria-selected="true"] {
 
 /* meters */
 .meter-stack { display: flex; align-items: flex-end; gap: 4px; height: 100%; min-height: 96px; padding: 0.6rem; border: 1px solid var(--hairline); border-radius: 8px; background: var(--surface-control); }
-.meter { flex: 1; border-radius: 2px; background: var(--meter-low); animation: meter-drift 3.2s ease-in-out infinite; }
-.meter:nth-child(2) { background: var(--meter-high); animation-delay: -0.7s; }
-.meter:nth-child(3) { background: var(--meter-low); animation-delay: -1.4s; }
-.meter:nth-child(4) { background: var(--meter-mid); animation-delay: -2.1s; }
+/* Held at one instant rather than drifting. The bars carry a level reading,
+   and a reading that never settles is decoration, not information — the panel
+   they sit in is a static representation of the plugin surface. */
+.meter { flex: 1; border-radius: 2px; background: var(--meter-low); height: 58%; }
+.meter:nth-child(2) { background: var(--meter-high); height: 82%; }
+.meter:nth-child(3) { background: var(--meter-low); height: 46%; }
+.meter:nth-child(4) { background: var(--meter-mid); height: 34%; }
 
 /* ---------- form controls ---------------------------------------------- */
 .field {
@@ -709,7 +712,19 @@ button.chip[aria-pressed="true"], button.chip[aria-selected="true"] {
   padding: 1.1rem;
   overflow-x: auto;
 }
+/* Above the fold-out width the diagram keeps a legible floor and the frame
+   scrolls to it. */
 .diagram-frame svg { min-width: 720px; }
+
+/* Below it, scrolling costs more than it buys: a reader on a phone cannot see
+   a cross-channel routing diagram one third at a time, so the whole picture
+   scales down to the frame instead. The viewBox does the scaling; the padding
+   comes off so the drawing gets the full width, and the frame stops scrolling
+   so no stray horizontal drag remains. */
+@media (max-width: 767px) {
+  .diagram-frame { overflow-x: hidden; padding: 0.5rem; }
+  .diagram-frame svg { min-width: 0; width: 100%; }
+}
 
 .edge { transition: stroke-opacity var(--dur-base) var(--ease-out); }
 .edge--idle { stroke-opacity: 0.07; }
@@ -786,11 +801,6 @@ button.chip[aria-pressed="true"], button.chip[aria-selected="true"] {
 @keyframes pulse-dot {
   0%, 100% { opacity: 1; }
   50%      { opacity: 0.35; }
-}
-@keyframes meter-drift {
-  0%, 100% { height: 38%; }
-  35%      { height: 82%; }
-  70%      { height: 54%; }
 }
 @keyframes heroSweep {
   from { left: -34%; }
