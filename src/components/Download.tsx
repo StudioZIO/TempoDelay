@@ -1,7 +1,6 @@
 import { Chip } from './Chip';
 import { Section } from './Section';
 import { MASTERING_SUITE_URL } from '../data/navigation';
-import { CONTACT_PATH } from '../router';
 
 const MACOS_DOWNLOAD_URL =
   'https://github.com/StudioZIO/TempoDelay/releases/download/v4.0.1-RC1/StudioZIOTempoDelay-v4.0.1-RC1-macOS-arm64.pkg';
@@ -34,9 +33,6 @@ export const Download = () => (
         </a>
         <a className="btn" href="#parameters">
           Parameter guide
-        </a>
-        <a className="btn" href={CONTACT_PATH}>
-          Support
         </a>
       </div>
     </div>

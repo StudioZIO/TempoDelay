@@ -11,13 +11,20 @@ const countMatches = (text, expression) => [...text.matchAll(expression)].length
 
 const assetNames = await readdir(path.join(distDirectory, 'assets'));
 const scriptName = assetNames.find((name) => /^index-.+\.js$/.test(name));
-const styleName = assetNames.find((name) => /^index-.+\.css$/.test(name));
-if (!scriptName || !styleName) {
-  fail('A11Y_CONTRACT', `fingerprinted bundle assets not found in ${distDirectory}/assets`);
+if (!scriptName) {
+  fail('A11Y_CONTRACT', `fingerprinted bundle script not found in ${distDirectory}/assets`);
 }
 
 const script = await readFile(path.join(distDirectory, 'assets', scriptName), 'utf8');
-const style = await readFile(path.join(distDirectory, 'assets', styleName), 'utf8');
+
+// The build inlines the stylesheet into the document so the first paint does
+// not wait on a second request, so the CSS to check lives there, not in a file.
+const document = await readFile(path.join(distDirectory, 'index.html'), 'utf8');
+const styleMatch = document.match(/<style\b[^>]*>([\s\S]*?)<\/style\s*>/i);
+if (!styleMatch) {
+  fail('A11Y_CONTRACT', `no inline stylesheet found in ${distDirectory}/index.html`);
+}
+const style = styleMatch[1];
 
 const requiredScriptLiterals = [
   ['Tempo in BPM', 'tempo range input must keep its accessible name'],

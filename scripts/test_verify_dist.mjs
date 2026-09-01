@@ -37,11 +37,14 @@ const expectFailure = (name, root, contract) => {
   console.log(`FIXTURE_PASS name=${name} expected=${contract}`);
 };
 
+// The build inlines the stylesheet, so a fixture has one JS asset and no CSS
+// file. cssPath still resolves to a plausible fingerprinted name so fixtures
+// can write one out to prove the contract rejects it.
 const findAssets = async (root) => {
   const entries = await readdir(path.join(root, 'assets'));
   const js = entries.find((entry) => /^index-.+\.js$/.test(entry));
-  const css = entries.find((entry) => /^index-.+\.css$/.test(entry));
-  if (!js || !css) fail(`fixture is missing its JS or CSS asset: ${root}`);
+  if (!js) fail(`fixture is missing its JS asset: ${root}`);
+  const css = `index-${js.replace(/^index-/, '').replace(/\.js$/, '')}.css`;
   return {
     htmlPath: path.join(root, 'index.html'),
     jsPath: path.join(root, 'assets', js),
@@ -416,6 +419,21 @@ const run = async () => {
       },
     },
     {
+      name: 'executable_at_output_root',
+      contract: 'OUTPUT_ALLOWLIST',
+      mutate: async (root) => {
+        await writeFile(path.join(root, 'payload.js'), 'export default 1;\n', 'utf8');
+      },
+    },
+    {
+      name: 'robots_name_reused_in_subdirectory',
+      contract: 'OUTPUT_ALLOWLIST',
+      mutate: async (root) => {
+        await mkdir(path.join(root, 'assets'), { recursive: true });
+        await writeFile(path.join(root, 'assets', 'robots.txt'), 'User-agent: *\n', 'utf8');
+      },
+    },
+    {
       name: 'executable_in_font_directory',
       contract: 'OUTPUT_ALLOWLIST',
       mutate: async (root) => {
@@ -443,8 +461,47 @@ const run = async () => {
       name: 'css_gzip_budget',
       contract: 'GZIP_BUDGET',
       mutate: async (root) => {
+        await replaceHtml(root, (html) =>
+          html.replace('</style>', `.fixture{--noise:'${deterministicNoise(150_000)}'}</style>`));
+      },
+    },
+    {
+      name: 'stylesheet_left_as_a_separate_file',
+      contract: 'STRUCTURAL_OUTPUT',
+      mutate: async (root) => {
         const { cssPath } = await findAssets(root);
-        await writeFile(cssPath, `.fixture{--noise:'${deterministicNoise(150_000)}'}\n`, 'utf8');
+        await writeFile(cssPath, '.fixture{color:red}\n', 'utf8');
+      },
+    },
+    {
+      name: 'external_stylesheet_link_reintroduced',
+      contract: 'THIRD_PARTY_SCRIPT_POLICY',
+      mutate: async (root) => {
+        await replaceHtml(root, (html) =>
+          html.replace('</head>', '<link rel="stylesheet" href="https://cdn.example.com/x.css"></head>'));
+      },
+    },
+    {
+      name: 'second_inline_stylesheet',
+      contract: 'STRUCTURAL_OUTPUT',
+      mutate: async (root) => {
+        await replaceHtml(root, (html) => html.replace('</head>', '<style>.x{color:red}</style></head>'));
+      },
+    },
+    {
+      name: 'inline_stylesheet_imports_offsite',
+      contract: 'THIRD_PARTY_SCRIPT_POLICY',
+      mutate: async (root) => {
+        await replaceHtml(root, (html) =>
+          html.replace('<style>', '<style>@import url("https://cdn.example.com/x.css");'));
+      },
+    },
+    {
+      name: 'inline_stylesheet_fetches_offsite_url',
+      contract: 'THIRD_PARTY_SCRIPT_POLICY',
+      mutate: async (root) => {
+        await replaceHtml(root, (html) =>
+          html.replace('</style>', '.x{background:url(https://cdn.example.com/x.png)}</style>'));
       },
     },
   ];
