@@ -23,8 +23,9 @@ const requiredScriptLiterals = [
   ['Tempo in BPM', 'tempo range input must keep its accessible name'],
   ['Left delay division', 'left division select must keep its accessible name'],
   ['Right delay division', 'right division select must keep its accessible name'],
-  ['Toggle navigation menu', 'mobile menu button must keep its accessible name'],
-  ['aria-expanded', 'disclosure controls must keep aria-expanded state'],
+  ['Search 32 parameters', 'parameter search field must keep its accessible name'],
+  ['StudioZIO properties', 'the four-link navigation must keep its accessible name'],
+  ['aria-pressed', 'toggle controls must keep aria-pressed state'],
 ];
 
 for (const [literal, reason] of requiredScriptLiterals) {

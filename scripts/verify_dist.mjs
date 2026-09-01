@@ -10,6 +10,11 @@ const measurementId = 'G-9LS1G2PR3R';
 const jsBudgetBytes = 100 * 1024;
 const cssBudgetBytes = 25 * 1024;
 const fingerprintedAssetPattern = /^assets\/index-([A-Za-z0-9_-]{8,})\.(js|css)$/;
+// Self-hosted design-system typefaces plus the OFL licences they ship under.
+// Fonts are static, non-executable payload: never referenced from HTML, only
+// from the first-party stylesheet's @font-face rules.
+const fontAssetPattern = /^assets\/fonts\/(?:[a-z0-9-]+\.woff2|OFL-[a-z0-9-]+\.txt)$/;
+const woff2Signature = Buffer.from('wOF2', 'ascii');
 
 const fail = (contract, detail) => {
   throw new Error(`[${contract}] ${detail}`);
@@ -761,10 +766,15 @@ const verifyOutput = async (requestedDirectory) => {
   }
 
   for (const directory of directories) {
-    if (directory !== 'assets') fail('OUTPUT_ALLOWLIST', `unexpected directory: ${directory}`);
+    if (directory !== 'assets' && directory !== 'assets/fonts') {
+      fail('OUTPUT_ALLOWLIST', `unexpected directory: ${directory}`);
+    }
   }
 
-  for (const file of files) {
+  const fontFiles = files.filter((file) => fontAssetPattern.test(file));
+  const applicationFiles = files.filter((file) => !fontAssetPattern.test(file));
+
+  for (const file of applicationFiles) {
     if (file === 'index.html') continue;
     if (!file.startsWith('assets/index-') || !/\.(?:js|css)$/.test(file)) {
       fail('OUTPUT_ALLOWLIST', `unexpected output file: ${file}`);
@@ -772,12 +782,19 @@ const verifyOutput = async (requestedDirectory) => {
     verifyFingerprint(file, file.endsWith('.js') ? 'js' : 'css');
   }
 
+  for (const file of fontFiles.filter((candidate) => candidate.endsWith('.woff2'))) {
+    const header = (await readFile(path.join(rootDirectory, file))).subarray(0, 4);
+    if (!header.equals(woff2Signature)) {
+      fail('OUTPUT_ALLOWLIST', `self-hosted font is not a WOFF2 payload: ${file}`);
+    }
+  }
+
   const jsFiles = files.filter((file) => file.endsWith('.js'));
   const cssFiles = files.filter((file) => file.endsWith('.css'));
-  if (jsFiles.length !== 1 || cssFiles.length !== 1 || files.length !== 3) {
+  if (jsFiles.length !== 1 || cssFiles.length !== 1 || applicationFiles.length !== 3) {
     fail(
       'STRUCTURAL_OUTPUT',
-      `expected index.html plus one fingerprinted JS and one fingerprinted CSS file; found ${files.join(', ') || 'no files'}`,
+      `expected index.html plus one fingerprinted JS and one fingerprinted CSS file; found ${applicationFiles.join(', ') || 'no files'}`,
     );
   }
 
@@ -863,7 +880,9 @@ const verifyOutput = async (requestedDirectory) => {
     fail('HTML_ASSET_RESOLUTION', `unreferenced output asset: ${unreferencedAssets.join(', ')}`);
   }
 
-  const textAssets = await Promise.all(files.map(async (file) => ({
+  // Static font payload is validated structurally above and deliberately kept
+  // out of the executable-content scan below.
+  const textAssets = await Promise.all(applicationFiles.map(async (file) => ({
     file,
     text: await readFile(path.join(rootDirectory, file), 'utf8'),
   })));
@@ -885,7 +904,7 @@ const verifyOutput = async (requestedDirectory) => {
     }
   }
 
-  const outputFileSet = new Set(files);
+  const outputFileSet = new Set(applicationFiles);
   for (const { file, text } of textAssets.filter(({ file: asset }) => asset.endsWith('.js'))) {
     verifyJavaScriptSemantics(file, text, outputFileSet);
   }
@@ -960,7 +979,7 @@ const verifyOutput = async (requestedDirectory) => {
   }
 
   console.log(
-    `VERIFY_DIST_PASS root=${rootDirectory} files=${files.length} `
+    `VERIFY_DIST_PASS root=${rootDirectory} files=${applicationFiles.length} fonts=${fontFiles.length} `
     + `js_gzip=${jsGzipBytes}B(${(jsGzipBytes / 1024).toFixed(2)}KiB) `
     + `css_gzip=${cssGzipBytes}B(${(cssGzipBytes / 1024).toFixed(2)}KiB) `
     + `ga4=${measurementId}`,
