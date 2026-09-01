@@ -419,6 +419,14 @@ const run = async () => {
       },
     },
     {
+      name: 'executable_in_audio_directory',
+      contract: 'OUTPUT_ALLOWLIST',
+      mutate: async (root) => {
+        await mkdir(path.join(root, 'audio'), { recursive: true });
+        await writeFile(path.join(root, 'audio', 'payload.js'), 'export default 1;\n', 'utf8');
+      },
+    },
+    {
       name: 'executable_at_output_root',
       contract: 'OUTPUT_ALLOWLIST',
       mutate: async (root) => {

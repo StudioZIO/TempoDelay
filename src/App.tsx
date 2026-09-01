@@ -1,6 +1,7 @@
 import { Architecture } from './components/Architecture';
 import { Download } from './components/Download';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { HearIt } from './components/HearIt';
 import { Hero } from './components/Hero';
 import { InteractiveVisualizer } from './components/InteractiveVisualizer';
 import { ParameterGuide } from './components/ParameterGuide';
@@ -17,6 +18,7 @@ export const App = () => (
     <SiteHeader />
     <main id="main-content" tabIndex={-1}>
       <Hero />
+      <HearIt />
       <Architecture />
       <InteractiveVisualizer />
       <ParameterGuide />
