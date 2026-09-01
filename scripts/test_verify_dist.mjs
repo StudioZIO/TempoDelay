@@ -416,6 +416,21 @@ const run = async () => {
       },
     },
     {
+      name: 'executable_at_output_root',
+      contract: 'OUTPUT_ALLOWLIST',
+      mutate: async (root) => {
+        await writeFile(path.join(root, 'payload.js'), 'export default 1;\n', 'utf8');
+      },
+    },
+    {
+      name: 'robots_name_reused_in_subdirectory',
+      contract: 'OUTPUT_ALLOWLIST',
+      mutate: async (root) => {
+        await mkdir(path.join(root, 'assets'), { recursive: true });
+        await writeFile(path.join(root, 'assets', 'robots.txt'), 'User-agent: *\n', 'utf8');
+      },
+    },
+    {
       name: 'executable_in_font_directory',
       contract: 'OUTPUT_ALLOWLIST',
       mutate: async (root) => {
