@@ -477,6 +477,10 @@ button.chip[aria-pressed="true"], button.chip[aria-selected="true"] {
 }
 .module-card p { color: var(--muted-foreground); font-size: 0.9375rem; margin: 0; }
 
+/* checksum line: mono, small, and allowed to break mid-hash so a 64-character
+   digest cannot widen the panel on a phone. Same rule as the hub's. */
+.sha { font-family: var(--font-mono); font-size: 0.6875rem; overflow-wrap: anywhere; }
+
 /* claim + readout: a plain-language claim with the value the plugin actually
    reports directly beneath it. The products are measurement-first, so the
    pages argue the way they do -- never a claim without its number. Named
