@@ -23,7 +23,12 @@ const staticRootPattern = /^(?:robots\.txt|sitemap\.xml)$/;
 // script, only from <audio src>, and excluded from the executable-content
 // scan because decoding AAC as UTF-8 produces meaningless matches.
 const audioAssetPattern = /^audio\/[a-z0-9-]+\.(?:m4a|opus)$/;
+const imageAssetPattern = /^images\/[a-z0-9-]+\.webp$/;
 const woff2Signature = Buffer.from('wOF2', 'ascii');
+// A WebP file is a RIFF container whose form type is WEBP: 'RIFF' at byte 0,
+// the payload length, then 'WEBP' at byte 8.
+const riffSignature = Buffer.from('RIFF', 'ascii');
+const webpFormType = Buffer.from('WEBP', 'ascii');
 
 const fail = (contract, detail) => {
   throw new Error(`[${contract}] ${detail}`);
@@ -775,13 +780,21 @@ const verifyOutput = async (requestedDirectory) => {
   }
 
   for (const directory of directories) {
-    if (directory !== 'assets' && directory !== 'assets/fonts' && directory !== 'audio') {
+    if (
+      directory !== 'assets'
+      && directory !== 'assets/fonts'
+      && directory !== 'audio'
+      && directory !== 'images'
+    ) {
       fail('OUTPUT_ALLOWLIST', `unexpected directory: ${directory}`);
     }
   }
 
   const isSidecar = (file) =>
-    fontAssetPattern.test(file) || staticRootPattern.test(file) || audioAssetPattern.test(file);
+    fontAssetPattern.test(file)
+    || staticRootPattern.test(file)
+    || audioAssetPattern.test(file)
+    || imageAssetPattern.test(file);
   const fontFiles = files.filter((file) => fontAssetPattern.test(file));
   const applicationFiles = files.filter((file) => !isSidecar(file));
 
@@ -797,6 +810,19 @@ const verifyOutput = async (requestedDirectory) => {
     const header = (await readFile(path.join(rootDirectory, file))).subarray(0, 4);
     if (!header.equals(woff2Signature)) {
       fail('OUTPUT_ALLOWLIST', `self-hosted font is not a WOFF2 payload: ${file}`);
+    }
+  }
+
+  // An image that is not the format its extension claims either fails to
+  // decode or decodes as something else entirely, so check the bytes.
+  for (const file of files.filter((candidate) => imageAssetPattern.test(candidate))) {
+    const header = await readFile(path.join(rootDirectory, file));
+    if (
+      header.length < 12
+      || !header.subarray(0, 4).equals(riffSignature)
+      || !header.subarray(8, 12).equals(webpFormType)
+    ) {
+      fail('OUTPUT_ALLOWLIST', `interface capture is not a WebP payload: ${file}`);
     }
   }
 

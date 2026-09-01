@@ -956,11 +956,12 @@ button.chip[aria-pressed="true"], button.chip[aria-selected="true"] {
   .audio-level-fill { transition: none; }
 }
 
-/* ---------- plugin interface illustration ------------------------------
-   A drawn rendering of the real interface, not a screenshot, so it is
-   decorative: every load-bearing claim is stated in text elsewhere on the
-   page. Drawn rather than photographed because it stays crisp at any size,
-   sits in the site's own palette and costs a few KB. */
+/* ---------- plugin interface capture -----------------------------------
+   A capture of the real interface, cropped to the plugin's own window so the
+   only frame around it is this one. The bar with the three dots is the site's
+   own chrome, not the host's. Every value the capture shows is repeated in
+   its alt text, and every load-bearing claim is stated in text elsewhere on
+   the page, so the section survives with images off. */
 .plugin-shot { overflow: hidden; }
 .plugin-shot-bar {
   display: flex;
