@@ -8,6 +8,7 @@ import { ParameterGuide } from './components/ParameterGuide';
 import { SiteFooter } from './components/SiteFooter';
 import { SiteHeader } from './components/SiteHeader';
 import { Specification } from './components/Specification';
+import { TempoDelayInterface } from './components/TempoDelayInterface';
 
 /* One document, one route. The client-side router existed for /contact, which
    now lives on the hub with the other two sites' support links; with nothing
@@ -19,6 +20,7 @@ export const App = () => (
     <main id="main-content" tabIndex={-1}>
       <Hero />
       <HearIt />
+      <TempoDelayInterface />
       <Architecture />
       <InteractiveVisualizer />
       <ParameterGuide />
