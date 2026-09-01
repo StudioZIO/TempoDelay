@@ -85,6 +85,11 @@ const SignalEdge = ({ edge, active, animate }: { edge: Edge; active: boolean; an
   />
 );
 
+// The level the loop settles at with no transient held in it. Low enough that
+// pressing Continuous Impulse is still a visible change, high enough that the
+// routing reads as live on load.
+const RESTING_AMPLITUDE = 0.22;
+
 const PulseHead = ({ edge, amplitude, animate }: { edge: Edge; amplitude: number; animate: boolean }) => {
   const stroke = strokeFor(edge.channel);
   if (!animate) return null;
@@ -129,10 +134,12 @@ export const InteractiveVisualizer = () => {
   const feedbackEdges = useMemo(() => [...CROSS_EDGES, ...DIRECT_EDGES], []);
   const activeFeedbackIds = pingPong ? ['cross-lr', 'cross-rl'] : ['direct-l', 'direct-r'];
 
-  // While the toggle is on the amplitude is pinned so the loop never dies.
-  const liveAmplitude = running ? 1 : amplitude;
-  const emitting = liveAmplitude > 0;
-  const animate = emitting && !reducedMotion;
+  // A delay always has signal passing through it, so the diagram runs at a
+  // resting level rather than sitting dead until someone presses a button.
+  // While the toggle is on the amplitude is pinned so the loop never dies;
+  // once stopped each pass decays back down to that resting level.
+  const liveAmplitude = running ? 1 : Math.max(amplitude, RESTING_AMPLITUDE);
+  const animate = !reducedMotion;
 
   const toggleImpulse = () => {
     if (running) {
@@ -415,7 +422,7 @@ export const InteractiveVisualizer = () => {
                 </text>
               </g>
 
-              {emitting
+              {animate
                 ? pulseEdges.map((edge) => (
                     <PulseHead key={`pulse-${edge.id}`} edge={edge} amplitude={liveAmplitude} animate={animate} />
                   ))
@@ -427,8 +434,9 @@ export const InteractiveVisualizer = () => {
             <div>
               <p className="eyebrow eyebrow--muted mb-2">Continuous impulse</p>
               <p className="text-sm text-muted-foreground">
-                Hold a transient in the loop to watch it travel. While it runs the amplitude stays pinned;
-                once stopped each pass decays until it falls away.
+                The loop runs at a resting level on its own. Hold a transient in it to watch a loud pass
+                travel: while it runs the amplitude stays pinned, and once stopped each pass decays back
+                down to rest.
               </p>
             </div>
             <button type="button" className="btn shrink-0" aria-pressed={running} onClick={toggleImpulse}>
