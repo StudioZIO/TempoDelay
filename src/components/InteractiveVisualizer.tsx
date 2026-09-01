@@ -85,20 +85,19 @@ const SignalEdge = ({ edge, active, animate }: { edge: Edge; active: boolean; an
   />
 );
 
-// The level the loop settles at with no transient held in it. Deliberately
-// quiet: the diagram has to read as live on load, but holding an impulse has
-// to be an unmistakable change, not a nudge.
-const RESTING_AMPLITUDE = 0.14;
-
+// Radii and opacity scale straight from the amplitude, so a full hold lands on
+// exactly the values the visible-state work settled on (ring r 16 at 0.48,
+// core r 7) and a decay shrinks the head to nothing instead of cutting it off
+// mid-size, which read as a pop when the loop emptied.
 const PulseHead = ({ edge, amplitude, animate }: { edge: Edge; amplitude: number; animate: boolean }) => {
   const stroke = strokeFor(edge.channel);
-  if (!animate) return null;
+  if (!animate || amplitude <= 0) return null;
   return (
     <g>
-      <circle r={7 + amplitude * 9} fill={stroke} opacity={0.18 + amplitude * 0.3}>
+      <circle r={amplitude * 16} fill={stroke} opacity={amplitude * 0.48}>
         <animateMotion path={edge.d} dur="0.9s" begin={edge.begin} repeatCount="indefinite" />
       </circle>
-      <circle r={3 + amplitude * 4} fill={stroke}>
+      <circle r={amplitude * 7} fill={stroke}>
         <animateMotion path={edge.d} dur="0.9s" begin={edge.begin} repeatCount="indefinite" />
       </circle>
     </g>
@@ -134,12 +133,13 @@ export const InteractiveVisualizer = () => {
   const feedbackEdges = useMemo(() => [...CROSS_EDGES, ...DIRECT_EDGES], []);
   const activeFeedbackIds = pingPong ? ['cross-lr', 'cross-rl'] : ['direct-l', 'direct-r'];
 
-  // A delay always has signal passing through it, so the diagram runs at a
-  // resting level rather than sitting dead until someone presses a button.
-  // While the toggle is on the amplitude is pinned so the loop never dies;
-  // once stopped each pass decays back down to that resting level.
-  const liveAmplitude = running ? 1 : Math.max(amplitude, RESTING_AMPLITUDE);
+  // Rest means rest: with nothing held, the loop empties out and the diagram
+  // stops completely. While the toggle is on the amplitude is pinned so the
+  // loop never dies; releasing it lets each pass decay to nothing, the way a
+  // delay's repeats actually die out, and then the picture holds still.
+  const liveAmplitude = running ? 1 : amplitude;
   const animate = !reducedMotion;
+  const moving = animate && liveAmplitude > 0;
 
   const toggleImpulse = () => {
     if (running) {
@@ -266,7 +266,7 @@ export const InteractiveVisualizer = () => {
               </defs>
 
               {THROUGH_EDGES.map((edge) => (
-                <SignalEdge key={edge.id} edge={edge} active animate={animate} />
+                <SignalEdge key={edge.id} edge={edge} active animate={moving} />
               ))}
 
               {feedbackEdges.map((edge) => (
@@ -274,7 +274,7 @@ export const InteractiveVisualizer = () => {
                   key={edge.id}
                   edge={edge}
                   active={activeFeedbackIds.includes(edge.id)}
-                  animate={animate}
+                  animate={moving}
                 />
               ))}
 
@@ -326,7 +326,7 @@ export const InteractiveVisualizer = () => {
                   fill="var(--surface-overlay)"
                   stroke="var(--primary)"
                   strokeWidth="2.5"
-                  className={animate ? 'node-breathe' : undefined}
+                  className={moving ? 'node-breathe' : undefined}
                 />
                 <text x="70" y="28" fill="var(--foreground)" textAnchor="middle" fontSize="13" fontWeight="600">
                   LEFT BUFFER
@@ -348,7 +348,7 @@ export const InteractiveVisualizer = () => {
                   fill="var(--surface-overlay)"
                   stroke="var(--signal)"
                   strokeWidth="2.5"
-                  className={animate ? 'node-breathe' : undefined}
+                  className={moving ? 'node-breathe' : undefined}
                 />
                 <text x="70" y="28" fill="var(--foreground)" textAnchor="middle" fontSize="13" fontWeight="600">
                   RIGHT BUFFER
@@ -412,7 +412,7 @@ export const InteractiveVisualizer = () => {
                   fill="var(--surface-overlay)"
                   stroke="var(--primary)"
                   strokeWidth="2.5"
-                  className={animate ? 'node-breathe' : undefined}
+                  className={moving ? 'node-breathe' : undefined}
                 />
                 <text x="45" y="27" fill="var(--foreground)" textAnchor="middle" fontSize="11" fontWeight="600">
                   MASTER OUT
@@ -422,9 +422,9 @@ export const InteractiveVisualizer = () => {
                 </text>
               </g>
 
-              {animate
+              {moving
                 ? pulseEdges.map((edge) => (
-                    <PulseHead key={`pulse-${edge.id}`} edge={edge} amplitude={liveAmplitude} animate={animate} />
+                    <PulseHead key={`pulse-${edge.id}`} edge={edge} amplitude={liveAmplitude} animate={moving} />
                   ))
                 : null}
             </svg>
@@ -439,9 +439,9 @@ export const InteractiveVisualizer = () => {
                 </span>
               </p>
               <p className="text-sm text-muted-foreground">
-                The loop runs at a resting level on its own. Hold a transient in it to watch a loud pass
-                travel: while it runs the amplitude stays pinned, and once stopped each pass decays back
-                down to rest.
+                At rest the diagram is still. Hold an impulse in the loop to watch the passes travel:
+                while it runs the amplitude stays pinned, and once stopped each pass decays away until
+                the loop is empty again.
               </p>
             </div>
             <button
