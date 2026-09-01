@@ -21,6 +21,7 @@
     "verify:tar-archive:test": "node scripts/test_verify_tar_archive.mjs"
   },
   "dependencies": {
+    "@vercel/analytics": "^2.0.1",
     "react": "18.3.1",
     "react-dom": "18.3.1"
   },

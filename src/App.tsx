@@ -1,3 +1,4 @@
+import { Analytics } from '@vercel/analytics/react';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
 import { Description } from './components/Description';
@@ -15,24 +16,27 @@ import { Footer } from './components/Footer';
 
 export const App = () => {
   return (
-    <div className="min-h-screen bg-[#14161A] text-[#E2E8F0]">
-      <Header />
-      <main id="main-content">
-        <Hero />
-        <Description />
-        <InteractiveVisualizer />
-        <ParameterGuide />
-        <Features />
-        <FormatBadges />
-        <SystemRequirements />
-        <VersionHistory />
-        <InstallationGuide />
-        <FAQ />
-        <DownloadPlaceholder />
-        <SupportContact />
-      </main>
-      <Footer />
-    </div>
+    <>
+      <div className="min-h-screen bg-[#14161A] text-[#E2E8F0]">
+        <Header />
+        <main id="main-content">
+          <Hero />
+          <Description />
+          <InteractiveVisualizer />
+          <ParameterGuide />
+          <Features />
+          <FormatBadges />
+          <SystemRequirements />
+          <VersionHistory />
+          <InstallationGuide />
+          <FAQ />
+          <DownloadPlaceholder />
+          <SupportContact />
+        </main>
+        <Footer />
+      </div>
+      <Analytics />
+    </>
   );
 };
 
