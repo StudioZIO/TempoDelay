@@ -416,6 +416,22 @@ const run = async () => {
       },
     },
     {
+      name: 'executable_in_font_directory',
+      contract: 'OUTPUT_ALLOWLIST',
+      mutate: async (root) => {
+        await mkdir(path.join(root, 'assets', 'fonts'), { recursive: true });
+        await writeFile(path.join(root, 'assets', 'fonts', 'payload.js'), 'export default 1;\n', 'utf8');
+      },
+    },
+    {
+      name: 'font_payload_is_not_woff2',
+      contract: 'OUTPUT_ALLOWLIST',
+      mutate: async (root) => {
+        await mkdir(path.join(root, 'assets', 'fonts'), { recursive: true });
+        await writeFile(path.join(root, 'assets', 'fonts', 'imposter.woff2'), 'not a font\n', 'utf8');
+      },
+    },
+    {
       name: 'javascript_gzip_budget',
       contract: 'GZIP_BUDGET',
       mutate: async (root) => {

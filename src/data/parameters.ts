@@ -32,3 +32,30 @@ export const APVTS_PARAMETERS = [
   { id: 'mod.tempoSync', name: 'Modulation Sync', category: 'Modulation', type: 'toggle', defaultValue: 0, options: ['Free (Hz)', 'Sync (Division)'], description: 'Links LFO modulation rate to host transport tempo divisions.', dspDetail: 'Synchronizes LFO rate to host transport clock note subdivisions.' },
   { id: 'mod.division', name: 'Modulation Division', category: 'Modulation', type: 'choice', defaultValue: 6, options: ['1/32', '1/16', '1/8', '1/8D', '1/4', '1/2', '1/1'], description: 'Musical note division for tempo-synced LFO rate.', dspDetail: 'Note subdivision grid for LFO tempo sync.' }
 ];
+
+/** The seven filter groups the design system exposes as category chips. */
+export const PARAMETER_GROUPS = [
+  'Global & Sync',
+  'L/R Timing',
+  'Tone Shaping',
+  'Character System',
+  'Ducking Engine',
+  'Modulation',
+  'Output',
+] as const;
+
+export type ParameterGroup = (typeof PARAMETER_GROUPS)[number];
+
+/** Folds the manifest's fine-grained categories onto the seven chips. */
+export const GROUP_BY_CATEGORY: Record<string, ParameterGroup> = {
+  'Global & Sync': 'Global & Sync',
+  'L/R Timing': 'L/R Timing',
+  'Feedback & Routing': 'L/R Timing',
+  'Tone Shaping': 'Tone Shaping',
+  'Character System': 'Character System',
+  'Advanced Processing': 'Character System',
+  'Ducking Engine': 'Ducking Engine',
+  Modulation: 'Modulation',
+  'Spatial & Output': 'Output',
+  'Gain Structure': 'Output',
+};
