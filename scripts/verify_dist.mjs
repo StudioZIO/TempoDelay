@@ -19,6 +19,10 @@ const fontAssetPattern = /^assets\/fonts\/(?:[a-z0-9-]+\.woff2|OFL-[a-z0-9-]+\.t
 // an invalid robots.txt. Static, non-executable, and referenced by crawlers
 // rather than from the document, so it is exempt from the HTML-reference rule.
 const staticRootPattern = /^(?:robots\.txt|sitemap\.xml)$/;
+// Loudness-matched A/B renders. Static media: never referenced from a
+// script, only from <audio src>, and excluded from the executable-content
+// scan because decoding AAC as UTF-8 produces meaningless matches.
+const audioAssetPattern = /^audio\/[a-z0-9-]+\.(?:m4a|opus)$/;
 const woff2Signature = Buffer.from('wOF2', 'ascii');
 
 const fail = (contract, detail) => {
@@ -771,12 +775,13 @@ const verifyOutput = async (requestedDirectory) => {
   }
 
   for (const directory of directories) {
-    if (directory !== 'assets' && directory !== 'assets/fonts') {
+    if (directory !== 'assets' && directory !== 'assets/fonts' && directory !== 'audio') {
       fail('OUTPUT_ALLOWLIST', `unexpected directory: ${directory}`);
     }
   }
 
-  const isSidecar = (file) => fontAssetPattern.test(file) || staticRootPattern.test(file);
+  const isSidecar = (file) =>
+    fontAssetPattern.test(file) || staticRootPattern.test(file) || audioAssetPattern.test(file);
   const fontFiles = files.filter((file) => fontAssetPattern.test(file));
   const applicationFiles = files.filter((file) => !isSidecar(file));
 

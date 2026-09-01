@@ -884,3 +884,74 @@ button.chip[aria-pressed="true"], button.chip[aria-selected="true"] {
   border-color: var(--primary);
   color: var(--primary-foreground);
 }
+
+/* ---------- A/B audio demo --------------------------------------------- */
+.audio-demo { overflow: hidden; }
+.audio-demo-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.7rem 1.25rem;
+  border-bottom: 1px solid var(--hairline);
+  background: color-mix(in oklab, var(--surface-overlay) 60%, transparent);
+}
+.audio-demo-state {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+.audio-demo-body { display: flex; flex-wrap: wrap; align-items: center; gap: 1.25rem; padding: 1.25rem; }
+.audio-demo-meters { flex: 1 1 14rem; min-width: 0; }
+
+/* segmented dry / processed switch */
+.seg { display: flex; padding: 0.25rem; border: 1px solid var(--border); border-radius: 8px; background: var(--background); }
+.seg-option {
+  border: 0;
+  border-radius: 6px;
+  padding: 0.4rem 0.9rem;
+  background: transparent;
+  color: var(--muted-foreground);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+}
+.seg-option[aria-pressed='true'] { background: var(--surface-control); color: var(--foreground); }
+
+.audio-level { height: 8px; border-radius: 999px; background: var(--surface-control); overflow: hidden; }
+.audio-level-fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--primary);
+  transition: width 75ms linear;
+}
+/* Amber is data, and a level near full scale is exactly that. */
+.audio-level-fill.is-hot { background: var(--signal); }
+.audio-demo-foot { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-top: 0.5rem; }
+.audio-demo-caption {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+.audio-progress { flex: 1; max-width: 9rem; height: 1px; background: var(--border); }
+.audio-progress-fill { display: block; height: 1px; background: var(--primary); }
+.audio-demo-note {
+  margin: 0;
+  padding: 0.85rem 1.25rem;
+  border-top: 1px solid var(--hairline);
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+  max-width: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .audio-level-fill { transition: none; }
+}
