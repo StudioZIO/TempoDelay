@@ -85,20 +85,20 @@ const SignalEdge = ({ edge, active, animate }: { edge: Edge; active: boolean; an
   />
 );
 
-// The level the loop settles at with no transient held in it. Low enough that
-// pressing Continuous Impulse is still a visible change, high enough that the
-// routing reads as live on load.
-const RESTING_AMPLITUDE = 0.22;
+// The level the loop settles at with no transient held in it. Deliberately
+// quiet: the diagram has to read as live on load, but holding an impulse has
+// to be an unmistakable change, not a nudge.
+const RESTING_AMPLITUDE = 0.14;
 
 const PulseHead = ({ edge, amplitude, animate }: { edge: Edge; amplitude: number; animate: boolean }) => {
   const stroke = strokeFor(edge.channel);
   if (!animate) return null;
   return (
     <g>
-      <circle r={8 + amplitude * 5} fill={stroke} opacity="0.3">
+      <circle r={7 + amplitude * 9} fill={stroke} opacity={0.18 + amplitude * 0.3}>
         <animateMotion path={edge.d} dur="0.9s" begin={edge.begin} repeatCount="indefinite" />
       </circle>
-      <circle r={3.5 + amplitude * 2.5} fill={stroke}>
+      <circle r={3 + amplitude * 4} fill={stroke}>
         <animateMotion path={edge.d} dur="0.9s" begin={edge.begin} repeatCount="indefinite" />
       </circle>
     </g>
@@ -254,7 +254,7 @@ export const InteractiveVisualizer = () => {
             </div>
           </div>
 
-          <div className="diagram-frame">
+          <div className="diagram-frame" data-impulse={running ? 'held' : 'rest'}>
             <svg viewBox="0 0 900 420" className="w-full h-auto" role="img" aria-label="Tempo Delay signal flow diagram">
               <defs>
                 <marker id="td-arrow-left" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
@@ -432,14 +432,24 @@ export const InteractiveVisualizer = () => {
 
           <div className="download-row panel-inset">
             <div>
-              <p className="eyebrow eyebrow--muted mb-2">Continuous impulse</p>
+              <p className="eyebrow eyebrow--muted mb-2">
+                Continuous impulse
+                <span className={running ? 'impulse-state impulse-state--held' : 'impulse-state'}>
+                  {running ? 'Held' : 'Resting'}
+                </span>
+              </p>
               <p className="text-sm text-muted-foreground">
                 The loop runs at a resting level on its own. Hold a transient in it to watch a loud pass
                 travel: while it runs the amplitude stays pinned, and once stopped each pass decays back
                 down to rest.
               </p>
             </div>
-            <button type="button" className="btn shrink-0" aria-pressed={running} onClick={toggleImpulse}>
+            <button
+              type="button"
+              className={running ? 'btn btn-primary shrink-0' : 'btn shrink-0'}
+              aria-pressed={running}
+              onClick={toggleImpulse}
+            >
               {running ? 'Stop Impulse' : 'Continuous Impulse'}
             </button>
           </div>

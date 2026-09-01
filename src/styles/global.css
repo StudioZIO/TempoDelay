@@ -818,3 +818,29 @@ button.chip[aria-pressed="true"], button.chip[aria-selected="true"] {
     transition-duration: 0.001ms !important;
   }
 }
+
+/* ---------- impulse state ----------------------------------------------
+   The diagram animates at a resting level at all times, so the toggle no
+   longer switches motion on and off. Its effect has to be legible some other
+   way: the heads grow and brighten, the flow speeds up, the control fills,
+   and the state is written out in words. */
+.impulse-state {
+  margin-left: 0.6rem;
+  padding: 0.15rem 0.45rem;
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  color: var(--muted-foreground);
+  letter-spacing: 0.12em;
+}
+.impulse-state--held {
+  border-color: var(--primary);
+  color: var(--primary-text);
+}
+[data-impulse='held'] .edge--flow { animation-duration: 0.5s; }
+/* .btn[aria-pressed="true"] outranks .btn-primary on specificity, which would
+   strip the fill from a toggle that is deliberately primary while engaged. */
+.btn-primary[aria-pressed='true'] {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--primary-foreground);
+}
