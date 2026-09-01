@@ -32,6 +32,7 @@ const requiredScriptLiterals = [
   ['Right delay division', 'right division select must keep its accessible name'],
   ['Search 32 parameters', 'parameter search field must keep its accessible name'],
   ['StudioZIO properties', 'the four-link navigation must keep its accessible name'],
+  ['StudioZIO properties, compact menu', 'the compact navigation must keep its accessible name'],
   ['aria-pressed', 'toggle controls must keep aria-pressed state'],
 ];
 
