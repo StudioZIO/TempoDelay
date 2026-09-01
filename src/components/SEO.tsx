@@ -7,29 +7,19 @@ export const SEO: React.FC = () => {
       "@graph": [
         {
           "@type": "Organization",
-          "@id": "https://studiozio.audio/#organization",
+          "@id": "https://studiozio.vercel.app/#organization",
           "name": "StudioZIO",
-          "url": "https://studiozio.audio",
-          "logo": "https://studiozio.audio/assets/studiozio-logo.png",
-          "description": "Independent audio software company specializing in native Audio Unit (AUv2), VST3, and Standalone audio plugins.",
-          "founder": {
-            "@type": "Person",
-            "@id": "https://zio.audio/#person",
-            "name": "ZIO",
-            "jobTitle": "Music Producer, Recording Artist & Audio Software Engineer",
-            "url": "https://zio.audio",
-            "description": "Founder of StudioZIO, music producer, recording artist, and audio software designer."
-          }
+          "url": "https://studiozio.vercel.app",
+          "description": "Independent audio software company specializing in native Audio Unit (AUv2), VST3, and Standalone audio plugins."
         },
         {
           "@type": "SoftwareApplication",
-          "@id": "https://studiozio.audio/tempo-delay/#software",
+          "@id": "https://www.tempodelay.tech/#software",
           "name": "StudioZIO Tempo Delay",
           "operatingSystem": "macOS 11+ (Apple Silicon arm64)",
           "applicationCategory": "MultimediaApplication / Audio Plugin",
-          "downloadUrl": "https://studiozio.audio/#downloads",
+          "downloadUrl": "https://github.com/StudioZIO/StudioZIO-Releases/releases/tag/tempo-delay-v4.0.1-RC1",
           "softwareVersion": "4.0.1",
-          "fileSize": "150 MB",
           "offers": {
             "@type": "Offer",
             "price": "0.00",
@@ -37,7 +27,7 @@ export const SEO: React.FC = () => {
             "availability": "https://schema.org/InStock"
           },
           "author": {
-            "@id": "https://studiozio.audio/#organization"
+            "@id": "https://studiozio.vercel.app/#organization"
           },
           "description": "StudioZIO Tempo Delay is a modern stereo delay featuring independent left/right timing, three character modes (Digital, Tape, Analog), advanced routing, modulation, ducking, diffusion, freeze and reverse processing."
         }

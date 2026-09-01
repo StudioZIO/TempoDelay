@@ -16,7 +16,7 @@ const SPECIFICATION: { key: string; value: string }[] = [
   { key: 'Note divisions', value: '16 per channel, straight, dotted and triplet' },
   { key: 'Feedback filters', value: 'HPF 20 – 2000 Hz, LPF 1 – 20 kHz' },
   { key: 'Stereo width', value: '0 – 200% mid/side' },
-  { key: 'Installer', value: '~24.5 MB, 150 MB free disk space' },
+  { key: 'Installer', value: 'Signed .pkg, 150 MB free disk space' },
 ];
 
 export const Specification = () => (
