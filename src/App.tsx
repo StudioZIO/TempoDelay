@@ -1,4 +1,5 @@
 import { Architecture } from './components/Architecture';
+import { Difference } from './components/Difference';
 import { Download } from './components/Download';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { HearIt } from './components/HearIt';
@@ -24,6 +25,7 @@ export const App = () => (
       <Architecture />
       <InteractiveVisualizer />
       <ParameterGuide />
+      <Difference />
       <Specification />
       <Download />
     </main>
