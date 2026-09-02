@@ -15,6 +15,9 @@ export default {
         primary: 'var(--primary)',
         'primary-foreground': 'var(--primary-foreground)',
         'primary-deep': 'var(--primary-deep)',
+        // The AA-safe step for small accent text; --primary itself measures
+        // 4.3:1 here, so prose links use this one instead.
+        'primary-text': 'var(--primary-text)',
         signal: 'var(--signal)',
         'signal-foreground': 'var(--signal-foreground)',
         destructive: 'var(--destructive)',
