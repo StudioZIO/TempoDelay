@@ -237,14 +237,16 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   border-radius: 8px;
   background: var(--surface-overlay);
 }
-.logo-mark svg { width: 20px; height: 20px; }
+.logo-mark svg { width: 20px; height: 20px; color: var(--primary); }
 .logo--sm .logo-mark { width: 28px; height: 28px; border-radius: 7px; }
 .logo--sm .logo-mark svg { width: 17px; height: 17px; }
 .logo--sm .logo-word { font-size: 0.9375rem; }
 .logo-word {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 1.0625rem;
+  /* The estate's wordmark size. This site sat at 1.0625rem, which is visibly
+     smaller than the same logo on the hub and Mastering Suite. */
+  font-size: 1.1875rem;
   letter-spacing: -0.02em;
   color: var(--foreground);
 }
