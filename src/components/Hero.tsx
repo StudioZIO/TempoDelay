@@ -17,7 +17,7 @@ export const Hero = () => (
           <p className="eyebrow">Time Effect · v4.0.1</p>
 
           <h1>
-            Independent stereo delay,
+            Independent stereo delay,{' '}
             <span className="accent">locked to the host grid.</span>
           </h1>
 

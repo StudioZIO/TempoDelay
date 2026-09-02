@@ -9,8 +9,10 @@ const verifierPath = path.join(repositoryRoot, 'scripts', 'verify_vercel_config.
 const expectedConfig = {
   version: 3,
   routes: [
+    { src: '/contact', headers: { Location: 'https://studiozio.vercel.app/contact' }, status: 308 },
     { handle: 'filesystem' },
-    { src: '/(.*)', dest: '/index.html' },
+    { handle: 'miss' },
+    { src: '/(.*)', status: 404, dest: '/404.html' },
   ],
 };
 
@@ -58,7 +60,28 @@ const run = async () => {
       contract: 'VERCEL_CONFIG_ROUTES',
       mutate: async (root) => {
         const config = await readConfig(root);
-        config.routes[1].dest = 'https://evil.invalid/index.html';
+        config.routes[3].dest = 'https://evil.invalid/404.html';
+        await writeConfig(root, config);
+      },
+    },
+    {
+      // The regression this whole routing change exists to prevent: the SPA
+      // catch-all answering every invented URL with a 200 carrying the homepage.
+      name: 'spa_catchall_restored',
+      contract: 'VERCEL_CONFIG_ROUTES',
+      mutate: async (root) => {
+        const config = await readConfig(root);
+        config.routes[3] = { src: '/(.*)', dest: '/index.html' };
+        await writeConfig(root, config);
+      },
+    },
+    {
+      // The one deliberate redirect must keep pointing at our own contact desk.
+      name: 'contact_redirect_hijacked',
+      contract: 'VERCEL_CONFIG_ROUTES',
+      mutate: async (root) => {
+        const config = await readConfig(root);
+        config.routes[0].headers.Location = 'https://evil.invalid/contact';
         await writeConfig(root, config);
       },
     },
@@ -110,7 +133,7 @@ const run = async () => {
       contract: 'VERCEL_CONFIG_ROUTES',
       mutate: async (root) => {
         const config = await readConfig(root);
-        config.routes[1].headers = { 'x-unapproved': 'true' };
+        config.routes[3].headers = { 'x-unapproved': 'true' };
         await writeConfig(root, config);
       },
     },
