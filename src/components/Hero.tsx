@@ -1,13 +1,6 @@
 import { Chip } from './Chip';
 import { TempoDelayMock } from './TempoDelayMock';
-
-/* The direct asset in the TempoDelay repo is marked "superseded for current
-   downloads" by its own release notes; the authoritative build lives in the
-   central release registry, whose README asks people to download from the
-   versioned release page and verify the published SHA-256 there. Linking the
-   page rather than a file also means a re-cut asset cannot strand this link. */
-const MACOS_DOWNLOAD_URL =
-  'https://github.com/StudioZIO/StudioZIO-Releases/releases/tag/tempo-delay-v4.0.1-RC1';
+import { MACOS_DOWNLOAD_URL } from '../data/navigation';
 
 export const Hero = () => (
   <section id="overview" className="hero tech-grid">
