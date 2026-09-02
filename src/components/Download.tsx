@@ -1,6 +1,6 @@
 import { Chip } from './Chip';
 import { Section } from './Section';
-import { MACOS_DOWNLOAD_URL, MACOS_RELEASE_URL, MASTERING_SUITE_URL } from '../data/navigation';
+import { MACOS_DOWNLOAD_URL, MASTERING_SUITE_URL } from '../data/navigation';
 
 const MACOS_SHA256 =
   '431e72768af9fdba855db3929bb63d347e9c418e1e6528aad629954ac695f250';
@@ -28,13 +28,6 @@ export const Download = () => (
           installer itself; check it against this SHA-256 before you open it.
         </p>
         <p className="sha mt-2 text-muted-foreground">{MACOS_SHA256}</p>
-        <p className="text-sm text-muted-foreground mt-2">
-          Release notes and the published checksum live on the{' '}
-          <a className="text-primary-text underline underline-offset-2" href={MACOS_RELEASE_URL}>
-            v4.0.1-RC1 release entry
-          </a>
-          .
-        </p>
       </div>
 
       <div className="actions">

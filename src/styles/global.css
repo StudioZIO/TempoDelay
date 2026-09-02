@@ -158,14 +158,12 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 
 ::selection { background: var(--primary-deep); color: var(--foreground); }
 
-::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-track { background: var(--background); }
-::-webkit-scrollbar-thumb {
-  background: var(--surface-control);
-  border-radius: 5px;
-  border: 2px solid var(--background);
-}
-::-webkit-scrollbar-thumb:hover { background: var(--primary-deep); }
+/* No ::-webkit-scrollbar styling here on purpose. Styling it opts the page out
+   of the platform's overlay scrollbar, so the bar becomes permanent and takes
+   real layout width — 10px here against 0 on the hub and Mastering Suite, which
+   style nothing. Every centred .shell then sat a few pixels right of where the
+   same header sits on the other two, and the logo visibly jumped when you moved
+   between the properties. The estate shares one scrollbar: the platform's. */
 
 .skip-link {
   position: absolute;
