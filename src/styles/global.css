@@ -479,7 +479,13 @@ button.chip[aria-pressed="true"], button.chip[aria-selected="true"] {
 
 /* checksum line: mono, small, and allowed to break mid-hash so a 64-character
    digest cannot widen the panel on a phone. Same rule as the hub's. */
-.sha { font-family: var(--font-mono); font-size: 0.6875rem; overflow-wrap: anywhere; }
+/* A SHA-256 is exactly 64 characters. The shared `p { max-width: var(--measure) }`
+   caps paragraphs at 62ch, and because this one switches to the mono face that
+   resolves to 409px against the 422px the digest needs — so it wrapped with two
+   characters orphaned on a second line, in a column that is 500px wide. The
+   measure here is the string, not prose. It still wraps below that width, which
+   is why overflow-wrap stays. */
+.sha { font-family: var(--font-mono); font-size: 0.6875rem; max-width: 64ch; overflow-wrap: anywhere; }
 
 /* claim + readout: a plain-language claim with the value the plugin actually
    reports directly beneath it. The products are measurement-first, so the
