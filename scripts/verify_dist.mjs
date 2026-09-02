@@ -18,7 +18,7 @@ const fontAssetPattern = /^assets\/fonts\/(?:[a-z0-9-]+\.woff2|OFL-[a-z0-9-]+\.t
 // the SPA rewrite and returned as HTML, which is what made every audit report
 // an invalid robots.txt. Static, non-executable, and referenced by crawlers
 // rather than from the document, so it is exempt from the HTML-reference rule.
-const staticRootPattern = /^(?:robots\.txt|sitemap\.xml)$/;
+const staticRootPattern = /^(?:robots\.txt|sitemap\.xml|404\.html)$/;
 // Loudness-matched A/B renders. Static media: never referenced from a
 // script, only from <audio src>, and excluded from the executable-content
 // scan because decoding AAC as UTF-8 produces meaningless matches.
@@ -761,6 +761,169 @@ const verifyJavaScriptSemantics = (file, source, outputFiles) => {
   visit(sourceFile);
 };
 
+// ---------------------------------------------------------------------------
+// SEO route and metadata contract.
+//
+// Every defect this asserts against was live in production at once: no
+// canonical anywhere, a sitemap advertising a page that had been deleted, a
+// JSON-LD component that was never imported and could not have survived the
+// prerender even if it had been, a meta keywords tag, and an H1 whose two
+// halves had fused because JSX drops whitespace containing a newline. They are
+// invisible in a browser and only a crawler pays for them, which is exactly
+// the class of defect that needs a build gate rather than review.
+const CANONICAL_ORIGIN = 'https://www.tempodelay.tech';
+const CANONICAL_URL = `${CANONICAL_ORIGIN}/`;
+const ORGANIZATION_ID = 'https://studiozio.vercel.app/#organization';
+
+const singleTag = (html, pattern, contract, label) => {
+  const found = [...html.matchAll(pattern)];
+  if (found.length !== 1) fail(contract, `expected exactly one ${label}, found ${found.length}`);
+  return found[0];
+};
+
+const verifySeoContract = async (rootDirectory, indexHtml) => {
+  // -- one of each head element that identifies the page -------------------
+  const title = singleTag(indexHtml, /<title>([^<]*)<\/title>/gi, 'SEO_HEAD', '<title>')[1].trim();
+  if (title.length < 20 || title.length > 65) {
+    fail('SEO_HEAD', `title should read as a full result line, 20-65 chars; got ${title.length}: ${title}`);
+  }
+  if (!title.startsWith('StudioZIO ')) {
+    fail('SEO_HEAD', `title must lead with the brand -- "Tempo Delay" alone collides with another vendor's plug-in: ${title}`);
+  }
+  const description = singleTag(indexHtml, /<meta\s+name="description"\s+content="([^"]*)"\s*\/?>/gi, 'SEO_HEAD', 'meta description')[1];
+  if (description.length < 70 || description.length > 165) {
+    fail('SEO_HEAD', `meta description should be 70-165 chars; got ${description.length}`);
+  }
+
+  // -- canonical must be the final 200 URL, not a redirect ------------------
+  const canonical = singleTag(indexHtml, /<link\s+rel="canonical"\s+href="([^"]*)"\s*\/?>/gi, 'SEO_CANONICAL', 'rel=canonical')[1];
+  if (canonical !== CANONICAL_URL) {
+    fail('SEO_CANONICAL', `canonical must be exactly ${CANONICAL_URL}; got ${canonical}`);
+  }
+
+  // -- social cards, both complete -----------------------------------------
+  for (const [pattern, label] of [
+    [/<meta\s+property="og:title"/gi, 'og:title'],
+    [/<meta\s+property="og:description"/gi, 'og:description'],
+    [/<meta\s+property="og:url"/gi, 'og:url'],
+    [/<meta\s+property="og:image"/gi, 'og:image'],
+    [/<meta\s+name="twitter:card"/gi, 'twitter:card'],
+    [/<meta\s+name="twitter:title"/gi, 'twitter:title'],
+    [/<meta\s+name="twitter:description"/gi, 'twitter:description'],
+    [/<meta\s+name="twitter:image"/gi, 'twitter:image'],
+  ]) singleTag(indexHtml, pattern, 'SEO_SOCIAL', label);
+
+  const ogUrl = /<meta\s+property="og:url"\s+content="([^"]*)"/i.exec(indexHtml)[1];
+  if (ogUrl !== canonical) fail('SEO_SOCIAL', `og:url (${ogUrl}) must equal the canonical (${canonical})`);
+
+  // Every social image must be a file this build actually produced, so a card
+  // can never point at an asset that exists on no origin of ours.
+  for (const match of indexHtml.matchAll(/<meta\s+(?:property="og:image"|name="twitter:image")\s+content="([^"]*)"/gi)) {
+    const url = match[1];
+    if (!url.startsWith(`${CANONICAL_ORIGIN}/`)) fail('SEO_SOCIAL', `social image must be self-hosted: ${url}`);
+    const relative = url.slice(CANONICAL_ORIGIN.length + 1);
+    try {
+      await readFile(path.join(rootDirectory, relative));
+    } catch {
+      fail('SEO_SOCIAL', `social image is not in the build output: ${relative}`);
+    }
+  }
+
+  // -- forbidden tags -------------------------------------------------------
+  if (/<meta\s+name="keywords"/i.test(indexHtml)) {
+    fail('SEO_HEAD', 'meta keywords is ignored by every engine and forbidden across this estate');
+  }
+  if (/<meta\s+name="robots"[^>]*noindex/i.test(indexHtml)) {
+    fail('SEO_HEAD', 'the production document must not carry noindex');
+  }
+
+  // -- exactly one H1, and its text must not have fused across a JSX newline -
+  const h1 = singleTag(indexHtml, /<h1\b[^>]*>([\s\S]*?)<\/h1>/gi, 'SEO_HEADINGS', '<h1>');
+  const h1Text = h1[1].replace(/<[^>]+>/g, '').replace(/&[a-z]+;/gi, ' ').replace(/\s+/g, ' ').trim();
+  if (h1Text.length < 10) fail('SEO_HEADINGS', `h1 text is too short to be real: "${h1Text}"`);
+  const fused = /[a-z0-9][,.;:!?][A-Za-z]/.exec(h1Text);
+  if (fused) {
+    fail(
+      'SEO_HEADINGS',
+      `h1 lost a space after punctuation -- JSX drops whitespace containing a newline, so put {' '} between the text and the next element: "${h1Text}"`,
+    );
+  }
+
+  // -- structured data must be present, parse, and agree with the page -------
+  const ldBlocks = [...indexHtml.matchAll(/<script\s+type="application\/ld\+json"\s*>([\s\S]*?)<\/script>/gi)];
+  if (ldBlocks.length !== 1) {
+    fail('SEO_STRUCTURED_DATA', `expected exactly one JSON-LD block in the prerendered document, found ${ldBlocks.length}`);
+  }
+  let graph;
+  try {
+    graph = JSON.parse(ldBlocks[0][1]);
+  } catch (error) {
+    fail('SEO_STRUCTURED_DATA', `JSON-LD does not parse: ${error instanceof Error ? error.message : String(error)}`);
+  }
+  const nodes = graph['@graph'] ?? [graph];
+  const byType = new Map(nodes.map((node) => [node['@type'], node]));
+  for (const type of ['Organization', 'WebSite', 'SoftwareApplication']) {
+    if (!byType.has(type)) fail('SEO_STRUCTURED_DATA', `JSON-LD is missing a ${type} node`);
+  }
+  const org = byType.get('Organization');
+  if (org['@id'] !== ORGANIZATION_ID) {
+    fail('SEO_STRUCTURED_DATA', `Organization @id must be the shared estate id ${ORGANIZATION_ID}; got ${org['@id']}`);
+  }
+  const app = byType.get('SoftwareApplication');
+  if (app.applicationCategory !== 'MultimediaApplication') {
+    fail('SEO_STRUCTURED_DATA', `applicationCategory must be a value Google supports; got ${app.applicationCategory}`);
+  }
+  if (app.aggregateRating || app.review) {
+    fail('SEO_STRUCTURED_DATA', 'no ratings or reviews exist for this product; publishing them would be fabricated');
+  }
+  // The version in the graph is the version on the page. Drift here is how a
+  // structured-data claim starts contradicting what a visitor is told.
+  if (!indexHtml.includes(app.softwareVersion)) {
+    fail('SEO_STRUCTURED_DATA', `softwareVersion ${app.softwareVersion} appears nowhere in the visible document`);
+  }
+  if (!indexHtml.includes(app.downloadUrl)) {
+    fail('SEO_STRUCTURED_DATA', 'JSON-LD downloadUrl is not the URL the page actually links');
+  }
+  const price = app.offers?.price;
+  if (price !== '0') fail('SEO_STRUCTURED_DATA', `offers.price must state the real price; got ${price}`);
+
+  // -- sitemap: only indexable, self-hosted, 200 URLs -----------------------
+  const sitemap = await readFile(path.join(rootDirectory, 'sitemap.xml'), 'utf8');
+  const locs = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/gi)].map((match) => match[1].trim());
+  if (locs.length === 0) fail('SEO_SITEMAP', 'sitemap declares no URLs');
+  for (const loc of locs) {
+    if (!loc.startsWith(`${CANONICAL_ORIGIN}/`)) fail('SEO_SITEMAP', `sitemap URL is off-origin: ${loc}`);
+  }
+  if (locs.length !== 1 || locs[0] !== CANONICAL_URL) {
+    fail(
+      'SEO_SITEMAP',
+      `this site is one document, so the sitemap must list exactly ${CANONICAL_URL} and nothing else -- a deleted or redirecting path here advertises a non-canonical URL. Found: ${locs.join(', ')}`,
+    );
+  }
+  if (/<(?:priority|changefreq)>/i.test(sitemap)) {
+    fail('SEO_SITEMAP', 'priority and changefreq are ignored by Google; drop them rather than implying they do something');
+  }
+
+  // -- robots.txt must point at the sitemap and be plain text ---------------
+  const robots = await readFile(path.join(rootDirectory, 'robots.txt'), 'utf8');
+  if (!robots.includes(`Sitemap: ${CANONICAL_ORIGIN}/sitemap.xml`)) {
+    fail('SEO_ROBOTS', 'robots.txt must declare the absolute sitemap URL');
+  }
+  if (/Disallow:\s*\/\s*$/m.test(robots)) fail('SEO_ROBOTS', 'robots.txt disallows the whole site');
+
+  // -- the 404 document must exist and must not masquerade as a page --------
+  const notFound = await readFile(path.join(rootDirectory, '404.html'), 'utf8');
+  if (/rel="canonical"/i.test(notFound)) {
+    fail('SEO_ROUTING', '404.html must not carry a canonical -- it would invite consolidation onto an error page');
+  }
+  if (!/<title>/i.test(notFound)) fail('SEO_ROUTING', '404.html has no title');
+
+  console.log(
+    `SEO_CONTRACT_PASS canonical=${canonical} title=${title.length}c description=${description.length}c `
+    + `jsonld=${nodes.length}nodes sitemap=${locs.length}url h1="${h1Text.slice(0, 48)}"`,
+  );
+};
+
 const verifyOutput = async (requestedDirectory) => {
   const rootDirectory = path.resolve(requestedDirectory);
   let rootMetadata;
@@ -843,6 +1006,8 @@ const verifyOutput = async (requestedDirectory) => {
 
   const indexPath = path.join(rootDirectory, 'index.html');
   const indexHtml = await readFile(indexPath, 'utf8');
+
+  await verifySeoContract(rootDirectory, indexHtml);
   const scriptTags = [...indexHtml.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)]
     .map((match) => ({ attributes: parseAttributes(match[1]), content: match[2] }));
   const linkTags = [...indexHtml.matchAll(/<link\b([^>]*)>/gi)]
@@ -972,8 +1137,16 @@ const verifyOutput = async (requestedDirectory) => {
     verifyJavaScriptSemantics(file, text, outputFileSet);
   }
 
+  /* A JSON-LD block is a <script> the browser never executes -- it is a data
+     island, and the SEO contract above has already parsed it and checked its
+     contents. Excluding it by exact type keeps this assertion about what it
+     was always about: exactly one inline EXECUTABLE script, the GA4
+     initializer. Anything with a different type, or no type, still counts. */
+  const isStructuredData = ({ attributes }) => attributes.get('type') === 'application/ld+json';
   const inlineScripts = scriptTags.filter(({ attributes }) => !attributes.has('src'));
-  const nonEmptyInlineScripts = inlineScripts.filter(({ content }) => content.trim() !== '');
+  const nonEmptyInlineScripts = inlineScripts
+    .filter((tag) => !isStructuredData(tag))
+    .filter(({ content }) => content.trim() !== '');
   if (nonEmptyInlineScripts.length !== 1) {
     fail('GA4_EXACTNESS', `expected exactly one non-empty inline GA4 initializer, found ${nonEmptyInlineScripts.length}`);
   }

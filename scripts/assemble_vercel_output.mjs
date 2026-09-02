@@ -8,11 +8,20 @@ const vercelRoot = path.join(repositoryRoot, '.vercel');
 const outputRoot = path.join(vercelRoot, 'output');
 const staticRoot = path.join(outputRoot, 'static');
 
+/* One document, one route -- and every other path is a real 404.
+   The old `/(.*)` -> /index.html fallback existed for the client-side router,
+   which was retired with the contact page. Left in place it answered every
+   invented URL with a 200 carrying the homepage: a soft-404 for crawlers and an
+   unbounded duplicate-URL space with no canonical to consolidate it.
+   `/contact` is the one path that still means something, so it gets a
+   permanent redirect to the desk that replaced it rather than a 404. */
 const config = {
   version: 3,
   routes: [
+    { src: '/contact', headers: { Location: 'https://studiozio.vercel.app/contact' }, status: 308 },
     { handle: 'filesystem' },
-    { src: '/(.*)', dest: '/index.html' },
+    { handle: 'miss' },
+    { src: '/(.*)', status: 404, dest: '/404.html' },
   ],
 };
 
