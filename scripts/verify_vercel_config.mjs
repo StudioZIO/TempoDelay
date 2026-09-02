@@ -1,11 +1,18 @@
 import { lstat, readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 
+/* Pinned to the post-SPA routing contract. The `/(.*)` -> /index.html fallback
+   this used to assert is exactly the defect it now guards against: it answered
+   every invented URL with a 200 carrying the homepage. The assertion is no
+   weaker for the change -- it is still an exact deep-equal against one literal,
+   so any drift in either direction fails the build. */
 const expectedConfig = {
   version: 3,
   routes: [
+    { src: '/contact', headers: { Location: 'https://studiozio.vercel.app/contact' }, status: 308 },
     { handle: 'filesystem' },
-    { src: '/(.*)', dest: '/index.html' },
+    { handle: 'miss' },
+    { src: '/(.*)', status: 404, dest: '/404.html' },
   ],
 };
 
@@ -66,11 +73,11 @@ const verifyConfig = async (requestedRoot) => {
   if (JSON.stringify(config.routes) !== JSON.stringify(expectedConfig.routes)) {
     fail(
       'VERCEL_CONFIG_ROUTES',
-      'routes must contain only filesystem handling followed by the local /index.html SPA fallback',
+      'routes must be exactly: the /contact permanent redirect, filesystem handling, miss handling, then the 404 terminator',
     );
   }
 
-  console.log(`VERIFY_VERCEL_CONFIG_PASS root=${outputRoot} version=3 routes=2`);
+  console.log(`VERIFY_VERCEL_CONFIG_PASS root=${outputRoot} version=3 routes=4`);
 };
 
 verifyConfig(process.argv[2] ?? '.vercel/output').catch((error) => {

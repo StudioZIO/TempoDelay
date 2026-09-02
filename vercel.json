@@ -4,7 +4,11 @@
   "buildCommand": "npm run typecheck && npm run build && npm run verify:dist",
   "outputDirectory": "dist",
   "cleanUrls": true,
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+  "redirects": [
+    {
+      "source": "/contact",
+      "destination": "https://studiozio.vercel.app/contact",
+      "permanent": true
+    }
   ]
 }

@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Page not found — StudioZIO Tempo Delay</title>
+<!-- Self-contained on purpose: the build inlines the stylesheet into
+     index.html only, so this page cannot borrow it. Tokens are copied from
+     the design system rather than imported, which is the whole reason this
+     file is allowed to carry its own <style>. No canonical and no indexing
+     hint: the 404 status is the signal, and a canonical on an error page
+     would invite consolidation onto it. -->
+<style>
+  :root {
+    --background: oklch(0.155 0.006 236);
+    --foreground: oklch(0.945 0.004 236);
+    --muted: oklch(0.672 0.014 236);
+    --primary-text: oklch(0.700 0.086 218);
+    --border: oklch(1 0 0 / 10%);
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 1.5rem;
+    background: var(--background);
+    color: var(--foreground);
+    font-family: "Inter Tight", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  main { max-width: 34rem; }
+  .eyebrow {
+    margin: 0 0 1rem;
+    font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.6875rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--primary-text);
+  }
+  h1 {
+    margin: 0;
+    font-family: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+    font-size: clamp(2rem, 6vw, 3rem);
+    font-weight: 700;
+    line-height: 1.06;
+    letter-spacing: -0.022em;
+  }
+  p { margin: 1.25rem 0 0; color: var(--muted); }
+  .actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 2rem; }
+  a.btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.6rem 1.1rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--foreground);
+    text-decoration: none;
+    font-size: 0.9375rem;
+  }
+  a.btn:hover { background: oklch(1 0 0 / 6%); }
+  a.btn--primary { border-color: var(--primary-text); color: var(--primary-text); }
+</style>
+</head>
+<body>
+<main>
+  <p class="eyebrow">404</p>
+  <h1>That page isn&rsquo;t here.</h1>
+  <p>Tempo Delay is a single page, so there is not much to get lost in. The link that brought you here is probably out of date.</p>
+  <div class="actions">
+    <a class="btn btn--primary" href="/">Tempo Delay</a>
+    <a class="btn" href="https://studiozio.vercel.app/">All StudioZIO plug-ins</a>
+    <a class="btn" href="https://studiozio.vercel.app/contact">Support</a>
+  </div>
+</main>
+</body>
+</html>
