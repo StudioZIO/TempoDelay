@@ -9,18 +9,23 @@ type LogoProps = {
 /**
  * The single StudioZIO mark: a waveform tile plus the Studio/ZIO wordmark.
  * The retired bar-chart, "Z" and "SZ" tiles must never come back.
+ *
+ * The path, the 24-unit viewBox and the 2-unit stroke are the same ones the hub
+ * and Mastering Suite draw, byte for byte. This site used to draw a smooth sine
+ * instead, which read as a second mark when you moved between the properties.
+ * The stroke takes currentColor so the tile's colour lives in one CSS rule.
  */
 export const Logo = ({ product, size = 'md', href = '#main-content' }: LogoProps) => (
   <a href={href} className={size === 'sm' ? 'logo logo--sm' : 'logo'} aria-label={`StudioZIO${product ? ` ${product}` : ''}`}>
     <span className="logo-mark" aria-hidden="true">
-      <svg viewBox="0 0 20 20" fill="none" role="presentation" focusable="false">
+      <svg viewBox="0 0 24 24" fill="none" role="presentation" focusable="false">
         <path
-          d="M1 10c1.6-6 3.2-6 4.8 0s3.2 6 4.8 0 3.2-6 4.8 0"
-          stroke="var(--primary)"
-          strokeWidth="1.6"
+          d="M2 12h3l2.6-7.2L11 19l3-9 2.4 4.4H22"
+          stroke="currentColor"
+          strokeWidth="2"
           strokeLinecap="round"
+          strokeLinejoin="round"
         />
-        <path d="M18.6 10h.4" stroke="var(--muted-foreground)" strokeWidth="1.6" strokeLinecap="round" />
       </svg>
     </span>
     <span className="logo-word">

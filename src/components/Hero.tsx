@@ -2,11 +2,17 @@ import { Chip } from './Chip';
 import { TempoDelayMock } from './TempoDelayMock';
 import { MACOS_DOWNLOAD_URL } from '../data/navigation';
 
+/* The hero arrives rather than appearing. The core system specifies `rise` at
+   0.7s with a 60ms stagger per hero item, and the hub and Mastering Suite both
+   run it; this site defined the keyframes but never applied the class, so
+   arriving here from either of them felt like a cut rather than a transition.
+   The stagger puts the copy first and the plug-in panel a beat behind it.
+   `prefers-reduced-motion` already collapses the whole thing to 0.001ms. */
 export const Hero = () => (
   <section id="overview" className="hero tech-grid">
     <div className="shell">
       <div className="hero-grid">
-        <div>
+        <div className="rise">
           <p className="eyebrow">Time Effect · v4.0.1</p>
 
           <h1>
@@ -37,7 +43,9 @@ export const Hero = () => (
           </div>
         </div>
 
-        <TempoDelayMock />
+        <div className="rise rise-2">
+          <TempoDelayMock />
+        </div>
       </div>
     </div>
   </section>
