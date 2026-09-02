@@ -17,19 +17,18 @@ export const NAV_LINKS: NavLink[] = [
 
 export const MASTERING_SUITE_URL = 'https://studioziomasteringsuite.vercel.app/';
 
-/** The macOS installer, and the release entry it belongs to.
+/** The macOS installer.
 
-    The button downloads the file itself rather than opening the release page:
-    a visitor who wants the plug-in should get the plug-in, not a page about it.
-    The release entry stays linked beside it, because that is where the build's
-    notes and its published checksum live, and because a direct asset link is
-    the one that breaks if a release is ever re-cut — if this file 404s, the
-    entry below is still the way in. Both point at the central release
-    registry, which holds the authoritative build; the asset in the TempoDelay
-    repository is marked superseded by its own release notes.
+    The button downloads the file itself rather than opening a release page: a
+    visitor who wants the plug-in should get the plug-in, not a page about it,
+    and nothing on this site sends anyone to GitHub to look for an asset. The
+    URL points at the central release registry, which holds the authoritative
+    build; the asset in the TempoDelay repository is marked superseded by its
+    own release notes. Its release entry, for maintainers, is the same path with
+    `/releases/tag/tempo-delay-v4.0.1-RC1`.
 
-    Change these together with the SHA-256 on the download panel. */
-export const MACOS_RELEASE_URL =
-  'https://github.com/StudioZIO/StudioZIO-Releases/releases/tag/tempo-delay-v4.0.1-RC1';
+    Change this together with the SHA-256 on the download panel, and with the
+    JSON-LD downloadUrl in index.html — verify_dist.mjs fails the build if the
+    two disagree. */
 export const MACOS_DOWNLOAD_URL =
   'https://github.com/StudioZIO/StudioZIO-Releases/releases/download/tempo-delay-v4.0.1-RC1/StudioZIOTempoDelay-v4.0.1-RC1-macOS-arm64.pkg';
