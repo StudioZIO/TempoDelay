@@ -1,24 +1,20 @@
 import { useMemo, useState } from 'react';
 import { APVTS_PARAMETERS, GROUP_BY_CATEGORY, PARAMETER_GROUPS } from '../data/parameters';
 
-const APVTS_VALUES: Record<string, number | string> = {
-  'delay.masterEnable': 1, 'delay.mode': 0, 'delay.syncMode': 1, 'delay.manualBpm': 120,
-  'delay.divisionLeft': '1/4', 'delay.divisionRight': '1/8D', 'delay.timeMsLeft': 375, 'delay.timeMsRight': 250,
-  'delay.feedbackLeft': 45, 'delay.feedbackRight': 45, 'delay.pingPong': 1, 'delay.highPassHz': 80,
-  'delay.lowPassHz': 8000, 'delay.saturation': 20, 'delay.width': 120, 'delay.mix': 35,
-  'trim.input': 0, 'trim.wetGain': 0, 'trim.output': 0, 'advanced.freeze': 0, 'advanced.reverse': 0,
-  'advanced.diffusion': 0, 'ducking.enable': 0, 'ducking.amount': 50, 'ducking.attack': 20, 'ducking.release': 200,
-  'mod.enable': 0, 'mod.rate': 1.0, 'mod.depth': 25, 'mod.stereoSpread': 90, 'mod.tempoSync': 0, 'mod.division': '1/8',
-};
-
+/* The value shown for each parameter is the plug-in's own default, taken from
+   the generated manifest. There used to be a hand-written override table here
+   that supplied a different value for every parameter -- none of its ids
+   existed in the plug-in, and its numbers disagreed with the plug-in on 18 of
+   32 controls. A page documenting defaults must not carry a second, private
+   opinion about what they are. */
 type Parameter = (typeof APVTS_PARAMETERS)[number];
 
 const formatValue = (parameter: Parameter): string => {
-  const raw = APVTS_VALUES[parameter.id] ?? parameter.defaultValue;
-  if (typeof raw === 'string') return raw;
-  if (parameter.type === 'toggle') return raw === 1 ? 'On' : 'Off';
-  if (parameter.type === 'choice' && parameter.options) return parameter.options[raw] ?? String(raw);
-  return parameter.unit ? `${raw} ${parameter.unit}` : String(raw);
+  if (parameter.type === 'toggle') return parameter.defaultValue ? 'On' : 'Off';
+  if (parameter.type === 'choice') return parameter.options[parameter.defaultValue] ?? String(parameter.defaultValue);
+  // Every continuous parameter carries a unit -- the generator refuses to emit
+  // one without it -- so there is no unitless branch to fall back to.
+  return `${parameter.defaultValue} ${parameter.unit}`;
 };
 
 const groupOf = (parameter: Parameter) => GROUP_BY_CATEGORY[parameter.category] ?? 'Global & Sync';
@@ -26,7 +22,7 @@ const groupOf = (parameter: Parameter) => GROUP_BY_CATEGORY[parameter.category] 
 export const ParameterGuide = () => {
   const [query, setQuery] = useState('');
   const [group, setGroup] = useState<string>('All');
-  const [activeId, setActiveId] = useState('delay.masterEnable');
+  const [activeId, setActiveId] = useState<string>(APVTS_PARAMETERS[0].id);
 
   const filtered = useMemo(() => {
     const needle = query.trim().toLowerCase();
@@ -51,8 +47,9 @@ export const ParameterGuide = () => {
           <p className="eyebrow">APVTS Manifest</p>
           <h2>Every parameter, documented</h2>
           <p className="lede">
-            All 32 automatable APVTS parameters in Tempo Delay, with the purpose of each control and the
-            note on how it behaves inside the C++ engine.
+            All {APVTS_PARAMETERS.length} automatable APVTS parameters in Tempo Delay, with the purpose of each control and
+            the note on how it behaves inside the engine. Ranges and defaults are read from the plug-in
+            source, not transcribed.
           </p>
         </div>
 

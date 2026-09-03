@@ -1221,6 +1221,34 @@ const verifyOutput = async (requestedDirectory) => {
     fail('GA4_EXACTNESS', `debug_mode is switched on outside the opt-in guard, so every real visitor would be reported as debug traffic: ${line.trim()}`);
   }
 
+  /* The parameter reference has to agree with the plug-in it documents.
+     It did not: every one of its 32 parameter ids was invented, 18 of 32
+     carried a wrong range or default, both note-division lists were in reverse
+     order under labels the plug-in does not use, and Diffusion was published as
+     a 0-100% knob when the plug-in has an on/off switch. None of that shows on
+     the rendered page -- it reads as authoritative either way -- so it is
+     asserted here against the manifest tools/parse_td_params.py extracts from
+     the plug-in source. */
+  const apvts = JSON.parse(await readFile(new URL('../src/data/apvts.json', import.meta.url), 'utf8'));
+  if (!indexHtml.includes(apvts.pluginVersion)) {
+    fail('PARAMETER_MANIFEST', `the manifest documents plug-in ${apvts.pluginVersion}, which the page never states`);
+  }
+  const documentedIds = new Set(apvts.parameters.map((parameter) => parameter.id));
+  const missingParameters = [...documentedIds].filter((id) => !indexHtml.includes(id));
+  if (missingParameters.length > 0) {
+    fail('PARAMETER_MANIFEST', `the page omits ${missingParameters.length} of the plug-in's parameters: ${missingParameters.slice(0, 5).join(', ')}`);
+  }
+  /* An id on the page the plug-in does not have is the exact shape of the
+     defect this guard exists for, so it fails too rather than passing quietly. */
+  const renderedIds = [...indexHtml.matchAll(/class="p-id">([^<]+)</g)].map((match) => match[1]);
+  if (renderedIds.length !== apvts.parameterCount) {
+    fail('PARAMETER_MANIFEST', `the page lists ${renderedIds.length} parameters; the plug-in has ${apvts.parameterCount}`);
+  }
+  const strayIds = renderedIds.filter((id) => !documentedIds.has(id));
+  if (strayIds.length > 0) {
+    fail('PARAMETER_MANIFEST', `the page documents ${[...new Set(strayIds)].join(', ')}, which the plug-in does not have`);
+  }
+
   const outputText = textAssets.map(({ text }) => text).join('\n');
   const gtagCommands = [...outputText.matchAll(/\bgtag\s*\(\s*(['"])([^'"]+)\1/g)].map((match) => match[2]);
   /* This used to allow js and config and nothing else, which was right while
