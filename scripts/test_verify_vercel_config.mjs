@@ -33,7 +33,7 @@ const expectedConfig = {
   version: 3,
   routes: [
     { src: '/(.*)', headers: EXPECTED_SECURITY_HEADERS, continue: true },
-    { src: '/contact', headers: { Location: 'https://studiozio.vercel.app/contact' }, status: 308 },
+    { src: '/contact', headers: { Location: 'https://studiozio.vercel.app/contact/' }, status: 308 },
     { handle: 'filesystem' },
     { handle: 'miss' },
     { src: '/(.*)', status: 404, dest: '/404.html' },

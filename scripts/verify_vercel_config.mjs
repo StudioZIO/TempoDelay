@@ -39,7 +39,7 @@ const expectedConfig = {
   version: 3,
   routes: [
     { src: '/(.*)', headers: EXPECTED_SECURITY_HEADERS, continue: true },
-    { src: '/contact', headers: { Location: 'https://studiozio.vercel.app/contact' }, status: 308 },
+    { src: '/contact', headers: { Location: 'https://studiozio.vercel.app/contact/' }, status: 308 },
     { handle: 'filesystem' },
     { handle: 'miss' },
     { src: '/(.*)', status: 404, dest: '/404.html' },
@@ -173,7 +173,7 @@ const verifyProductionHeaderParity = async () => {
   }
 
   const offsite = redirects.filter((r) => /^https?:\/\//.test(r.destination ?? ''));
-  const approved = new Set([`${CANONICAL_HOST}/:path*`, 'https://studiozio.vercel.app/contact']);
+  const approved = new Set([`${CANONICAL_HOST}/:path*`, 'https://studiozio.vercel.app/contact/']);
   for (const r of offsite) {
     if (!approved.has(r.destination)) {
       fail('VERCEL_DUPLICATE_HOST', `unapproved off-site redirect to ${r.destination}`);

@@ -18,7 +18,7 @@
     },
     {
       "source": "/contact",
-      "destination": "https://studiozio.vercel.app/contact",
+      "destination": "https://studiozio.vercel.app/contact/",
       "permanent": true
     }
   ],
