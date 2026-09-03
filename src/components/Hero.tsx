@@ -1,6 +1,7 @@
 import { Chip } from './Chip';
 import { TempoDelayMock } from './TempoDelayMock';
 import { MACOS_DOWNLOAD_URL } from '../data/navigation';
+import { track } from '../analytics';
 
 /* The hero arrives rather than appearing. The core system specifies `rise` at
    0.7s with a 60ms stagger per hero item, and the hub and Mastering Suite both
@@ -27,7 +28,11 @@ export const Hero = () => (
           </p>
 
           <div className="hero-actions">
-            <a className="btn btn-primary" href={MACOS_DOWNLOAD_URL}>
+            <a
+              className="btn btn-primary"
+              href={MACOS_DOWNLOAD_URL}
+              onClick={() => track('download_click', { product: 'tempo-delay', version: '4.0.1' })}
+            >
               Download for macOS
             </a>
             <a className="btn" href="#simulator">

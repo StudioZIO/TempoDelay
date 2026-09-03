@@ -1,6 +1,7 @@
 import { Chip } from './Chip';
 import { Section } from './Section';
 import { MACOS_DOWNLOAD_URL, MASTERING_SUITE_URL } from '../data/navigation';
+import { track } from '../analytics';
 
 const MACOS_SHA256 =
   '431e72768af9fdba855db3929bb63d347e9c418e1e6528aad629954ac695f250';
@@ -33,7 +34,11 @@ export const Download = () => (
       </div>
 
       <div className="actions">
-        <a className="btn btn-primary" href={MACOS_DOWNLOAD_URL}>
+        <a
+          className="btn btn-primary"
+          href={MACOS_DOWNLOAD_URL}
+          onClick={() => track('download_click', { product: 'tempo-delay', version: '4.0.1' })}
+        >
           Download for macOS
         </a>
         <a className="btn" href="#parameters">

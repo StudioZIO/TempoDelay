@@ -460,9 +460,14 @@ const run = async () => {
     {
       name: 'javascript_gzip_budget',
       contract: 'GZIP_BUDGET',
+      /* Appends rather than replaces. Overwriting the bundle also deleted the
+         conversion calls, so the fixture tripped the GA4 contract before it
+         ever reached the budget one and reported the wrong failure. A fixture
+         should change the one thing it is testing. */
       mutate: async (root) => {
         const { jsPath } = await findAssets(root);
-        await writeFile(jsPath, `export default '${deterministicNoise(450_000)}';\n`, 'utf8');
+        const existing = await readFile(jsPath, 'utf8');
+        await writeFile(jsPath, `${existing}\nexport const padding = '${deterministicNoise(450_000)}';\n`, 'utf8');
       },
     },
     {

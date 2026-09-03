@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { track } from '../analytics';
 
 type AudioDemoProps = {
   /** Base path without extension; .opus and .m4a are both offered. */
@@ -198,7 +199,10 @@ export const AudioDemo = ({
               type="button"
               className="seg-option"
               aria-pressed={processed === option.on}
-              onClick={() => setProcessed(option.on)}
+              onClick={() => {
+                setProcessed(option.on);
+                track('ab_toggle', { take: option.on ? 'processed' : 'dry', product: 'tempo-delay' });
+              }}
             >
               {option.label}
             </button>

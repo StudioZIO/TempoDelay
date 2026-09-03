@@ -14,6 +14,9 @@ const measurementId = 'G-VL8Z542XMP';
 // The four hosts the one property measures. The same list is entered in the
 // GA4 console under the data stream's configured domains, which is what drives
 // referral exclusion; this copy is what makes the session survive the hop.
+// The conversions this site reports. Kept identical to the EventName union in
+// src/analytics.ts, which is what stops a new name being added by accident.
+const approvedEvents = ['download_click', 'ab_toggle'];
 const networkDomains = [
   'studiozio.vercel.app',
   'studioziomasteringsuite.vercel.app',
@@ -1197,11 +1200,56 @@ const verifyOutput = async (requestedDirectory) => {
 
   const outputText = textAssets.map(({ text }) => text).join('\n');
   const gtagCommands = [...outputText.matchAll(/\bgtag\s*\(\s*(['"])([^'"]+)\1/g)].map((match) => match[2]);
-  if (gtagCommands.length !== 2 || gtagCommands[0] !== 'js' || gtagCommands[1] !== 'config') {
-    fail('GA4_EXACTNESS', `only the standard js and config calls are permitted; found ${gtagCommands.join(', ') || 'none'}`);
+  /* This used to allow js and config and nothing else, which was right while
+     the site measured no conversions. It now also allows event, and the names
+     those events may carry are fixed: src/analytics.ts declares them as a union
+     type, so an unapproved name fails typecheck, and this list fails the build
+     if the two ever disagree. What the contract is actually for — no ad-tech,
+     no identifiers, no second tag — is unchanged and asserted below. */
+  const commandTally = gtagCommands.reduce((counts, command) => {
+    counts[command] = (counts[command] ?? 0) + 1;
+    return counts;
+  }, Object.create(null));
+  if (commandTally.js !== 1 || commandTally.config !== 1) {
+    fail('GA4_EXACTNESS', `exactly one js and one config call are required; found ${gtagCommands.join(', ') || 'none'}`);
   }
-  if (countMatches(outputText, /\bgtag\s*\(/g) !== 3) {
-    fail('GA4_EXACTNESS', 'unexpected gtag definition or call detected');
+  const unapprovedCommand = gtagCommands.find((command) => !['js', 'config', 'event'].includes(command));
+  if (unapprovedCommand) {
+    fail('GA4_EXACTNESS', `only js, config and event calls are permitted; found ${unapprovedCommand}`);
+  }
+  /* Every approved event must still be reachable in the build. Losing one is
+     silent: the report simply stops filling in, and nothing distinguishes that
+     from nobody having clicked. */
+  /* Quoted with any of the three delimiters: the minifier rewrites '' and ""
+     as template literals, so a check that only knew about quotes reported the
+     conversions missing from a build that reports them fine. */
+  const quoted = (value) => ["'", '"', '`'].some((q) => outputText.includes(`${q}${value}${q}`));
+  for (const eventName of approvedEvents) {
+    if (!quoted(eventName)) {
+      fail('GA4_EXACTNESS', `the ${eventName} conversion is no longer reported anywhere in the build`);
+    }
+  }
+  /* Two shapes of rogue event, and they need different tests.
+
+     A name passed straight to gtag is readable at the call: gtag('event',
+     'probe'). The site's own events never look like this — analytics.ts passes
+     the name as a variable — so any literal here is something else's, whatever
+     it is called. This is the check that catches an injected or hand-added tag.
+
+     A name added through analytics.ts has no literal at the gtag call, only at
+     the call site, so it is caught by shape instead. Between them, an
+     unapproved conversion cannot reach the build by either route. */
+  const literalEventNames = [...outputText.matchAll(/\bgtag\s*\(\s*(['"`])event\1\s*,\s*(['"`])([^'"`]+)\2/g)]
+    .map((match) => match[3]);
+  const strayLiteral = literalEventNames.find((name) => !approvedEvents.includes(name));
+  if (strayLiteral) {
+    fail('GA4_EXACTNESS', `gtag reports ${strayLiteral}, which is not on the approved event list`);
+  }
+  const strayEventName = [...outputText.matchAll(/(['"`])([a-z][a-z0-9]*_(?:click|toggle|submit|view|play))\1/g)]
+    .map((match) => match[2])
+    .find((name) => !approvedEvents.includes(name));
+  if (strayEventName) {
+    fail('GA4_EXACTNESS', `${strayEventName} is measured but not on the approved event list`);
   }
   if (countMatches(outputText, /(?:window\s*\.\s*)?dataLayer\s*=/g) !== 1) {
     fail('GA4_EXACTNESS', 'unexpected dataLayer initialization detected');
