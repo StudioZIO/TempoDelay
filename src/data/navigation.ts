@@ -26,14 +26,14 @@ export const MASTERING_SUITE_URL = 'https://studioziomasteringsuite.vercel.app/'
     build; the asset in the TempoDelay repository is marked superseded by its
     own release notes.
 
-    4.0.1 is final — the site says "Available now" and the spec table says
-    4.0.1 — but the published artifact is still named for the release candidate
-    it was cut as. That is a packaging label lagging behind the decision, not a
-    different binary, and it is the one thing on this page that still reads RC1.
-    When the release is re-tagged without the suffix, this URL, the SHA-256 on
-    the download panel and the JSON-LD downloadUrl in index.html all change
-    together; verify_dist.mjs fails the build if the URL and the JSON-LD
-    disagree. Its release entry, for maintainers, is the same path with
-    `/releases/tag/`. */
+    4.0.1 is final and the artifact is named for it. The release it was cut as,
+    tempo-delay-v4.0.1-RC1, is still published and still downloadable — its
+    asset is byte-identical to this one, so nothing that already links to it
+    breaks — but this is the one the site points at.
+
+    Change this together with the SHA-256 on the download panel and the JSON-LD
+    downloadUrl in index.html; verify_dist.mjs fails the build if the URL and
+    the JSON-LD disagree. The release entry, for maintainers, is the same path
+    with `/releases/tag/`. */
 export const MACOS_DOWNLOAD_URL =
-  'https://github.com/StudioZIO/StudioZIO-Releases/releases/download/tempo-delay-v4.0.1-RC1/StudioZIOTempoDelay-v4.0.1-RC1-macOS-arm64.pkg';
+  'https://github.com/StudioZIO/StudioZIO-Releases/releases/download/tempo-delay-v4.0.1/StudioZIOTempoDelay-v4.0.1-macOS-arm64.pkg';
