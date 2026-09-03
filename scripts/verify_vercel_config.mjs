@@ -14,7 +14,7 @@ import path from 'node:path';
    so any drift in either direction fails the build. */
 const EXPECTED_CONTENT_SECURITY_POLICY = [
   "default-src 'self'",
-  "script-src 'self' https://www.googletagmanager.com 'sha256-yEmoheAcAc1jIhLM0zddY4EcifLaLpUk4J9eKfWcjTM='",
+  "script-src 'self' https://www.googletagmanager.com 'sha256-M02ID3KbezCGA+FyC+C+hXWg1LwiYVw618EB/hHglyk='",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: https://www.googletagmanager.com https://*.google-analytics.com https://*.g.doubleclick.net https://www.google.com",
   "font-src 'self'",
@@ -52,6 +52,38 @@ const fail = (contract, detail) => {
 };
 
 const sortedKeys = (value) => Object.keys(value).sort();
+
+/* Explains a route mismatch; the whole-array comparison below is still the
+   contract. It used to print one fixed sentence naming the four routes, and
+   that cost real time the first time a *header value* drifted rather than the
+   route sequence: the message sent the reader hunting through the route array
+   while the actual difference was one changed hash inside route 0's
+   Content-Security-Policy. Name the index, the key and both values instead. */
+const describeRouteMismatch = (actual, expected) => {
+  if (!Array.isArray(actual)) return `routes must be an array; found ${JSON.stringify(actual)}`;
+  if (actual.length !== expected.length) {
+    return `expected ${expected.length} routes, found ${actual.length}`;
+  }
+  for (const [index, want] of expected.entries()) {
+    const got = actual[index];
+    if (JSON.stringify(got) === JSON.stringify(want)) continue;
+    const keys = [...new Set([...Object.keys(want), ...Object.keys(got || {})])];
+    for (const key of keys) {
+      if (JSON.stringify(got && got[key]) === JSON.stringify(want[key])) continue;
+      if (key === 'headers') {
+        const wantHeaders = want.headers || {};
+        const gotHeaders = (got && got.headers) || {};
+        const names = [...new Set([...Object.keys(wantHeaders), ...Object.keys(gotHeaders)])];
+        for (const name of names) {
+          if (wantHeaders[name] === gotHeaders[name]) continue;
+          return `route ${index} header ${name}\n  expected: ${wantHeaders[name] || '(absent)'}\n  found:    ${gotHeaders[name] || '(absent)'}`;
+        }
+      }
+      return `route ${index} key ${key}\n  expected: ${JSON.stringify(want[key])}\n  found:    ${JSON.stringify(got && got[key])}`;
+    }
+  }
+  return 'routes differ from the expected sequence';
+};
 
 const verifyRegularEntry = async (entryPath, kind, contract) => {
   let metadata;
@@ -104,7 +136,7 @@ const verifyConfig = async (requestedRoot) => {
   if (JSON.stringify(config.routes) !== JSON.stringify(expectedConfig.routes)) {
     fail(
       'VERCEL_CONFIG_ROUTES',
-      'routes must be exactly: the /contact permanent redirect, filesystem handling, miss handling, then the 404 terminator',
+      describeRouteMismatch(config.routes, expectedConfig.routes),
     );
   }
 

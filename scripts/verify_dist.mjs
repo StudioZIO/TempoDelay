@@ -1198,6 +1198,29 @@ const verifyOutput = async (requestedDirectory) => {
     fail('GA4_EXACTNESS', 'the linker must accept an incoming client id, or the hop is only measured one way');
   }
 
+  /* DebugView is opt-in, and both halves of that matter. Without the opt-in
+     the screen stays empty however many events arrive, which reads as broken
+     measurement and is not -- that is exactly how this was found: the runbook
+     said to append `?_dbg=1`, nothing appeared, and the conclusion drawn was
+     that GA4 was receiving nothing. It was; only the debug screen was blind.
+     With the flag left on unconditionally the opposite happens: every real
+     visitor is reported as debug traffic, which GA4 treats differently in
+     reporting, and that loss is silent. */
+  for (const required of ['_dbg', 'debug_mode']) {
+    if (!gaInitializer.includes(required)) {
+      fail('GA4_EXACTNESS', `the initializer no longer wires up DebugView; ${required} is missing`);
+    }
+  }
+  /* Match the shape, not just the value: `debug_mode: true` inside the config
+     literal and `CONFIG.debug_mode = true` after it are both ways to leave it
+     on, and a check written for the first form let the second through when it
+     was tried. Every line that switches it on must be the guarded one. */
+  for (const line of gaInitializer.split('\n')) {
+    if (!line.includes('debug_mode') || !/\btrue\b/.test(line)) continue;
+    if (line.includes('studioZioDebug)')) continue;
+    fail('GA4_EXACTNESS', `debug_mode is switched on outside the opt-in guard, so every real visitor would be reported as debug traffic: ${line.trim()}`);
+  }
+
   const outputText = textAssets.map(({ text }) => text).join('\n');
   const gtagCommands = [...outputText.matchAll(/\bgtag\s*\(\s*(['"])([^'"]+)\1/g)].map((match) => match[2]);
   /* This used to allow js and config and nothing else, which was right while
