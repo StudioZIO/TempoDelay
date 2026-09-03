@@ -38,10 +38,23 @@ const CONTENT_SECURITY_POLICY = [
   // server-renders six style attributes (the live meter and progress fills).
   // A hash cannot pin these: the CSS changes with every build.
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: https://www.googletagmanager.com https://*.google-analytics.com",
+  // The doubleclick and google.com hosts are Google Analytics' identity layer,
+  // not advertising: stats.g.doubleclick.net carries the Google Signals hit and
+  // www.google.com/ads/ga-audiences the audience ping. Measured, not assumed --
+  // a probe served this exact policy as a real header and listened for
+  // securitypolicyviolation while requesting each endpoint gtag.js uses. Five
+  // were refused on every StudioZIO property, which is what GA reported as
+  // partially blocked measurement.
+  "img-src 'self' data: https://www.googletagmanager.com https://*.google-analytics.com https://*.g.doubleclick.net https://www.google.com",
   "font-src 'self'",
   "media-src 'self'",
-  "connect-src 'self' https://www.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com",
+  "connect-src 'self' https://www.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://*.g.doubleclick.net https://www.google.com",
+  // Without this directive `default-src 'self'` governs frames, so the Signals
+  // cookie-sync frame at td.doubleclick.net was refused. It is named
+  // explicitly rather than by wildcard: *.doubleclick.net would admit the ad
+  // serving hosts too, and nothing here needs them. frame-ancestors below is
+  // unrelated and still 'none' -- it governs who may frame this page.
+  "frame-src https://td.doubleclick.net https://www.googletagmanager.com",
   "object-src 'none'",
   "frame-ancestors 'none'",
   "base-uri 'self'",

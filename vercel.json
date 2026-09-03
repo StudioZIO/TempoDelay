@@ -28,7 +28,7 @@
       "headers": [
         {
           "key": "content-security-policy",
-          "value": "default-src 'self'; script-src 'self' https://www.googletagmanager.com 'sha256-yEmoheAcAc1jIhLM0zddY4EcifLaLpUk4J9eKfWcjTM='; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://www.googletagmanager.com https://*.google-analytics.com; font-src 'self'; media-src 'self'; connect-src 'self' https://www.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'none'"
+          "value": "default-src 'self'; script-src 'self' https://www.googletagmanager.com 'sha256-yEmoheAcAc1jIhLM0zddY4EcifLaLpUk4J9eKfWcjTM='; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://www.googletagmanager.com https://*.google-analytics.com https://*.g.doubleclick.net https://www.google.com; font-src 'self'; media-src 'self'; connect-src 'self' https://www.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://*.g.doubleclick.net https://www.google.com; frame-src https://td.doubleclick.net https://www.googletagmanager.com; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'none'"
         },
         {
           "key": "x-frame-options",
