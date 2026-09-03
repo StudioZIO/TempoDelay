@@ -6,9 +6,87 @@
   "cleanUrls": true,
   "redirects": [
     {
-      "source": "/contact",
-      "destination": "https://studiozio.vercel.app/contact",
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "tempo-delay-virid.vercel.app"
+        }
+      ],
+      "destination": "https://www.tempodelay.tech/:path*",
       "permanent": true
+    },
+    {
+      "source": "/contact",
+      "destination": "https://studiozio.vercel.app/contact/",
+      "permanent": true
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "content-security-policy",
+          "value": "default-src 'self'; script-src 'self' https://www.googletagmanager.com 'sha256-yEmoheAcAc1jIhLM0zddY4EcifLaLpUk4J9eKfWcjTM='; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://www.googletagmanager.com https://*.google-analytics.com https://*.g.doubleclick.net https://www.google.com; font-src 'self'; media-src 'self'; connect-src 'self' https://www.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://*.g.doubleclick.net https://www.google.com; frame-src https://td.doubleclick.net https://www.googletagmanager.com; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'none'"
+        },
+        {
+          "key": "x-frame-options",
+          "value": "DENY"
+        },
+        {
+          "key": "x-content-type-options",
+          "value": "nosniff"
+        },
+        {
+          "key": "referrer-policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "permissions-policy",
+          "value": "camera=(), microphone=(), geolocation=()"
+        },
+        {
+          "key": "strict-transport-security",
+          "value": "max-age=63072000; includeSubDomains; preload"
+        }
+      ]
+    },
+    {
+      "source": "/assets/index-(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/assets/fonts/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/images/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400, stale-while-revalidate=604800"
+        }
+      ]
+    },
+    {
+      "source": "/audio/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400, stale-while-revalidate=604800"
+        }
+      ]
     }
   ]
 }

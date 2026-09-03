@@ -1,6 +1,7 @@
 import { Chip } from './Chip';
 import { Section } from './Section';
 import { MACOS_DOWNLOAD_URL, MASTERING_SUITE_URL } from '../data/navigation';
+import { track } from '../analytics';
 
 const MACOS_SHA256 =
   '431e72768af9fdba855db3929bb63d347e9c418e1e6528aad629954ac695f250';
@@ -18,9 +19,11 @@ export const Download = () => (
           <Chip>Free</Chip>
           <Chip>macOS 11+</Chip>
           <Chip>arm64</Chip>
-          <Chip tone="signal" dot>
-            Release candidate
-          </Chip>
+          {/* Plain, not the amber signal chip. Amber is data and exception
+              state across the estate; a shipping release is neither. The hub
+              draws the same distinction: "Available now" is a plain chip, every
+              other availability gets the signal treatment. */}
+          <Chip>Available now</Chip>
         </div>
         <p className="text-sm text-muted-foreground">
           Free to download and use &mdash; a signed, notarized .pkg, with no licence key and no
@@ -31,7 +34,11 @@ export const Download = () => (
       </div>
 
       <div className="actions">
-        <a className="btn btn-primary" href={MACOS_DOWNLOAD_URL}>
+        <a
+          className="btn btn-primary"
+          href={MACOS_DOWNLOAD_URL}
+          onClick={() => track('download_click', { product: 'tempo-delay', version: '4.0.1' })}
+        >
           Download for macOS
         </a>
         <a className="btn" href="#parameters">

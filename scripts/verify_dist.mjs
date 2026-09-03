@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { gzipSync } from 'node:zlib';
 import { lstat, readFile, readdir } from 'node:fs/promises';
 import { createRequire } from 'node:module';
@@ -6,7 +7,22 @@ import path from 'node:path';
 const require = createRequire(import.meta.url);
 const ts = require('@vercel/node/node_modules/typescript');
 
-const measurementId = 'G-9LS1G2PR3R';
+// One property measures the whole StudioZIO network, so a hub -> product ->
+// download journey is one session. This site reported to G-9LS1G2PR3R until the
+// consolidation; that property keeps its history as a read-only archive.
+const measurementId = 'G-VL8Z542XMP';
+// The four hosts the one property measures. The same list is entered in the
+// GA4 console under the data stream's configured domains, which is what drives
+// referral exclusion; this copy is what makes the session survive the hop.
+// The conversions this site reports. Kept identical to the EventName union in
+// src/analytics.ts, which is what stops a new name being added by accident.
+const approvedEvents = ['download_click', 'ab_toggle'];
+const networkDomains = [
+  'studiozio.vercel.app',
+  'studioziomasteringsuite.vercel.app',
+  'www.tempodelay.tech',
+  'zio-audio.vercel.app',
+];
 const jsBudgetBytes = 100 * 1024;
 const cssBudgetBytes = 25 * 1024;
 const fingerprintedAssetPattern = /^assets\/index-([A-Za-z0-9_-]{8,})\.(js|css)$/;
@@ -1152,24 +1168,88 @@ const verifyOutput = async (requestedDirectory) => {
   }
   const gaInitializer = nonEmptyInlineScripts[0].content;
 
+  await verifyPolicyPinsInitializer(gaInitializer);
+
   const semanticContracts = [
     ['dataLayer initialization', /window\s*\.\s*dataLayer\s*=\s*window\s*\.\s*dataLayer\s*\|\|\s*\[\s*\]\s*;?/g],
     ['gtag function definition', /function\s+gtag\s*\(\s*\)\s*\{\s*dataLayer\s*\.\s*push\s*\(\s*arguments\s*\)\s*;?\s*\}/g],
     ['gtag js initialization', /gtag\s*\(\s*(['"])js\1\s*,\s*new\s+Date\s*\(\s*\)\s*\)\s*;?/g],
-    ['approved GA4 config', new RegExp(`gtag\\s*\\(\\s*(['"])config\\1\\s*,\\s*(['"])${measurementId}\\2\\s*\\)\\s*;?`, 'g')],
+    // The config call carries a second argument now, so this matches the call
+    // up to the measurement id rather than through its closing paren. The id
+    // stays pinned; what follows it is checked by the linker contract below,
+    // which is a stronger assertion than "the call ends here" ever was.
+    ['approved GA4 config', new RegExp(`gtag\\s*\\(\\s*(['"])config\\1\\s*,\\s*(['"])${measurementId}\\2`, 'g')],
+    ['cross-domain linker', /linker\s*:\s*\{\s*domains\s*:/g],
   ];
   for (const [label, expression] of semanticContracts) {
     const occurrences = countMatches(gaInitializer, expression);
     if (occurrences !== 1) fail('GA4_EXACTNESS', `${label} must occur exactly once; found ${occurrences}`);
   }
 
+  /* A linker that lists three of the four hosts is worse than none: the missing
+     host silently keeps starting fresh sessions and blaming its predecessor,
+     and the gap is invisible in reporting because the other three look right. */
+  for (const domain of networkDomains) {
+    if (!gaInitializer.includes(`'${domain}'`)) {
+      fail('GA4_EXACTNESS', `the cross-domain linker omits ${domain}; that host would start a new session on arrival`);
+    }
+  }
+  if (!/accept_incoming\s*:\s*true/.test(gaInitializer)) {
+    fail('GA4_EXACTNESS', 'the linker must accept an incoming client id, or the hop is only measured one way');
+  }
+
   const outputText = textAssets.map(({ text }) => text).join('\n');
   const gtagCommands = [...outputText.matchAll(/\bgtag\s*\(\s*(['"])([^'"]+)\1/g)].map((match) => match[2]);
-  if (gtagCommands.length !== 2 || gtagCommands[0] !== 'js' || gtagCommands[1] !== 'config') {
-    fail('GA4_EXACTNESS', `only the standard js and config calls are permitted; found ${gtagCommands.join(', ') || 'none'}`);
+  /* This used to allow js and config and nothing else, which was right while
+     the site measured no conversions. It now also allows event, and the names
+     those events may carry are fixed: src/analytics.ts declares them as a union
+     type, so an unapproved name fails typecheck, and this list fails the build
+     if the two ever disagree. What the contract is actually for — no ad-tech,
+     no identifiers, no second tag — is unchanged and asserted below. */
+  const commandTally = gtagCommands.reduce((counts, command) => {
+    counts[command] = (counts[command] ?? 0) + 1;
+    return counts;
+  }, Object.create(null));
+  if (commandTally.js !== 1 || commandTally.config !== 1) {
+    fail('GA4_EXACTNESS', `exactly one js and one config call are required; found ${gtagCommands.join(', ') || 'none'}`);
   }
-  if (countMatches(outputText, /\bgtag\s*\(/g) !== 3) {
-    fail('GA4_EXACTNESS', 'unexpected gtag definition or call detected');
+  const unapprovedCommand = gtagCommands.find((command) => !['js', 'config', 'event'].includes(command));
+  if (unapprovedCommand) {
+    fail('GA4_EXACTNESS', `only js, config and event calls are permitted; found ${unapprovedCommand}`);
+  }
+  /* Every approved event must still be reachable in the build. Losing one is
+     silent: the report simply stops filling in, and nothing distinguishes that
+     from nobody having clicked. */
+  /* Quoted with any of the three delimiters: the minifier rewrites '' and ""
+     as template literals, so a check that only knew about quotes reported the
+     conversions missing from a build that reports them fine. */
+  const quoted = (value) => ["'", '"', '`'].some((q) => outputText.includes(`${q}${value}${q}`));
+  for (const eventName of approvedEvents) {
+    if (!quoted(eventName)) {
+      fail('GA4_EXACTNESS', `the ${eventName} conversion is no longer reported anywhere in the build`);
+    }
+  }
+  /* Two shapes of rogue event, and they need different tests.
+
+     A name passed straight to gtag is readable at the call: gtag('event',
+     'probe'). The site's own events never look like this — analytics.ts passes
+     the name as a variable — so any literal here is something else's, whatever
+     it is called. This is the check that catches an injected or hand-added tag.
+
+     A name added through analytics.ts has no literal at the gtag call, only at
+     the call site, so it is caught by shape instead. Between them, an
+     unapproved conversion cannot reach the build by either route. */
+  const literalEventNames = [...outputText.matchAll(/\bgtag\s*\(\s*(['"`])event\1\s*,\s*(['"`])([^'"`]+)\2/g)]
+    .map((match) => match[3]);
+  const strayLiteral = literalEventNames.find((name) => !approvedEvents.includes(name));
+  if (strayLiteral) {
+    fail('GA4_EXACTNESS', `gtag reports ${strayLiteral}, which is not on the approved event list`);
+  }
+  const strayEventName = [...outputText.matchAll(/(['"`])([a-z][a-z0-9]*_(?:click|toggle|submit|view|play))\1/g)]
+    .map((match) => match[2])
+    .find((name) => !approvedEvents.includes(name));
+  if (strayEventName) {
+    fail('GA4_EXACTNESS', `${strayEventName} is measured but not on the approved event list`);
   }
   if (countMatches(outputText, /(?:window\s*\.\s*)?dataLayer\s*=/g) !== 1) {
     fail('GA4_EXACTNESS', 'unexpected dataLayer initialization detected');
@@ -1217,6 +1297,45 @@ const verifyOutput = async (requestedDirectory) => {
     + `css_gzip=${cssGzipBytes}B(${(cssGzipBytes / 1024).toFixed(2)}KiB) `
     + `ga4=${measurementId}`,
   );
+};
+
+/* The Content-Security-Policy allows exactly one inline script, by hash. If the
+   gtag bootstrap is edited by so much as a space, the hash stops matching and
+   the browser silently refuses to run it: analytics would go quiet in
+   production while every local check still passed, which is precisely the
+   failure mode style-src already caused once on the sibling sites. So the
+   policy and the page are compared here, in the same command that gates the
+   production build. */
+const verifyPolicyPinsInitializer = async (initializer) => {
+  const manifestPath = path.join(process.cwd(), 'vercel.json');
+  let manifest;
+  try {
+    manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
+  } catch (error) {
+    fail('CSP_SCRIPT_PIN', `vercel.json must be readable JSON: ${error.message}`);
+  }
+
+  const block = (manifest.headers ?? []).find((entry) => entry.source === '/(.*)');
+  const policy = block?.headers?.find((h) => h.key.toLowerCase() === 'content-security-policy')?.value;
+  if (!policy) {
+    fail('CSP_SCRIPT_PIN', 'vercel.json sets no Content-Security-Policy for /(.*)');
+  }
+
+  const scriptSrc = policy.split(';').map((d) => d.trim()).find((d) => d.startsWith('script-src'));
+  if (!scriptSrc) fail('CSP_SCRIPT_PIN', 'the policy declares no script-src');
+  if (scriptSrc.includes("'unsafe-inline'")) {
+    fail('CSP_SCRIPT_PIN', "script-src must pin the initializer by hash, not admit every inline script with 'unsafe-inline'");
+  }
+
+  const pinned = [...scriptSrc.matchAll(/'sha256-([A-Za-z0-9+/=]+)'/g)].map((m) => m[1]);
+  const actual = createHash('sha256').update(initializer, 'utf8').digest('base64');
+  if (!pinned.includes(actual)) {
+    fail(
+      'CSP_SCRIPT_PIN',
+      `script-src does not pin the inline GA4 initializer this build produced. `
+      + `Update the hash in vercel.json and scripts/assemble_vercel_output.mjs to 'sha256-${actual}'`,
+    );
+  }
 };
 
 const requestedDirectory = process.argv[2] ?? 'dist';
