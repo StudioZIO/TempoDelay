@@ -6,6 +6,17 @@
   "cleanUrls": true,
   "redirects": [
     {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "tempo-delay-virid.vercel.app"
+        }
+      ],
+      "destination": "https://www.tempodelay.tech/:path*",
+      "permanent": true
+    },
+    {
       "source": "/contact",
       "destination": "https://studiozio.vercel.app/contact",
       "permanent": true

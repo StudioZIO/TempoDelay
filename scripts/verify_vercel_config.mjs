@@ -112,6 +112,16 @@ const verifyConfig = async (requestedRoot) => {
   console.log(`VERIFY_VERCEL_CONFIG_PASS root=${outputRoot} version=3 routes=${expectedConfig.routes.length} headers=${Object.keys(EXPECTED_SECURITY_HEADERS).length}`);
 };
 
+/* The project answers on a second, auto-assigned Vercel hostname that served a
+   byte-identical crawlable copy of the product page, held together by nothing
+   but a canonical tag. It is consolidated with a 308, and the redirect is
+   asserted here so it cannot be dropped in a tidy-up. It sits FIRST so that
+   every path on the duplicate host lands on the canonical host before any
+   other rule applies -- /contact on the duplicate host consolidates and then
+   forwards, rather than leaving the duplicate a valid entry point. */
+const DUPLICATE_HOST = 'tempo-delay-virid.vercel.app';
+const CANONICAL_HOST = 'https://www.tempodelay.tech';
+
 /* Production and preview read different files. This config governs preview
    only; www.tempodelay.tech is served by the Vercel Git integration, which
    reads vercel.json and never sees this file. Two files, one policy -- so the
@@ -144,6 +154,30 @@ const verifyProductionHeaderParity = async () => {
   }
   if (served.size !== Object.keys(EXPECTED_SECURITY_HEADERS).length) {
     fail('VERCEL_PRODUCTION_HEADERS', `vercel.json sets headers this contract does not know about: ${[...served.keys()].join(', ')}`);
+  }
+
+  const redirects = manifest.redirects ?? [];
+  const consolidation = redirects[0];
+  const hostCondition = consolidation?.has?.find((c) => c.type === 'host');
+  if (!consolidation || hostCondition?.value !== DUPLICATE_HOST) {
+    fail(
+      'VERCEL_DUPLICATE_HOST',
+      `the first redirect must consolidate ${DUPLICATE_HOST}; without it that host serves a second crawlable copy of the site`,
+    );
+  }
+  if (consolidation.destination !== `${CANONICAL_HOST}/:path*` || consolidation.source !== '/:path*') {
+    fail('VERCEL_DUPLICATE_HOST', `the consolidation must forward every path to ${CANONICAL_HOST}, not just the root`);
+  }
+  if (consolidation.permanent !== true) {
+    fail('VERCEL_DUPLICATE_HOST', 'the consolidation must be permanent (308); a temporary redirect does not transfer signals');
+  }
+
+  const offsite = redirects.filter((r) => /^https?:\/\//.test(r.destination ?? ''));
+  const approved = new Set([`${CANONICAL_HOST}/:path*`, 'https://studiozio.vercel.app/contact']);
+  for (const r of offsite) {
+    if (!approved.has(r.destination)) {
+      fail('VERCEL_DUPLICATE_HOST', `unapproved off-site redirect to ${r.destination}`);
+    }
   }
 };
 
