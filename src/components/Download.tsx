@@ -18,9 +18,11 @@ export const Download = () => (
           <Chip>Free</Chip>
           <Chip>macOS 11+</Chip>
           <Chip>arm64</Chip>
-          <Chip tone="signal" dot>
-            Release candidate
-          </Chip>
+          {/* Plain, not the amber signal chip. Amber is data and exception
+              state across the estate; a shipping release is neither. The hub
+              draws the same distinction: "Available now" is a plain chip, every
+              other availability gets the signal treatment. */}
+          <Chip>Available now</Chip>
         </div>
         <p className="text-sm text-muted-foreground">
           Free to download and use &mdash; a signed, notarized .pkg, with no licence key and no
