@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { gzipSync } from 'node:zlib';
 import { lstat, readFile, readdir } from 'node:fs/promises';
 import { createRequire } from 'node:module';
@@ -1152,6 +1153,8 @@ const verifyOutput = async (requestedDirectory) => {
   }
   const gaInitializer = nonEmptyInlineScripts[0].content;
 
+  await verifyPolicyPinsInitializer(gaInitializer);
+
   const semanticContracts = [
     ['dataLayer initialization', /window\s*\.\s*dataLayer\s*=\s*window\s*\.\s*dataLayer\s*\|\|\s*\[\s*\]\s*;?/g],
     ['gtag function definition', /function\s+gtag\s*\(\s*\)\s*\{\s*dataLayer\s*\.\s*push\s*\(\s*arguments\s*\)\s*;?\s*\}/g],
@@ -1217,6 +1220,45 @@ const verifyOutput = async (requestedDirectory) => {
     + `css_gzip=${cssGzipBytes}B(${(cssGzipBytes / 1024).toFixed(2)}KiB) `
     + `ga4=${measurementId}`,
   );
+};
+
+/* The Content-Security-Policy allows exactly one inline script, by hash. If the
+   gtag bootstrap is edited by so much as a space, the hash stops matching and
+   the browser silently refuses to run it: analytics would go quiet in
+   production while every local check still passed, which is precisely the
+   failure mode style-src already caused once on the sibling sites. So the
+   policy and the page are compared here, in the same command that gates the
+   production build. */
+const verifyPolicyPinsInitializer = async (initializer) => {
+  const manifestPath = path.join(process.cwd(), 'vercel.json');
+  let manifest;
+  try {
+    manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
+  } catch (error) {
+    fail('CSP_SCRIPT_PIN', `vercel.json must be readable JSON: ${error.message}`);
+  }
+
+  const block = (manifest.headers ?? []).find((entry) => entry.source === '/(.*)');
+  const policy = block?.headers?.find((h) => h.key.toLowerCase() === 'content-security-policy')?.value;
+  if (!policy) {
+    fail('CSP_SCRIPT_PIN', 'vercel.json sets no Content-Security-Policy for /(.*)');
+  }
+
+  const scriptSrc = policy.split(';').map((d) => d.trim()).find((d) => d.startsWith('script-src'));
+  if (!scriptSrc) fail('CSP_SCRIPT_PIN', 'the policy declares no script-src');
+  if (scriptSrc.includes("'unsafe-inline'")) {
+    fail('CSP_SCRIPT_PIN', "script-src must pin the initializer by hash, not admit every inline script with 'unsafe-inline'");
+  }
+
+  const pinned = [...scriptSrc.matchAll(/'sha256-([A-Za-z0-9+/=]+)'/g)].map((m) => m[1]);
+  const actual = createHash('sha256').update(initializer, 'utf8').digest('base64');
+  if (!pinned.includes(actual)) {
+    fail(
+      'CSP_SCRIPT_PIN',
+      `script-src does not pin the inline GA4 initializer this build produced. `
+      + `Update the hash in vercel.json and scripts/assemble_vercel_output.mjs to 'sha256-${actual}'`,
+    );
+  }
 };
 
 const requestedDirectory = process.argv[2] ?? 'dist';

@@ -6,9 +6,33 @@ import { fileURLToPath } from 'node:url';
 
 const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const verifierPath = path.join(repositoryRoot, 'scripts', 'verify_vercel_config.mjs');
+const EXPECTED_CONTENT_SECURITY_POLICY = [
+  "default-src 'self'",
+  "script-src 'self' https://www.googletagmanager.com 'sha256-hvBnSu/0T6os9VuaQ226TdI+jTfXgQvnA0usLIqgrpk='",
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: https://www.googletagmanager.com https://*.google-analytics.com",
+  "font-src 'self'",
+  "media-src 'self'",
+  "connect-src 'self' https://www.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com",
+  "object-src 'none'",
+  "frame-ancestors 'none'",
+  "base-uri 'self'",
+  "form-action 'none'",
+].join('; ');
+
+const EXPECTED_SECURITY_HEADERS = {
+  'content-security-policy': EXPECTED_CONTENT_SECURITY_POLICY,
+  'x-frame-options': 'DENY',
+  'x-content-type-options': 'nosniff',
+  'referrer-policy': 'strict-origin-when-cross-origin',
+  'permissions-policy': 'camera=(), microphone=(), geolocation=()',
+  'strict-transport-security': 'max-age=63072000; includeSubDomains; preload',
+};
+
 const expectedConfig = {
   version: 3,
   routes: [
+    { src: '/(.*)', headers: EXPECTED_SECURITY_HEADERS, continue: true },
     { src: '/contact', headers: { Location: 'https://studiozio.vercel.app/contact' }, status: 308 },
     { handle: 'filesystem' },
     { handle: 'miss' },
@@ -43,7 +67,7 @@ const run = async () => {
   if (positive.status !== 0 || !output(positive).includes('VERIFY_VERCEL_CONFIG_PASS')) {
     fail(`valid config should pass: ${output(positive)}`);
   }
-  console.log('FIXTURE_PASS name=exact_static_spa_contract expected=VERIFY_VERCEL_CONFIG_PASS');
+  console.log('FIXTURE_PASS name=exact_static_contract_with_headers expected=VERIFY_VERCEL_CONFIG_PASS');
 
   const fixtures = [
     {
@@ -106,7 +130,7 @@ const run = async () => {
       contract: 'VERCEL_CONFIG_ROUTES',
       mutate: async (root) => {
         const config = await readConfig(root);
-        config.routes[1].middlewarePath = 'middleware.js';
+        config.routes[2].middlewarePath = 'middleware.js';
         await writeConfig(root, config);
       },
     },
@@ -129,11 +153,33 @@ const run = async () => {
       },
     },
     {
-      name: 'response_headers',
+      name: 'unapproved_response_header',
       contract: 'VERCEL_CONFIG_ROUTES',
       mutate: async (root) => {
         const config = await readConfig(root);
-        config.routes[3].headers = { 'x-unapproved': 'true' };
+        config.routes[4].headers = { 'x-unapproved': 'true' };
+        await writeConfig(root, config);
+      },
+    },
+    {
+      // The header route is a security contract, not decoration: silently
+      // dropping a directive from it must fail exactly as loudly as adding a
+      // rogue route.
+      name: 'weakened_csp',
+      contract: 'VERCEL_CONFIG_ROUTES',
+      mutate: async (root) => {
+        const config = await readConfig(root);
+        config.routes[0].headers['content-security-policy'] =
+          config.routes[0].headers['content-security-policy'].replace("; object-src 'none'", '');
+        await writeConfig(root, config);
+      },
+    },
+    {
+      name: 'missing_security_header_route',
+      contract: 'VERCEL_CONFIG_ROUTES',
+      mutate: async (root) => {
+        const config = await readConfig(root);
+        config.routes.shift();
         await writeConfig(root, config);
       },
     },

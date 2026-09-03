@@ -231,7 +231,14 @@ jobs:
         run: |
           set -euo pipefail
           test -z "$(find .vercel/output -type l -print -quit)"
-          node -e "const fs=require('node:fs'); const root='.vercel/output'; const entries=fs.readdirSync(root).sort(); if (JSON.stringify(entries)!==JSON.stringify(['config.json','static'])) throw new Error('Unexpected Build Output API entries: '+entries.join(', ')); const c=JSON.parse(fs.readFileSync(root+'/config.json','utf8')); const e={version:3,routes:[{handle:'filesystem'},{src:'/(.*)',dest:'/index.html'}]}; if (JSON.stringify(c)!==JSON.stringify(e)) throw new Error('Build Output API config contract mismatch'); if (!fs.lstatSync(root+'/static').isDirectory()) throw new Error('Static payload is missing')"
+          # This job deliberately has no application source, so it cannot call
+          # scripts/verify_vercel_config.mjs -- which already deep-equals the
+          # routes against the contract, in the job that built this artifact.
+          # Restating that literal here bought nothing but drift: it sat pinned
+          # to the retired two-route SPA shape and would have thrown on every
+          # dispatch. What this step can usefully assert is the deployment
+          # boundary itself, which is what its name promises.
+          node -e "const fs=require('node:fs'); const root='.vercel/output'; const entries=fs.readdirSync(root).sort(); if (JSON.stringify(entries)!==JSON.stringify(['config.json','static'])) throw new Error('Unexpected Build Output API entries: '+entries.join(', ')); const c=JSON.parse(fs.readFileSync(root+'/config.json','utf8')); if (JSON.stringify(Object.keys(c).sort())!==JSON.stringify(['routes','version'])) throw new Error('Build Output API config carries unexpected top-level keys: '+Object.keys(c).join(', ')); if (c.version!==3) throw new Error('Build Output API version must be 3'); if (!Array.isArray(c.routes)||c.routes.length===0) throw new Error('Build Output API config declares no routes'); const sec=c.routes[0]; if (!sec||sec.src!=='/(.*)'||sec.continue!==true||!sec.headers||!sec.headers['content-security-policy']) throw new Error('The first route must be the security-header route'); for (const h of ['content-security-policy','x-frame-options','x-content-type-options','referrer-policy','permissions-policy','strict-transport-security']) if (!sec.headers[h]) throw new Error('Security header missing from the deployment artifact: '+h); if (!fs.lstatSync(root+'/static').isDirectory()) throw new Error('Static payload is missing')"
 
       - name: Deploy the verified prebuilt output to preview
         id: deploy
