@@ -151,7 +151,12 @@ const verifyConfig = async (requestedRoot) => {
    asserted here so it cannot be dropped in a tidy-up. It sits FIRST so that
    every path on the duplicate host lands on the canonical host before any
    other rule applies -- /contact on the duplicate host consolidates and then
-   forwards, rather than leaving the duplicate a valid entry point. */
+   forwards, rather than leaving the duplicate a valid entry point.
+   The source is written `/(.*)` with a `$1` destination rather than `/:path*`
+   with `/:path*`. Two independent live audits measured the same signature on
+   the duplicate host: /robots.txt redirected and / did not, which is what a
+   matcher that never matches the empty path looks like. `/(.*)` captures the
+   empty string, so the root is covered by the same rule as everything else. */
 const DUPLICATE_HOST = 'tempo-delay-virid.vercel.app';
 const CANONICAL_HOST = 'https://www.tempodelay.tech';
 
@@ -198,7 +203,7 @@ const verifyProductionHeaderParity = async () => {
       `the first redirect must consolidate ${DUPLICATE_HOST}; without it that host serves a second crawlable copy of the site`,
     );
   }
-  if (consolidation.destination !== `${CANONICAL_HOST}/:path*` || consolidation.source !== '/:path*') {
+  if (consolidation.destination !== `${CANONICAL_HOST}/$1` || consolidation.source !== '/(.*)') {
     fail('VERCEL_DUPLICATE_HOST', `the consolidation must forward every path to ${CANONICAL_HOST}, not just the root`);
   }
   if (consolidation.permanent !== true) {
@@ -206,7 +211,7 @@ const verifyProductionHeaderParity = async () => {
   }
 
   const offsite = redirects.filter((r) => /^https?:\/\//.test(r.destination ?? ''));
-  const approved = new Set([`${CANONICAL_HOST}/:path*`, 'https://studiozio.vercel.app/contact/']);
+  const approved = new Set([`${CANONICAL_HOST}/$1`, 'https://studiozio.vercel.app/contact/']);
   for (const r of offsite) {
     if (!approved.has(r.destination)) {
       fail('VERCEL_DUPLICATE_HOST', `unapproved off-site redirect to ${r.destination}`);
