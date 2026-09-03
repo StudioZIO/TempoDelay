@@ -83,7 +83,26 @@
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-    gtag('config', 'G-VL8Z542XMP', {
+    /* DebugView opt-in. GA4's DebugView shows only traffic that flags itself
+       as a debug session, so without this it stays empty however many events
+       arrive -- which is what happened the first time it was opened, and led
+       to the wrong conclusion that measurement was broken. Off by default,
+       because GA4 treats debug traffic differently in reporting: `?_dbg=1`
+       turns it on for the rest of the browser session, `?_dbg=0` turns it off.
+       Stored so it survives navigation inside this site; it does not cross to
+       another property, so a tester appends `?_dbg=1` again on arrival. */
+    var STUDIOZIO_DEBUG_KEY = 'studiozio-debug';
+    var studioZioDebug = false;
+    try {
+      var debugFlag = new URLSearchParams(window.location.search).get('_dbg');
+      if (debugFlag === '1') window.sessionStorage.setItem(STUDIOZIO_DEBUG_KEY, '1');
+      else if (debugFlag === '0') window.sessionStorage.removeItem(STUDIOZIO_DEBUG_KEY);
+      studioZioDebug = window.sessionStorage.getItem(STUDIOZIO_DEBUG_KEY) === '1';
+    } catch (e) {
+      studioZioDebug = window.location.search.indexOf('_dbg=1') !== -1;
+    }
+
+    var STUDIOZIO_MEASUREMENT_CONFIG = {
       linker: {
         domains: [
           'studiozio.vercel.app',
@@ -93,7 +112,10 @@
         ],
         accept_incoming: true
       }
-    });
+    };
+    if (studioZioDebug) STUDIOZIO_MEASUREMENT_CONFIG.debug_mode = true;
+
+    gtag('config', 'G-VL8Z542XMP', STUDIOZIO_MEASUREMENT_CONFIG);
   </script>
 </head>
 <body>
