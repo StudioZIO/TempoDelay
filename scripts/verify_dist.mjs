@@ -7,7 +7,19 @@ import path from 'node:path';
 const require = createRequire(import.meta.url);
 const ts = require('@vercel/node/node_modules/typescript');
 
-const measurementId = 'G-9LS1G2PR3R';
+// One property measures the whole StudioZIO network, so a hub -> product ->
+// download journey is one session. This site reported to G-9LS1G2PR3R until the
+// consolidation; that property keeps its history as a read-only archive.
+const measurementId = 'G-VL8Z542XMP';
+// The four hosts the one property measures. The same list is entered in the
+// GA4 console under the data stream's configured domains, which is what drives
+// referral exclusion; this copy is what makes the session survive the hop.
+const networkDomains = [
+  'studiozio.vercel.app',
+  'studioziomasteringsuite.vercel.app',
+  'www.tempodelay.tech',
+  'zio-audio.vercel.app',
+];
 const jsBudgetBytes = 100 * 1024;
 const cssBudgetBytes = 25 * 1024;
 const fingerprintedAssetPattern = /^assets\/index-([A-Za-z0-9_-]{8,})\.(js|css)$/;
@@ -1159,11 +1171,28 @@ const verifyOutput = async (requestedDirectory) => {
     ['dataLayer initialization', /window\s*\.\s*dataLayer\s*=\s*window\s*\.\s*dataLayer\s*\|\|\s*\[\s*\]\s*;?/g],
     ['gtag function definition', /function\s+gtag\s*\(\s*\)\s*\{\s*dataLayer\s*\.\s*push\s*\(\s*arguments\s*\)\s*;?\s*\}/g],
     ['gtag js initialization', /gtag\s*\(\s*(['"])js\1\s*,\s*new\s+Date\s*\(\s*\)\s*\)\s*;?/g],
-    ['approved GA4 config', new RegExp(`gtag\\s*\\(\\s*(['"])config\\1\\s*,\\s*(['"])${measurementId}\\2\\s*\\)\\s*;?`, 'g')],
+    // The config call carries a second argument now, so this matches the call
+    // up to the measurement id rather than through its closing paren. The id
+    // stays pinned; what follows it is checked by the linker contract below,
+    // which is a stronger assertion than "the call ends here" ever was.
+    ['approved GA4 config', new RegExp(`gtag\\s*\\(\\s*(['"])config\\1\\s*,\\s*(['"])${measurementId}\\2`, 'g')],
+    ['cross-domain linker', /linker\s*:\s*\{\s*domains\s*:/g],
   ];
   for (const [label, expression] of semanticContracts) {
     const occurrences = countMatches(gaInitializer, expression);
     if (occurrences !== 1) fail('GA4_EXACTNESS', `${label} must occur exactly once; found ${occurrences}`);
+  }
+
+  /* A linker that lists three of the four hosts is worse than none: the missing
+     host silently keeps starting fresh sessions and blaming its predecessor,
+     and the gap is invisible in reporting because the other three look right. */
+  for (const domain of networkDomains) {
+    if (!gaInitializer.includes(`'${domain}'`)) {
+      fail('GA4_EXACTNESS', `the cross-domain linker omits ${domain}; that host would start a new session on arrival`);
+    }
+  }
+  if (!/accept_incoming\s*:\s*true/.test(gaInitializer)) {
+    fail('GA4_EXACTNESS', 'the linker must accept an incoming client id, or the hop is only measured one way');
   }
 
   const outputText = textAssets.map(({ text }) => text).join('\n');

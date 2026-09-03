@@ -8,7 +8,7 @@ const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url))
 const verifierPath = path.join(repositoryRoot, 'scripts', 'verify_vercel_config.mjs');
 const EXPECTED_CONTENT_SECURITY_POLICY = [
   "default-src 'self'",
-  "script-src 'self' https://www.googletagmanager.com 'sha256-hvBnSu/0T6os9VuaQ226TdI+jTfXgQvnA0usLIqgrpk='",
+  "script-src 'self' https://www.googletagmanager.com 'sha256-yEmoheAcAc1jIhLM0zddY4EcifLaLpUk4J9eKfWcjTM='",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: https://www.googletagmanager.com https://*.google-analytics.com",
   "font-src 'self'",

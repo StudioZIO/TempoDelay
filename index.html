@@ -64,13 +64,36 @@
   }
   </script>
 
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-9LS1G2PR3R"></script>
+  <!-- Google tag (gtag.js). The id below is the one property the whole
+       StudioZIO network reports to; this site used to have its own, whose
+       history stays readable as an archive but is not migrated and cannot be.
+       Only the two ids the tag needs appear in this document — verify_dist
+       counts them, and a third in prose would fail the build.
+
+       The linker domains make a hub → product → download journey one session
+       instead of three, each blaming the last for the visit. The same list must
+       be entered in the GA4 console under the data stream's configured domains,
+       which is what drives referral exclusion.
+
+       This script is inline, and the site's CSP pins it by SHA-256 rather than
+       admitting every inline script. Editing it changes the hash: verify_dist
+       recomputes it during the build and fails with the replacement value. -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-VL8Z542XMP"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-    gtag('config', 'G-9LS1G2PR3R');
+    gtag('config', 'G-VL8Z542XMP', {
+      linker: {
+        domains: [
+          'studiozio.vercel.app',
+          'studioziomasteringsuite.vercel.app',
+          'www.tempodelay.tech',
+          'zio-audio.vercel.app'
+        ],
+        accept_incoming: true
+      }
+    });
   </script>
 </head>
 <body>
