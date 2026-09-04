@@ -39,12 +39,13 @@ const staticRootPattern = /^(?:robots\.txt|sitemap\.xml|404\.html)$/;
 // script, only from <audio src>, and excluded from the executable-content
 // scan because decoding AAC as UTF-8 produces meaningless matches.
 const audioAssetPattern = /^audio\/[a-z0-9-]+\.(?:m4a|opus)$/;
-const imageAssetPattern = /^images\/[a-z0-9-]+\.webp$/;
+const imageAssetPattern = /^images\/[a-z0-9-]+\.(?:png|webp)$/;
 const woff2Signature = Buffer.from('wOF2', 'ascii');
 // A WebP file is a RIFF container whose form type is WEBP: 'RIFF' at byte 0,
 // the payload length, then 'WEBP' at byte 8.
 const riffSignature = Buffer.from('RIFF', 'ascii');
 const webpFormType = Buffer.from('WEBP', 'ascii');
+const pngSignature = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
 
 const fail = (contract, detail) => {
   throw new Error(`[${contract}] ${detail}`);
@@ -996,7 +997,11 @@ const verifyOutput = async (requestedDirectory) => {
   // decode or decodes as something else entirely, so check the bytes.
   for (const file of files.filter((candidate) => imageAssetPattern.test(candidate))) {
     const header = await readFile(path.join(rootDirectory, file));
-    if (
+    if (file.endsWith('.png')) {
+      if (header.length < pngSignature.length || !header.subarray(0, 8).equals(pngSignature)) {
+        fail('OUTPUT_ALLOWLIST', `interface capture is not a PNG payload: ${file}`);
+      }
+    } else if (
       header.length < 12
       || !header.subarray(0, 4).equals(riffSignature)
       || !header.subarray(8, 12).equals(webpFormType)

@@ -15,7 +15,7 @@
 **StudioZIO Tempo Delay** is a modern stereo delay available as native Audio Unit (AUv2), VST3, and Standalone application for macOS Apple Silicon (arm64) systems.
 
 - **Current Release**: 4.0.1 (Schema 8)
-- **Validated Operating System**: macOS 11+ (Apple Silicon arm64: M1 / M2 / M3 / M4)
+- **Validated Operating System**: macOS 12+ (Apple Silicon arm64: M1 / M2 / M3 / M4)
 - **Validated DAWs**: Logic Pro, REAPER
 - **APVTS Parameters**: 32 automatable parameters
 - **Latency**: Zero reported processing latency

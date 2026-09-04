@@ -12,7 +12,7 @@ const SPECIFICATION: { key: string; value: string }[] = [
   { key: 'Release', value: '4.0.1 (Schema 8)' },
   { key: 'Formats', value: 'Audio Unit (AUv2), VST3, Standalone' },
   { key: 'Price', value: 'Free' },
-  { key: 'Platform', value: 'macOS 11+, Apple Silicon (arm64)' },
+  { key: 'Platform', value: 'macOS 12+, Apple Silicon (arm64)' },
   { key: 'Windows', value: 'Planned, no date announced' },
   { key: 'Automatable parameters', value: '32 APVTS parameters' },
   { key: 'Sample rate', value: '44.1 – 192 kHz' },
@@ -22,7 +22,7 @@ const SPECIFICATION: { key: string; value: string }[] = [
   { key: 'Note divisions', value: '16 per channel, straight, dotted and triplet' },
   { key: 'Feedback filters', value: 'HPF 20 – 2000 Hz, LPF 1 – 20 kHz' },
   { key: 'Stereo width', value: '0 – 200% mid/side' },
-  { key: 'Installer', value: 'Signed .pkg, 150 MB free disk space' },
+  { key: 'Installer', value: '12.1 MB signed and notarized .pkg; 150 MB free disk space' },
 ];
 
 export const Specification = () => (
