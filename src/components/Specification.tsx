@@ -18,9 +18,9 @@ const SPECIFICATION: { key: string; value: string }[] = [
   { key: 'Sample rate', value: '44.1 – 192 kHz' },
   { key: 'Reported latency', value: '0 samples' },
   { key: 'Engine', value: '64-bit float' },
-  { key: 'Delay time', value: '1 – 2000 ms per channel' },
+  { key: 'Delay time', value: '1 – 5000 ms per channel' },
   { key: 'Note divisions', value: '16 per channel, straight, dotted and triplet' },
-  { key: 'Feedback filters', value: 'HPF 20 – 2000 Hz, LPF 1 – 20 kHz' },
+  { key: 'Feedback filters', value: 'HPF and LPF, 20 Hz – 20 kHz each' },
   { key: 'Stereo width', value: '0 – 200% mid/side' },
   { key: 'Installer', value: '12.1 MB signed and notarized .pkg; 150 MB free disk space' },
 ];

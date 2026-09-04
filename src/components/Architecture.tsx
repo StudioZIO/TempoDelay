@@ -7,7 +7,7 @@ const MODULES = [
   },
   {
     title: 'Independent dual L/R engine',
-    body: 'Decoupled left and right delay lines. Run 1/4 on the left against 1/8D on the right, or free millisecond timing from 1 to 2000 ms.',
+    body: 'Decoupled left and right delay lines. Run 1/4 on the left against 1/8D on the right, or free millisecond timing from 1 to 5000 ms.',
   },
   {
     title: 'Ping-pong routing matrix',

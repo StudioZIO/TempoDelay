@@ -34,9 +34,9 @@ const CLAIMS: { title: string; body: string; key: string; value: string }[] = [
   {
     title: 'The two modulators are deliberately out of phase',
     body:
-      'Left and right LFOs run at one rate with an adjustable phase angle between them, so the channels drift apart instead of wobbling together. At ninety degrees the movement reads as width rather than as vibrato.',
+      'Left and right LFOs run at one rate with an adjustable phase angle between them, so the channels drift apart instead of wobbling together. Spread sets that angle: at 100 per cent the right channel runs ninety degrees behind the left, which is as far apart as they go, and the movement reads as width rather than as vibrato.',
     key: 'Stereo spread',
-    value: '0 – 180° LFO PHASE OFFSET',
+    value: '0 – 100% SPREAD · 90° AT FULL',
   },
 ];
 
