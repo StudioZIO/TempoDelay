@@ -1006,6 +1006,7 @@ button.chip[aria-pressed="true"], button.chip[aria-selected="true"] {
    own chrome, not the host's. Every value the capture shows is repeated in
    its alt text, and every load-bearing claim is stated in text elsewhere on
    the page, so the section survives with images off. */
+.interface-shots { display: grid; gap: 1.5rem; }
 .plugin-shot { overflow: hidden; }
 .plugin-shot-bar {
   display: flex;

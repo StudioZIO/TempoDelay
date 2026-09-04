@@ -4,7 +4,7 @@ import { MACOS_DOWNLOAD_URL, MASTERING_SUITE_URL } from '../data/navigation';
 import { track } from '../analytics';
 
 const MACOS_SHA256 =
-  '431e72768af9fdba855db3929bb63d347e9c418e1e6528aad629954ac695f250';
+  'a36e50d0f6cc5197f17286f0122723080f960f19e49a2da309f5c5872cd4f8a0';
 
 export const Download = () => (
   <Section
@@ -17,7 +17,7 @@ export const Download = () => (
       <div>
         <div className="chip-row mb-3">
           <Chip>Free</Chip>
-          <Chip>macOS 11+</Chip>
+          <Chip>macOS 12+</Chip>
           <Chip>arm64</Chip>
           {/* Plain, not the amber signal chip. Amber is data and exception
               state across the estate; a shipping release is neither. The hub
@@ -27,8 +27,8 @@ export const Download = () => (
         </div>
         <p className="text-sm text-muted-foreground">
           Free to download and use &mdash; a signed, notarized .pkg, with no licence key and no
-          account. It needs 150 MB of free disk space once installed. The button downloads the
-          installer itself; check it against this SHA-256 before you open it.
+          account. The installer download is 12.1 MB and needs 150 MB of free disk space once
+          installed. Check it against this SHA-256 before you open it.
         </p>
         <p className="sha mt-2 text-muted-foreground">{MACOS_SHA256}</p>
       </div>

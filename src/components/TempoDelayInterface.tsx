@@ -8,20 +8,35 @@ export const TempoDelayInterface = () => (
     title="One window, nothing buried"
     lede="The delay engine sits on the surface: sync, divisions, independent feedback per side, width and mix. Tone, modulation and routing are one tab away, never a nested page."
   >
-    {/* Not lazy: the panel is the section, and at 29 KB the request it would
-        defer costs less than a blank frame if the observer never fires. */}
-    <PluginShot
-      name="StudioZIO Tempo Delay 4.0.1"
-      caption="Captured from the plug-in on its default preset, cropped to the plug-in's own window."
-    >
-      <img
-        className="gui-render"
-        src="/images/tempo-delay-ui.webp"
-        width={1120}
-        height={720}
-        decoding="async"
-        alt="The Tempo Delay window. Tempo sync is on at 120 BPM with 1/8 dotted on the left and 1/8 on the right, giving 375 ms and 250 ms; feedback is 40 per cent on both sides, ping-pong is off, width is 100 per cent and mix is 35 per cent. The Tone and Filters tab is open, showing an 80 Hz high-pass, an 8 kHz low-pass and 30 per cent saturation."
-      />
-    </PluginShot>
+    <div className="interface-shots">
+      <PluginShot
+        name="StudioZIO Tempo Delay 4.0.1 — Tone & Filters"
+        caption="Final standalone interface with real audio driving the meters. Cropped to the GUI only."
+      >
+        <img
+          className="gui-render"
+          src="/images/tempo-delay-ui.png"
+          width={1440}
+          height={760}
+          decoding="async"
+          alt="The final Tempo Delay interface with Tone and Filters open. The signal path shows 120 BPM, independent left and right divisions, 80 Hz to 8 kHz filtering, 45 per cent feedback, Digital character, 100 per cent width and 50 per cent mix. Real audio is active in the input, wet and output meters."
+        />
+      </PluginShot>
+
+      <PluginShot
+        name="StudioZIO Tempo Delay 4.0.1 — Advanced & Routing"
+        caption="The same audio-active standalone session with the complete routing and gain page visible."
+      >
+        <img
+          className="gui-render"
+          src="/images/tempo-delay-routing.png"
+          width={1440}
+          height={760}
+          loading="lazy"
+          decoding="async"
+          alt="The final Tempo Delay interface with Advanced and Routing open. Creative routing, ducking and input, wet and output gain controls are grouped below the delay engine while the live stereo meters and correlation display remain visible."
+        />
+      </PluginShot>
+    </div>
   </Section>
 );

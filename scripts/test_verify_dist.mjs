@@ -81,6 +81,13 @@ const run = async () => {
   const tempRoot = await mkdtemp(path.join(tmpdir(), 'studiozio-verify-dist-'));
   const fixtures = [
     {
+      name: 'png_extension_with_non_png_payload',
+      contract: 'OUTPUT_ALLOWLIST',
+      mutate: async (root) => {
+        await writeFile(path.join(root, 'images', 'tempo-delay-ui.png'), 'not a png', 'utf8');
+      },
+    },
+    {
       name: 'meaningless_underscore_fingerprint',
       contract: 'FINGERPRINT_CONTRACT',
       mutate: async (root) => {
