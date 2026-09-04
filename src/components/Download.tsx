@@ -4,7 +4,7 @@ import { MACOS_DOWNLOAD_URL, MASTERING_SUITE_URL } from '../data/navigation';
 import { track } from '../analytics';
 
 const MACOS_SHA256 =
-  'a36e50d0f6cc5197f17286f0122723080f960f19e49a2da309f5c5872cd4f8a0';
+  'adae51020ee920d607f04e15c8db3c044c8dadd7bf3e01762dd56cc1c70072c7';
 
 export const Download = () => (
   <Section
