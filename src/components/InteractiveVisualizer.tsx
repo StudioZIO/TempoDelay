@@ -54,7 +54,12 @@ const DIRECT_EDGES: Edge[] = [
   },
 ];
 
-const strokeFor = (channel: Channel) => (channel === 'left' ? 'var(--primary)' : 'var(--signal)');
+/* Both channels are the instrument cyan. The right channel's paths and node
+   borders run a deeper step of the same hue, which keeps two crossing lines
+   separable without introducing a second accent colour; its text stays on the
+   lighter --primary-text step so the readouts are as legible as the left's.
+   The L and R labels, not the colour, are what name the channels. */
+const strokeFor = (channel: Channel) => (channel === 'left' ? 'var(--primary)' : 'var(--primary-deep)');
 const markerFor = (channel: Channel) => (channel === 'left' ? 'url(#td-arrow-left)' : 'url(#td-arrow-right)');
 
 const usePrefersReducedMotion = () => {
@@ -107,8 +112,8 @@ const PulseHead = ({ edge, amplitude, animate }: { edge: Edge; amplitude: number
 export const InteractiveVisualizer = () => {
   const [pingPong, setPingPong] = useState(true);
   const [bpm, setBpm] = useState(120);
-  const [leftDivision, setLeftDivision] = useState('1/4');
-  const [rightDivision, setRightDivision] = useState('1/8D');
+  const [leftDivision, setLeftDivision] = useState('1/8D');
+  const [rightDivision, setRightDivision] = useState('1/8');
   const [running, setRunning] = useState(false);
   const [amplitude, setAmplitude] = useState(0);
 
@@ -164,7 +169,7 @@ export const InteractiveVisualizer = () => {
           </p>
         </div>
 
-        <div className="notice-signal mb-8">
+        <div className="notice-warn mb-8">
           <svg className="notice-mark" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path
               d="M12 9v3.5m0 3.5h.01M10.3 4.2 3.4 16.1c-.8 1.3.2 3 1.7 3h13.8c1.5 0 2.5-1.7 1.7-3L13.7 4.2c-.8-1.3-2.6-1.3-3.4 0Z"
@@ -237,7 +242,7 @@ export const InteractiveVisualizer = () => {
             <div className="control">
               <div className="control-head">
                 <span>Right division</span>
-                <span className="val val--signal">{rightMs} ms</span>
+                <span className="val val--alt">{rightMs} ms</span>
               </div>
               <select
                 className="field field-mono"
@@ -261,7 +266,7 @@ export const InteractiveVisualizer = () => {
                   <path d="M0,0 L8,4 L0,8 Z" fill="var(--primary)" />
                 </marker>
                 <marker id="td-arrow-right" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
-                  <path d="M0,0 L8,4 L0,8 Z" fill="var(--signal)" />
+                  <path d="M0,0 L8,4 L0,8 Z" fill="var(--primary-deep)" />
                 </marker>
               </defs>
 
@@ -282,7 +287,7 @@ export const InteractiveVisualizer = () => {
                 <text x="352" y="176" fill="var(--primary)" fontSize="11" fontFamily="var(--font-mono)">
                   CROSS L → R
                 </text>
-                <text x="352" y="248" fill="var(--signal)" fontSize="11" fontFamily="var(--font-mono)">
+                <text x="352" y="248" fill="var(--primary-text)" fontSize="11" fontFamily="var(--font-mono)">
                   CROSS R → L
                 </text>
               </g>
@@ -290,7 +295,7 @@ export const InteractiveVisualizer = () => {
                 <text x="286" y="22" fill="var(--primary)" fontSize="11" fontFamily="var(--font-mono)">
                   FEEDBACK L
                 </text>
-                <text x="286" y="400" fill="var(--signal)" fontSize="11" fontFamily="var(--font-mono)">
+                <text x="286" y="400" fill="var(--primary-text)" fontSize="11" fontFamily="var(--font-mono)">
                   FEEDBACK R
                 </text>
               </g>
@@ -308,8 +313,8 @@ export const InteractiveVisualizer = () => {
 
               {/* Input R */}
               <g transform="translate(40, 270)">
-                <rect width="90" height="50" rx="8" fill="var(--surface-raised)" stroke="var(--signal)" strokeWidth="1.5" />
-                <text x="45" y="24" fill="var(--signal)" textAnchor="middle" fontSize="12" fontFamily="var(--font-mono)">
+                <rect width="90" height="50" rx="8" fill="var(--surface-raised)" stroke="var(--primary-deep)" strokeWidth="1.5" />
+                <text x="45" y="24" fill="var(--primary-text)" textAnchor="middle" fontSize="12" fontFamily="var(--font-mono)">
                   INPUT R
                 </text>
                 <text x="45" y="40" fill="var(--muted-foreground)" textAnchor="middle" fontSize="10">
@@ -335,7 +340,7 @@ export const InteractiveVisualizer = () => {
                   {leftDivision} · {leftMs} ms
                 </text>
                 <text x="70" y="66" fill="var(--muted-foreground)" textAnchor="middle" fontSize="10" fontFamily="var(--font-mono)">
-                  FB 45%
+                  FB 40%
                 </text>
               </g>
 
@@ -346,18 +351,18 @@ export const InteractiveVisualizer = () => {
                   height="80"
                   rx="10"
                   fill="var(--surface-overlay)"
-                  stroke="var(--signal)"
+                  stroke="var(--primary-deep)"
                   strokeWidth="2.5"
                   className={moving ? 'node-breathe' : undefined}
                 />
                 <text x="70" y="28" fill="var(--foreground)" textAnchor="middle" fontSize="13" fontWeight="600">
                   RIGHT BUFFER
                 </text>
-                <text x="70" y="48" fill="var(--signal)" textAnchor="middle" fontSize="12" fontFamily="var(--font-mono)">
+                <text x="70" y="48" fill="var(--primary-text)" textAnchor="middle" fontSize="12" fontFamily="var(--font-mono)">
                   {rightDivision} · {rightMs} ms
                 </text>
                 <text x="70" y="66" fill="var(--muted-foreground)" textAnchor="middle" fontSize="10" fontFamily="var(--font-mono)">
-                  FB 45%
+                  FB 40%
                 </text>
               </g>
 
@@ -368,7 +373,7 @@ export const InteractiveVisualizer = () => {
                   TONE &amp; DRIVE L
                 </text>
                 <text x="65" y="43" fill="var(--primary)" textAnchor="middle" fontSize="10" fontFamily="var(--font-mono)">
-                  DRIVE 20%
+                  DRIVE 30%
                 </text>
                 <text x="65" y="58" fill="var(--muted-foreground)" textAnchor="middle" fontSize="9" fontFamily="var(--font-mono)">
                   HPF 80 · LPF 8k
@@ -377,12 +382,12 @@ export const InteractiveVisualizer = () => {
 
               {/* Tone & drive R */}
               <g transform="translate(450, 260)">
-                <rect width="130" height="70" rx="10" fill="var(--surface-raised)" stroke="var(--signal)" strokeWidth="1.5" />
+                <rect width="130" height="70" rx="10" fill="var(--surface-raised)" stroke="var(--primary-deep)" strokeWidth="1.5" />
                 <text x="65" y="26" fill="var(--foreground)" textAnchor="middle" fontSize="11" fontWeight="600">
                   TONE &amp; DRIVE R
                 </text>
-                <text x="65" y="43" fill="var(--signal)" textAnchor="middle" fontSize="10" fontFamily="var(--font-mono)">
-                  DRIVE 20%
+                <text x="65" y="43" fill="var(--primary-text)" textAnchor="middle" fontSize="10" fontFamily="var(--font-mono)">
+                  DRIVE 30%
                 </text>
                 <text x="65" y="58" fill="var(--muted-foreground)" textAnchor="middle" fontSize="9" fontFamily="var(--font-mono)">
                   HPF 80 · LPF 8k
@@ -396,7 +401,7 @@ export const InteractiveVisualizer = () => {
                   STEREO WIDTH
                 </text>
                 <text x="55" y="50" fill="var(--primary)" textAnchor="middle" fontSize="13" fontFamily="var(--font-mono)">
-                  120%
+                  100%
                 </text>
                 <text x="55" y="66" fill="var(--muted-foreground)" textAnchor="middle" fontSize="10">
                   Mid/side matrix

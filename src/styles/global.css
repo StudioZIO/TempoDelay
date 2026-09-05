@@ -72,10 +72,6 @@
      one-lightness-step variant instead. Same hue, same chroma. */
   --primary-text:       oklch(0.700 0.086 218);
 
-  /* signal amber — meters, clip, release flags, right channel. Never a CTA. */
-  --signal:            oklch(0.735 0.135 68);
-  --signal-foreground: oklch(0.18  0.03  68);
-
   --destructive: oklch(0.598 0.185 22);
 
   --border:   oklch(1 0 0 / 9%);
@@ -428,10 +424,10 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   text-transform: uppercase;
   color: var(--muted-foreground);
 }
-.chip--signal { color: var(--signal); border-color: color-mix(in oklab, var(--signal) 40%, transparent); }
+.chip--flag { color: var(--foreground); border-color: var(--border); }
 .chip--bare { border: 0; background: none; padding-inline: 0; }
 .chip .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
-.chip--signal .dot { background: var(--signal); }
+.chip--flag .dot { background: var(--primary); }
 .chip--live .dot { background: var(--primary); animation: pulse-dot 2.4s ease-in-out infinite; }
 
 /* filter chips are buttons: same pill, selectable state, never amber */
@@ -519,7 +515,7 @@ button.chip[aria-pressed="true"], button.chip[aria-selected="true"] {
   color: var(--muted-foreground);
 }
 /* amber is data: these values are measured, so they read as measurements */
-.claim-readout dd { margin: 0; color: var(--signal); }
+.claim-readout dd { margin: 0; color: var(--primary-text); }
 
 /* spec grid: 1px gaps over --border so dividers read as hairlines */
 .spec-grid {
@@ -576,66 +572,124 @@ button.chip[aria-pressed="true"], button.chip[aria-selected="true"] {
   color: var(--foreground);
 }
 .mock-title .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--primary); animation: pulse-dot 2.4s ease-in-out infinite; }
-.mock-body { padding: 1.1rem; display: grid; gap: 1rem; }
-.mock-readouts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.6rem; }
-@media (min-width: 560px) { .mock-readouts { grid-template-columns: repeat(4, 1fr); } }
-.readout {
-  border: 1px solid var(--hairline);
-  border-radius: 8px;
-  background: var(--surface-control);
-  padding: 0.6rem 0.75rem;
-  text-align: center;
-}
-.readout .k {
-  display: block;
+.mock-body { padding: 1.1rem; display: grid; gap: 0.9rem; }
+
+/* The rail is the window's own opening sentence: every stage in the order the
+   audio reaches it. A cyan head arms one stage at a time, left to right, so
+   the motion states the layout rather than decorating it. */
+.rail-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
   font-family: var(--font-mono);
-  font-size: 0.5625rem;
+  font-size: 0.5312rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--muted-foreground);
 }
-.readout .v { display: block; margin-top: 0.3rem; font-family: var(--font-mono); font-size: 0.9375rem; color: var(--primary); }
-.readout .v--signal { color: var(--signal); }
-.readout .v--plain { color: var(--foreground); }
-
-.mock-knobs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.5rem; }
-.knob { text-align: center; }
-.knob svg { margin-inline: auto; width: 46px; height: 46px; }
-.knob .k {
-  display: block;
-  margin-top: 0.45rem;
+.rail { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; }
+.rail .st {
+  border: 1px solid var(--hairline);
+  border-top: 2px solid transparent;
+  border-radius: 5px;
+  background: var(--surface-control);
+  padding: 0.4rem 0.3rem;
+  display: grid;
+  gap: 0.1rem;
+  min-width: 0;
+  animation: stage-arm 4.8s linear infinite;
+}
+.rail .st .k {
   font-family: var(--font-mono);
-  font-size: 0.5rem;
-  letter-spacing: 0.14em;
+  font-size: 0.4688rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.rail .st .v {
+  font-family: var(--font-mono);
+  /* Sized so the longest shipped value -- "Digital" -- fits a cell at the
+     hero panel's narrowest column rather than ellipsing. */
+  font-size: 0.625rem;
+  color: var(--foreground);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.rail .st:nth-child(1) { animation-delay: 0s; }
+.rail .st:nth-child(2) { animation-delay: 0.28s; }
+.rail .st:nth-child(3) { animation-delay: 0.56s; }
+.rail .st:nth-child(4) { animation-delay: 0.84s; }
+.rail .st:nth-child(5) { animation-delay: 1.12s; }
+.rail .st:nth-child(6) { animation-delay: 1.4s; }
+.rail .st:nth-child(7) { animation-delay: 1.68s; }
+.rail .st:nth-child(8) { animation-delay: 1.96s; }
+
+/* Host grid. The head crosses one bar in 2 s, which is 120 BPM, and the taps
+   sit at the shipped divisions rather than at decorative positions: 1/8D is
+   375 ms into a 2 s bar (37.5%) and 1/8 is 250 ms (25%). The claim in the
+   headline -- locked to the host grid -- is what the motion demonstrates. */
+.grid-pulse { border: 1px solid var(--hairline); border-radius: 8px; background: var(--surface-control); padding: 0.85rem 0.9rem; display: grid; gap: 0.6rem; }
+.gp-head, .gp-foot { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; font-family: var(--font-mono); color: var(--muted-foreground); }
+.gp-head { font-size: 0.5312rem; letter-spacing: 0.16em; text-transform: uppercase; }
+.gp-foot { font-size: 0.5625rem; }
+.gp-foot b { color: var(--foreground); font-weight: 500; }
+.gp-track { position: relative; height: 30px; border-radius: 5px; background: color-mix(in oklab, var(--foreground) 5%, transparent); overflow: hidden; }
+.gp-track .beat { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--hairline); }
+.gp-track .beat:nth-child(1) { left: 0; }
+.gp-track .beat:nth-child(2) { left: 25%; }
+.gp-track .beat:nth-child(3) { left: 50%; }
+.gp-track .beat:nth-child(4) { left: 75%; }
+.gp-headmark { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--primary); animation: gp-run 2s linear infinite; }
+.gp-track .tap { position: absolute; top: 50%; width: 9px; height: 9px; margin-top: -4.5px; margin-left: -4.5px; border-radius: 50%; background: var(--primary); animation: tap-land 2s ease-out infinite; }
+.gp-track .tap--l { left: 37.5%; }
+.gp-track .tap--r { left: 25%; background: var(--primary-deep); animation-delay: -0.25s; }
+
+/* Stereo echo field. Both channels are the same cyan and are told apart by
+   their labels, which is how the window draws them. */
+.echo {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.9rem;
+  border: 1px solid var(--hairline);
+  border-radius: 8px;
+  background: var(--surface-control);
+  padding: 0.65rem 0.8rem;
+}
+.echo-corr { display: grid; gap: 0.32rem; min-width: 0; }
+.echo-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.5312rem;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--muted-foreground);
 }
-.knob .v { display: block; font-family: var(--font-mono); font-size: 0.625rem; color: var(--foreground); }
-.knob .ind { transition: transform var(--dur-base) var(--ease-out); transform-origin: 23px 23px; }
-.knob:hover .ind { transform: rotate(24deg); }
-
-/* routing lane (tempo delay mock) */
-.lane { border: 1px solid var(--hairline); border-radius: 8px; background: var(--surface-control); padding: 0.85rem 1rem; display: grid; gap: 0.6rem; }
-.lane-head { display: flex; align-items: center; justify-content: space-between; font-family: var(--font-mono); font-size: 0.5625rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted-foreground); }
-.lane-row { display: grid; grid-template-columns: 1.25rem minmax(0, 1fr); align-items: center; gap: 0.6rem; }
-.lane-row .ch { font-family: var(--font-mono); font-size: 0.625rem; color: var(--muted-foreground); }
-.lane-track { position: relative; height: 6px; border-radius: 3px; background: color-mix(in oklab, var(--foreground) 8%, transparent); overflow: hidden; }
-.lane-tap { position: absolute; top: 50%; width: 9px; height: 9px; margin-top: -4.5px; margin-left: -4.5px; border-radius: 50%; background: var(--primary); }
-.lane-row--r .lane-tap { background: var(--signal); }
-.lane-foot { display: flex; align-items: center; justify-content: space-between; font-family: var(--font-mono); font-size: 0.5625rem; color: var(--muted-foreground); }
-
-/* flat sweep across a lane — weight and contrast only, no bloom */
-.lane-sweep {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 34%;
-  border-radius: 3px;
-  background: linear-gradient(90deg, transparent, var(--primary), transparent);
-  animation: heroSweep 4s linear infinite;
+.echo-bar { position: relative; height: 6px; border-radius: 3px; background: color-mix(in oklab, var(--foreground) 8%, transparent); }
+.echo-bar i { position: absolute; top: 0; bottom: 0; left: 50%; border-radius: 3px; background: var(--primary); animation: corr-settle 5.2s ease-in-out infinite; }
+.echo-big {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.45rem;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+  color: var(--foreground);
 }
-.lane-row--r .lane-sweep { background: linear-gradient(90deg, transparent, var(--signal), transparent); }
-.lane-sweep--offset { animation-delay: -2s; }
+.echo-big small {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  color: var(--muted-foreground);
+}
 
 
 /* ---------- form controls ---------------------------------------------- */
@@ -733,26 +787,26 @@ button.chip[aria-pressed="true"], button.chip[aria-selected="true"] {
 }
 
 /* ---------- simulator --------------------------------------------------- */
-.notice-signal {
+.notice-warn {
   display: flex;
   align-items: flex-start;
   gap: 0.85rem;
   padding: 1rem 1.1rem;
-  border: 1px solid color-mix(in oklab, var(--signal) 45%, transparent);
+  border: 1px solid color-mix(in oklab, var(--destructive) 45%, transparent);
   border-radius: 10px;
-  background: color-mix(in oklab, var(--signal) 8%, transparent);
+  background: color-mix(in oklab, var(--destructive) 8%, transparent);
 }
-.notice-signal .notice-mark { color: var(--signal); flex: none; }
-.notice-signal .notice-label {
+.notice-warn .notice-mark { color: var(--destructive); flex: none; }
+.notice-warn .notice-label {
   display: block;
   font-family: var(--font-mono);
   font-size: 0.625rem;
   font-weight: 500;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--signal);
+  color: var(--destructive);
 }
-.notice-signal p { margin: 0.35rem 0 0; font-size: 0.8125rem; color: var(--muted-foreground); }
+.notice-warn p { margin: 0.35rem 0 0; font-size: 0.8125rem; color: var(--muted-foreground); }
 
 .control-strip { display: grid; gap: 0.75rem; }
 @media (min-width: 720px) { .control-strip { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
@@ -777,7 +831,7 @@ button.chip[aria-pressed="true"], button.chip[aria-selected="true"] {
   color: var(--muted-foreground);
 }
 .control-head .val { color: var(--primary); letter-spacing: 0.08em; }
-.control-head .val--signal { color: var(--signal); }
+.control-head .val--alt { color: var(--primary-deep); }
 
 .diagram-frame {
   border: 1px solid var(--hairline);
@@ -876,9 +930,25 @@ button.chip[aria-pressed="true"], button.chip[aria-selected="true"] {
   0%, 100% { opacity: 1; }
   50%      { opacity: 0.35; }
 }
-@keyframes heroSweep {
-  from { left: -34%; }
+@keyframes gp-run {
+  from { left: 0; }
   to   { left: 100%; }
+}
+@keyframes tap-land {
+  0%, 100% { transform: scale(1); opacity: 0.35; }
+  2%       { transform: scale(1.7); opacity: 1; }
+  26%      { transform: scale(1); opacity: 0.8; }
+}
+@keyframes stage-arm {
+  0%, 100% { border-top-color: transparent; background: var(--surface-control); }
+  4%       { border-top-color: var(--primary); background: var(--surface-overlay); }
+  13%      { border-top-color: color-mix(in oklab, var(--primary) 45%, transparent); background: var(--surface-overlay); }
+  22%      { border-top-color: transparent; background: var(--surface-control); }
+}
+@keyframes corr-settle {
+  0%, 100% { right: 6%; }
+  45%      { right: 2%; }
+  70%      { right: 11%; }
 }
 @keyframes dash-flow {
   from { stroke-dashoffset: 28; }
@@ -895,6 +965,12 @@ button.chip[aria-pressed="true"], button.chip[aria-selected="true"] {
 .rise-3 { animation-delay: 180ms; }
 
 @media (prefers-reduced-motion: reduce) {
+  /* Collapsing the animations would leave the rail unarmed and the taps at
+     their dimmest keyframe. Show the panel at rest instead: every stage armed,
+     both taps fully drawn, no travelling head. */
+  .rail .st { border-top-color: color-mix(in oklab, var(--primary) 45%, transparent); }
+  .gp-track .tap { opacity: 1; transform: none; }
+  .gp-headmark { display: none; }
   html { scroll-behavior: auto; }
   *, *::before, *::after {
     animation-duration: 0.001ms !important;
@@ -977,7 +1053,8 @@ button.chip[aria-pressed="true"], button.chip[aria-selected="true"] {
   transition: width 75ms linear;
 }
 /* Amber is data, and a level near full scale is exactly that. */
-.audio-level-fill.is-hot { background: var(--signal); }
+/* The plug-in's own rule: red past the ceiling. No amber step between. */
+.audio-level-fill.is-hot { background: var(--destructive); }
 .audio-demo-foot { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-top: 0.5rem; }
 .audio-demo-caption {
   font-family: var(--font-mono);

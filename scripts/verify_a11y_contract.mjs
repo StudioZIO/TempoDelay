@@ -51,8 +51,28 @@ if (!style.includes('prefers-reduced-motion')) {
   fail('A11Y_CONTRACT', 'stylesheet must keep the prefers-reduced-motion block');
 }
 
-if (!style.includes('heroSweep')) {
-  fail('A11Y_CONTRACT', 'stylesheet must keep the CSS-driven hero sweep animation');
+// The hero's motion is CSS-driven so that prefers-reduced-motion can switch it
+// off without the bundle having to co-operate. heroSweep used to be that
+// animation; it was a free-running light band that represented nothing, and it
+// was replaced by the host-grid pulse, which states the headline's own claim —
+// the head crosses a bar at 120 BPM and the taps land on the shipped divisions.
+// The contract still guards the same property: the motion lives in the
+// stylesheet, and it has a resting state for reduced motion.
+for (const [name, reason] of [
+  ['gp-run', 'the host-grid head must stay a CSS animation'],
+  ['tap-land', 'the delay taps must stay a CSS animation'],
+  ['stage-arm', 'the signal-path rail must stay a CSS animation'],
+]) {
+  if (!style.includes(name)) {
+    fail('A11Y_CONTRACT', `stylesheet must keep the ${name} animation: ${reason}`);
+  }
+}
+
+if (!/\.gp-headmark\s*\{\s*display:\s*none/.test(style.replace(/\s+/g, ' '))) {
+  fail(
+    'A11Y_CONTRACT',
+    'reduced motion must park the host-grid head rather than freeze it mid-travel'
+  );
 }
 
 console.log('[A11Y_CONTRACT] built bundle satisfies the accessibility contract');
