@@ -3,6 +3,7 @@ import { gzipSync } from 'node:zlib';
 import { lstat, readFile, readdir } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const require = createRequire(import.meta.url);
 const ts = require('@vercel/node/node_modules/typescript');
@@ -901,6 +902,35 @@ const verifySeoContract = async (rootDirectory, indexHtml) => {
   if (!indexHtml.includes(app.downloadUrl)) {
     fail('SEO_STRUCTURED_DATA', 'JSON-LD downloadUrl is not the URL the page actually links');
   }
+
+  // The parameter manifest states a version too, and nothing on the page
+  // renders it -- which is how it drifted to 4.0.2 while the installer, the
+  // JSON-LD and twelve places in the copy all said 4.0.1. Tie the chain
+  // together: apvts.json is written by parse_td_params.py from the plug-in's
+  // own VERSION file, parameters.ts is generated from apvts.json, and the graph
+  // is what the page publishes. All three describe one build or the build is
+  // not the one being described.
+  const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+  const manifest = JSON.parse(
+    await readFile(path.join(repoRoot, 'src/data/apvts.json'), 'utf8'),
+  );
+  const generated = await readFile(path.join(repoRoot, 'src/data/parameters.ts'), 'utf8');
+  const generatedVersion = generated.match(/PLUGIN_VERSION = "([^"]+)"/)?.[1];
+  if (generatedVersion !== manifest.pluginVersion) {
+    fail(
+      'PLUGIN_VERSION',
+      `src/data/parameters.ts says ${generatedVersion} but src/data/apvts.json, which it is `
+      + `generated from, says ${manifest.pluginVersion}. Re-run tools/build_td_params.py`,
+    );
+  }
+  if (manifest.pluginVersion !== app.softwareVersion) {
+    fail(
+      'PLUGIN_VERSION',
+      `the parameter manifest is for ${manifest.pluginVersion} but the page publishes `
+      + `${app.softwareVersion}. One of the two describes a build that is not shipping`,
+    );
+  }
+
   const price = app.offers?.price;
   if (price !== '0') fail('SEO_STRUCTURED_DATA', `offers.price must state the real price; got ${price}`);
 

@@ -11,7 +11,7 @@ export const TempoDelayInterface = () => (
     <div className="interface-shots">
       <PluginShot
         name="StudioZIO Tempo Delay 4.0.1 — Tone & Filters"
-        caption="Final standalone interface with real audio driving the meters. Cropped to the GUI only."
+        caption="The Default Stereo Delay preset, running in the standalone app with real audio driving the meters and tempo sync off, which is why both delays read in milliseconds. These are the preset's values; the plug-in's own defaults are listed in the parameter guide below. Cropped to the GUI only."
       >
         <img
           className="gui-render"
@@ -19,13 +19,13 @@ export const TempoDelayInterface = () => (
           width={1440}
           height={760}
           decoding="async"
-          alt="The final Tempo Delay interface with Tone and Filters open. The signal path shows 120 BPM, independent left and right divisions, 80 Hz to 8 kHz filtering, 45 per cent feedback, Digital character, 100 per cent width and 50 per cent mix. Real audio is active in the input, wet and output meters."
+          alt="The Tempo Delay interface on the Default Stereo Delay preset with Tone and Filters open. The signal path shows 120 BPM with sync off, independent left and right divisions, 80 Hz to 8 kHz filtering, 45 per cent feedback, Digital character, 100 per cent width and 50 per cent mix, and both delay times at 100 milliseconds. Real audio is active in the input, wet and output meters."
         />
       </PluginShot>
 
       <PluginShot
         name="StudioZIO Tempo Delay 4.0.1 — Advanced & Routing"
-        caption="The same audio-active standalone session with the complete routing and gain page visible."
+        caption="The same preset and the same audio-active session, with the complete routing and gain page visible."
       >
         <img
           className="gui-render"
@@ -34,7 +34,7 @@ export const TempoDelayInterface = () => (
           height={760}
           loading="lazy"
           decoding="async"
-          alt="The final Tempo Delay interface with Advanced and Routing open. Creative routing, ducking and input, wet and output gain controls are grouped below the delay engine while the live stereo meters and correlation display remain visible."
+          alt="The Tempo Delay interface on the same Default Stereo Delay preset with Advanced and Routing open. Creative routing, ducking and input, wet and output gain controls are grouped below the delay engine while the live stereo meters and correlation display remain visible."
         />
       </PluginShot>
     </div>

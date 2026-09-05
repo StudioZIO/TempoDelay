@@ -9,7 +9,7 @@
  * note-division lists reversed, and Diffusion as a knob when it is a switch.
  */
 
-export const PLUGIN_VERSION = "4.0.2";
+export const PLUGIN_VERSION = "4.0.1";
 
 export const APVTS_PARAMETERS = [
   { id: "master_enable", name: "Power", category: "Global & Sync", type: "toggle", defaultValue: true, description: "Master DSP processing toggle with click-free crossfaded bypass.", dspDetail: "Executes realtime-safe crossfaded bypass without digital transients." },

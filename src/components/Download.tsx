@@ -19,10 +19,10 @@ export const Download = () => (
           <Chip>Free</Chip>
           <Chip>macOS 12+</Chip>
           <Chip>arm64</Chip>
-          {/* Plain, not the amber signal chip. Amber is data and exception
-              state across the estate; a shipping release is neither. The hub
-              draws the same distinction: "Available now" is a plain chip, every
-              other availability gets the signal treatment. */}
+          {/* Plain, not a flag chip. A flag marks a release state that is not
+              simply shipping, and the chip's dot is what marks it rather than a
+              second accent hue. The hub draws the same distinction: "Available
+              now" is a plain chip, every other availability carries the dot. */}
           <Chip>Available now</Chip>
         </div>
         <p className="text-sm text-muted-foreground">
