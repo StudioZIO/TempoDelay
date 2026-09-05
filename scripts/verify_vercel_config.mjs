@@ -41,10 +41,12 @@ const expectedConfig = {
   routes: [
     { src: '/(.*)', headers: EXPECTED_SECURITY_HEADERS, continue: true },
     { src: '/contact', headers: { Location: 'https://studiozio.vercel.app/contact/' }, status: 308 },
-    { handle: 'filesystem' },
-    { handle: 'miss' },
-    { src: '/(.*)', status: 404, dest: '/404.html' },
+    { handle: 'error' },
+    { src: '^(?!/api).*$', status: 404, dest: '/404' },
   ],
+  overrides: {
+    '404.html': { path: '404' },
+  },
 };
 
 const fail = (contract, detail) => {
@@ -139,10 +141,16 @@ const verifyConfig = async (requestedRoot) => {
       describeRouteMismatch(config.routes, expectedConfig.routes),
     );
   }
+  if (JSON.stringify(config.overrides) !== JSON.stringify(expectedConfig.overrides)) {
+    fail(
+      'VERCEL_CONFIG_OVERRIDES',
+      `expected ${JSON.stringify(expectedConfig.overrides)}, found ${JSON.stringify(config.overrides)}`,
+    );
+  }
 
   await verifyProductionHeaderParity();
 
-  console.log(`VERIFY_VERCEL_CONFIG_PASS root=${outputRoot} version=3 routes=${expectedConfig.routes.length} headers=${Object.keys(EXPECTED_SECURITY_HEADERS).length}`);
+  console.log(`VERIFY_VERCEL_CONFIG_PASS root=${outputRoot} version=3 routes=${expectedConfig.routes.length} overrides=1 headers=${Object.keys(EXPECTED_SECURITY_HEADERS).length}`);
 };
 
 /* The project answers on a second, auto-assigned Vercel hostname that served a

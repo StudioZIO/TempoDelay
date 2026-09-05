@@ -35,10 +35,12 @@ const expectedConfig = {
   routes: [
     { src: '/(.*)', headers: EXPECTED_SECURITY_HEADERS, continue: true },
     { src: '/contact', headers: { Location: 'https://studiozio.vercel.app/contact/' }, status: 308 },
-    { handle: 'filesystem' },
-    { handle: 'miss' },
-    { src: '/(.*)', status: 404, dest: '/404.html' },
+    { handle: 'error' },
+    { src: '^(?!/api).*$', status: 404, dest: '/404' },
   ],
+  overrides: {
+    '404.html': { path: '404' },
+  },
 };
 
 const fail = (detail) => {
@@ -106,7 +108,7 @@ const run = async () => {
       contract: 'VERCEL_CONFIG_ROUTES',
       mutate: async (root) => {
         const config = await readConfig(root);
-        config.routes[0].headers.Location = 'https://evil.invalid/contact';
+        config.routes[1].headers.Location = 'https://evil.invalid/contact';
         await writeConfig(root, config);
       },
     },
@@ -146,7 +148,7 @@ const run = async () => {
     },
     {
       name: 'filesystem_override',
-      contract: 'VERCEL_CONFIG_TOP_LEVEL',
+      contract: 'VERCEL_CONFIG_OVERRIDES',
       mutate: async (root) => {
         const config = await readConfig(root);
         config.overrides = { 'static/index.html': { path: 'alternate.html' } };
@@ -158,7 +160,7 @@ const run = async () => {
       contract: 'VERCEL_CONFIG_ROUTES',
       mutate: async (root) => {
         const config = await readConfig(root);
-        config.routes[4].headers = { 'x-unapproved': 'true' };
+        config.routes[3].headers = { 'x-unapproved': 'true' };
         await writeConfig(root, config);
       },
     },
