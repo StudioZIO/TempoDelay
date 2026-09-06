@@ -89,7 +89,60 @@ what was reviewed, and anyone can read the diff that produced it.
    inside GitHub Actions, so the commit stays attached, and it never targets
    production. It is not an exception to rule 2.
 
-Recorded with the Tempo Delay cookie-consent update on 2026-09-06. The source
+## Indexing: the URLs that redirect on purpose
+
+Each surface advertises only URLs that answer 200 and canonicalise to
+themselves. The sitemaps are the list of what should be indexed:
+`https://www.tempodelay.tech/` for Tempo Delay, four hub URLs, four Mastering
+Suite URLs. None of them lists a redirect.
+
+Around that list a few URLs redirect **by design**:
+
+| URL | Behaviour | Why |
+| --- | --- | --- |
+| `https://tempodelay.tech/` | 308 → `https://www.tempodelay.tech/` | `www` is the canonical host; the apex consolidates onto it |
+| `http://…` on any surface | 308 → the `https://` form | HSTS and the platform's TLS redirect |
+| `https://www.tempodelay.tech/contact` | 308 → `https://studiozio.vercel.app/contact/` | The route was retired on 2026-09-02; one support desk serves the estate |
+| `https://tempo-delay-virid.vercel.app/*` | 308 → `https://www.tempodelay.tech/*` | Duplicate host consolidated onto the canonical domain |
+| `https://studiozio.vercel.app/products/mastering-suite/` | 308 → the Mastering Suite site | The catalogue entry points at the product's own surface |
+
+Google Search Console reports every one of these under **Page indexing → Page
+with redirect**, with the note "These pages aren't indexed or served on
+Google". That is the report describing the intent, not a fault:
+
+- The Tempo Delay property is a **domain** property (`sc-domain:tempodelay.tech`),
+  so it covers the apex, `www`, `http` and `https` together. The apex and the
+  `http` forms therefore *must* appear as redirects; a domain property with no
+  entries in this bucket would mean the host consolidation was missing.
+- `/contact` is known to Google because the sitemap listed it until
+  2026-09-02. Nothing links to it any more, so it ages out of the report on
+  its own.
+
+Two consequences worth writing down, because both mistakes are easy to make:
+
+1. **Do not press "Validate fix" on this bucket.** Validation asks Google to
+   confirm the URLs stopped redirecting. They still redirect, and they should,
+   so the validation fails and tells you nothing.
+2. **Do not remove a redirect to clear the report.** Deleting the `/contact`
+   redirect turns a 308 into a 404 for anyone still holding the old link, and
+   dropping the apex or duplicate-host redirect re-opens the duplicate-URL
+   space that the 2026-09-02 indexation closure was written to shut.
+
+What *would* be a real defect, and what to check instead:
+
+- the canonical URL itself redirecting — if `https://www.tempodelay.tech/` ever
+  appears in this bucket, the Vercel project has `www` and the apex the wrong
+  way round, and nothing can be indexed;
+- a redirecting URL appearing in a current sitemap (`verify:dist` fails the
+  build on this for Tempo Delay, `npm run check` for the hub);
+- an internal link on any surface pointing at a retired route.
+
+The healthy signal is not an empty "Page with redirect" list. It is the
+sitemap's URLs sitting under **Indexed**, which is a separate row in the same
+report.
+
+Recorded with the Tempo Delay cookie-consent update on 2026-09-06, and extended
+on 2026-09-06 with the deployment-provenance and indexing rules. The source
 commit and the production deployment URL are recorded in the change commit and
 release notes; this document is the durable architecture rule, not a copy of a
 Vercel deployment.
