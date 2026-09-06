@@ -83,6 +83,45 @@
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
+
+    /* Consent Mode v2 is shared with the Hub and Mastering Suite. Visitors in
+       Türkiye, the EEA, the UK and Switzerland start denied until they answer
+       the footer question; returning visitors replay their saved choice before
+       the config call. */
+    var CONSENT_OPT_IN_REGIONS = [
+      'AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT',
+      'LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE',
+      'IS','LI','NO','GB','CH','TR'
+    ];
+    gtag('consent', 'default', {
+      ad_storage: 'granted',
+      ad_user_data: 'granted',
+      ad_personalization: 'granted',
+      analytics_storage: 'granted'
+    });
+    gtag('consent', 'default', {
+      ad_storage: 'denied',
+      ad_user_data: 'denied',
+      ad_personalization: 'denied',
+      analytics_storage: 'denied',
+      region: CONSENT_OPT_IN_REGIONS,
+      wait_for_update: 500
+    });
+    window.STUDIOZIO_CONSENT_KEY = 'studiozio-consent';
+    try {
+      var storedConsent = window.localStorage.getItem(window.STUDIOZIO_CONSENT_KEY);
+      if (storedConsent === 'granted' || storedConsent === 'denied') {
+        gtag('consent', 'update', {
+          ad_storage: storedConsent,
+          ad_user_data: storedConsent,
+          ad_personalization: storedConsent,
+          analytics_storage: storedConsent
+        });
+      }
+    } catch (e) {
+      /* Private browsing can deny storage; the banner remains available. */
+    }
+
     /* DebugView opt-in. GA4's DebugView shows only traffic that flags itself
        as a debug session, so without this it stays empty however many events
        arrive -- which is what happened the first time it was opened, and led

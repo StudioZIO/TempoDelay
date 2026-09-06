@@ -33,7 +33,7 @@ const CONTENT_SECURITY_POLICY = [
   // The one inline script on the page is Google's gtag bootstrap. It is pinned
   // by hash rather than allowed with 'unsafe-inline', so the policy still
   // refuses every other inline script, including any an injection would add.
-  "script-src 'self' https://www.googletagmanager.com 'sha256-M02ID3KbezCGA+FyC+C+hXWg1LwiYVw618EB/hHglyk='",
+  "script-src 'self' https://www.googletagmanager.com 'sha256-6FbWSSRB7bscyiMGW2gpAmU5rc7HE50DwzUnu7lpjYo='",
   // The prerender inlines the whole stylesheet into a <style> block, and React
   // server-renders six style attributes (the live meter and progress fills).
   // A hash cannot pin these: the CSS changes with every build.

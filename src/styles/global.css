@@ -942,6 +942,51 @@ button.chip[aria-pressed="true"], button.chip[aria-selected="true"] {
 .site-footer nav a:hover, .site-footer nav a:focus-visible { color: var(--foreground); }
 .site-footer .copy { font-family: var(--font-mono); font-size: 0.625rem; letter-spacing: 0.1em; color: var(--muted-foreground); }
 
+/* ---------- consent banner ----------------------------------------------
+   Shared with the Hub and Mastering Suite. It is a fixed consent layer, so
+   it never shifts the document or hides the footer navigation. The footer
+   button reopens the choice, making withdrawal as easy as acceptance. */
+.consent-banner {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 40;
+  background: var(--surface-raised);
+  border-top: 1px solid var(--border);
+  box-shadow: var(--shadow-float);
+}
+.consent-inner {
+  max-width: var(--shell);
+  margin-inline: auto;
+  padding: 1.25rem var(--gutter);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.consent-text {
+  margin: 0;
+  max-width: 52ch;
+  font-size: 0.9375rem;
+  color: var(--muted-foreground);
+}
+.consent-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.consent-btn { flex: 0 0 auto; }
+.consent-reopen {
+  appearance: none;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+  padding: 0.6rem 0;
+}
+.consent-reopen:hover, .consent-reopen:focus-visible { color: var(--foreground); }
+
 /* ---------- motion ------------------------------------------------------ */
 @keyframes rise {
   from { opacity: 0; transform: translateY(18px); }

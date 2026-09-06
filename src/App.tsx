@@ -1,4 +1,5 @@
 import { Architecture } from './components/Architecture';
+import { CookieConsentProvider } from './components/CookieConsent';
 import { Difference } from './components/Difference';
 import { Download } from './components/Download';
 import { ErrorBoundary } from './components/ErrorBoundary';
@@ -16,21 +17,23 @@ import { TempoDelayInterface } from './components/TempoDelayInterface';
    left to route, the link interception, the focus-and-scroll reset and the
    title switching go with it. The title comes from index.html again. */
 export const App = () => (
-  <ErrorBoundary>
-    <SiteHeader />
-    <main id="main-content" tabIndex={-1}>
-      <Hero />
-      <HearIt />
-      <TempoDelayInterface />
-      <Architecture />
-      <InteractiveVisualizer />
-      <ParameterGuide />
-      <Difference />
-      <Specification />
-      <Download />
-    </main>
-    <SiteFooter />
-  </ErrorBoundary>
+  <CookieConsentProvider>
+    <ErrorBoundary>
+      <SiteHeader />
+      <main id="main-content" tabIndex={-1}>
+        <Hero />
+        <HearIt />
+        <TempoDelayInterface />
+        <Architecture />
+        <InteractiveVisualizer />
+        <ParameterGuide />
+        <Difference />
+        <Specification />
+        <Download />
+      </main>
+      <SiteFooter />
+    </ErrorBoundary>
+  </CookieConsentProvider>
 );
 
 export default App;
