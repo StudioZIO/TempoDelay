@@ -62,6 +62,33 @@ the matching Vercel project. Production HTML, download links and screenshots
 are verified on the public domain after promotion. Changes in one surface do
 not authorize rebuilding or repointing another surface.
 
+## Deployment provenance
+
+Every production deployment must name the branch and commit it was built from.
+That is the whole point of the canonical repositories: what is live is exactly
+what was reviewed, and anyone can read the diff that produced it.
+
+1. Production is promoted from `main` of the canonical repository, through the
+   Vercel Git integration for that project. That is the only production path.
+2. A manual publish from a workstation — `vercel deploy`, `vercel --prod`, or
+   an upload of a locally built directory — is **not** a deployment path. It
+   produces a deployment whose source reads `vercel deploy` with no branch and
+   no commit, and promoting it silently replaces a reviewed deployment with one
+   nobody can trace back to a diff.
+3. To re-deploy without a content change, use Redeploy on the latest `main`
+   deployment, which keeps the commit attached. Never re-publish by hand to
+   force an update.
+4. A source-less deployment holding the production alias is a defect, not a
+   variation. The remedy is to promote a `main` deployment again — merge the
+   next change, or Redeploy the newest `main` build — and then confirm on the
+   Vercel deployments list that the production entry shows a branch and a
+   commit hash.
+5. `tempo-delay` also has a manual **preview** workflow
+   (`.github/workflows/deploy.yml`, `workflow_dispatch`) that publishes a
+   prebuilt artifact with `vercel deploy --prebuilt --target=preview`. It runs
+   inside GitHub Actions, so the commit stays attached, and it never targets
+   production. It is not an exception to rule 2.
+
 Recorded with the Tempo Delay cookie-consent update on 2026-09-06. The source
 commit and the production deployment URL are recorded in the change commit and
 release notes; this document is the durable architecture rule, not a copy of a
