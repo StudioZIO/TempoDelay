@@ -12,7 +12,7 @@ const navItems = () =>
 
 /**
  * Sticky header: hairline bottom border, translucent background with a blur,
- * logo left, four mono uppercase links right.
+ * logo left, five mono uppercase links right.
  *
  * Below the fold-out width the links collapse into a native disclosure rather
  * than wrapping onto a second row, which is what they did once Contact made

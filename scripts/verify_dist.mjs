@@ -1283,6 +1283,40 @@ const verifyOutput = async (requestedDirectory) => {
   if (strayIds.length > 0) {
     fail('PARAMETER_MANIFEST', `the page documents ${[...new Set(strayIds)].join(', ')}, which the plug-in does not have`);
   }
+  if (new Set(renderedIds).size !== apvts.parameterCount) {
+    fail('PARAMETER_MANIFEST', 'each parameter must have exactly one visible row');
+  }
+
+  // Check the rendered values, not just IDs or the generated TypeScript.
+  // A complete manifest previously passed while the UI omitted every range.
+  const units = {
+    bpm_manual: 'BPM', delay_ms_left: 'ms', delay_ms_right: 'ms',
+    feedback_left_pct: '%', feedback_right_pct: '%', hp_filter_hz: 'Hz', lp_filter_hz: 'Hz',
+    feedback_saturation_pct: '%', width_pct: '%', mix_pct: '%',
+    modulation_depth_pct: '%', modulation_rate_hz: 'Hz', modulation_stereo_pct: '%',
+    ducking_amount_pct: '%', ducking_attack_ms: 'ms', ducking_release_ms: 'ms',
+    input_trim_db: 'dB', wet_gain_db: 'dB', output_trim_db: 'dB',
+  };
+  const rows = [...indexHtml.matchAll(/<button\b[^>]*class="param-row"[^>]*>([\s\S]*?)<\/button>/g)]
+    .map((match) => match[1].replace(/<!--[\s\S]*?-->/g, ''));
+  for (const parameter of apvts.parameters) {
+    const row = rows.find((html) => html.includes(`class="p-id">${parameter.id}<`));
+    if (!row) fail('PARAMETER_VALUES', `missing visible row for ${parameter.id}`);
+    const value = row.match(/class="p-val">([^<]+)</)?.[1];
+    const range = row.match(/class="p-range p-id block">([^<]+)</)?.[1];
+    const expectedDefault = parameter.type === 'bool' ? (parameter.default ? 'On' : 'Off')
+      : parameter.type === 'choice' ? parameter.choices[parameter.default]
+      : `${parameter.default} ${units[parameter.id]}`;
+    const expectedRange = parameter.type === 'bool' ? 'Range: Off / On'
+      : parameter.type === 'choice' ? `${parameter.choices.length} options`
+      : `Range: ${parameter.min} – ${parameter.max} ${units[parameter.id]}`;
+    if (parameter.type === 'float' && !units[parameter.id]) {
+      fail('PARAMETER_VALUES', `unknown unit for ${parameter.id}`);
+    }
+    if (value !== `Default: ${expectedDefault}` || range !== expectedRange) {
+      fail('PARAMETER_VALUES', `${parameter.id}: expected Default: ${expectedDefault}; ${expectedRange}, got ${value}; ${range}`);
+    }
+  }
 
   const outputText = textAssets.map(({ text }) => text).join('\n');
   const gtagCommands = [...outputText.matchAll(/\bgtag\s*\(\s*(['"])([^'"]+)\1/g)].map((match) => match[2]);

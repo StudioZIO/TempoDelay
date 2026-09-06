@@ -81,6 +81,31 @@ const run = async () => {
   const tempRoot = await mkdtemp(path.join(tmpdir(), 'studiozio-verify-dist-'));
   const fixtures = [
     {
+      name: 'missing_visible_parameter_range',
+      contract: 'PARAMETER_VALUES',
+      mutate: async (root) => replaceHtml(root, (html) => html.replace(/<span class="p-range p-id block">[^<]+<\/span>/, '')),
+    },
+    {
+      name: 'wrong_delay_range',
+      contract: 'PARAMETER_VALUES',
+      mutate: async (root) => replaceHtml(root, (html) => html.replace('Range: 1 – 5000 ms', 'Range: 1 – 500 ms')),
+    },
+    {
+      name: 'wrong_delay_unit',
+      contract: 'PARAMETER_VALUES',
+      mutate: async (root) => replaceHtml(root, (html) => html.replace('Range: 1 – 5000 ms', 'Range: 1 – 5000 Hz')),
+    },
+    {
+      name: 'wrong_delay_default',
+      contract: 'PARAMETER_VALUES',
+      mutate: async (root) => replaceHtml(root, (html) => html.replace('375 ms</span>', '100 ms</span>')),
+    },
+    {
+      name: 'wrong_division_option_count',
+      contract: 'PARAMETER_VALUES',
+      mutate: async (root) => replaceHtml(root, (html) => html.replace('16 options</span>', '15 options</span>')),
+    },
+    {
       name: 'png_extension_with_non_png_payload',
       contract: 'OUTPUT_ALLOWLIST',
       mutate: async (root) => {

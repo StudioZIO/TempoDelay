@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { APVTS_PARAMETERS, GROUP_BY_CATEGORY, PARAMETER_GROUPS } from '../data/parameters';
+import { APVTS_PARAMETERS, GROUP_BY_CATEGORY, PARAMETER_GROUPS, PLUGIN_VERSION } from '../data/parameters';
 
 /* The value shown for each parameter is the plug-in's own default, taken from
    the generated manifest. There used to be a hand-written override table here
@@ -15,6 +15,12 @@ const formatValue = (parameter: Parameter): string => {
   // Every continuous parameter carries a unit -- the generator refuses to emit
   // one without it -- so there is no unitless branch to fall back to.
   return `${parameter.defaultValue} ${parameter.unit}`;
+};
+
+const formatRange = (parameter: Parameter): string => {
+  if (parameter.type === 'toggle') return 'Off / On';
+  if (parameter.type === 'choice') return parameter.options.join(' · ');
+  return `${parameter.min} – ${parameter.max} ${parameter.unit}`;
 };
 
 const groupOf = (parameter: Parameter) => GROUP_BY_CATEGORY[parameter.category] ?? 'Global & Sync';
@@ -44,7 +50,7 @@ export const ParameterGuide = () => {
     <section id="parameters" className="section scroll-mt-24">
       <div className="shell">
         <div className="section-head">
-          <p className="eyebrow">APVTS Manifest</p>
+          <p className="eyebrow">Parameter reference · v{PLUGIN_VERSION}</p>
           <h2>Every parameter, documented</h2>
           <p className="lede">
             All {APVTS_PARAMETERS.length} automatable APVTS parameters in Tempo Delay, with the purpose of each control and
@@ -106,7 +112,12 @@ export const ParameterGuide = () => {
                     <span className="p-name block">{parameter.name}</span>
                     <span className="p-id">{parameter.id}</span>
                   </span>
-                  <span className="p-val">{formatValue(parameter)}</span>
+                  <span className="p-val">Default: {formatValue(parameter)}</span>
+                </span>
+                <span className="p-range p-id block">
+                  {parameter.type === 'choice'
+                    ? `${parameter.options.length} options`
+                    : `Range: ${formatRange(parameter)}`}
                 </span>
                 <p>{parameter.description}</p>
               </button>
@@ -126,8 +137,16 @@ export const ParameterGuide = () => {
               </div>
 
               <div className="value-box">
-                <h4>APVTS value</h4>
+                <h4>Default</h4>
                 <span className="v">{formatValue(active)}</span>
+              </div>
+
+              <div className="value-box">
+                <h4>{active.type === 'choice' ? 'Options' : 'Range'}</h4>
+                <p>{formatRange(active)}</p>
+                {active.type === 'knob' && 'step' in active ? (
+                  <p>Step: {active.step} {active.unit}</p>
+                ) : null}
               </div>
 
               <div>
@@ -136,7 +155,7 @@ export const ParameterGuide = () => {
               </div>
 
               <div className="value-box">
-                <h4>C++ implementation</h4>
+                <h4>How it behaves</h4>
                 <p className="impl">{active.dspDetail}</p>
               </div>
             </div>

@@ -5,17 +5,21 @@ export type NavLink = {
   active?: boolean;
 };
 
-/** One flat link per StudioZIO property, then the shared support desk. No
-    submenus. Contact is the same fourth entry on all three sites and points at
-    the one form, rather than each site keeping its own. */
+/** One flat Products bridge, one link per StudioZIO property, then the shared
+    support desk. No submenus. Contact points at the one form rather than each
+    site keeping its own. */
 export const NAV_LINKS: NavLink[] = [
   { label: 'Hub', href: 'https://studiozio.vercel.app/' },
+  { label: 'Products', href: 'https://studiozio.vercel.app/#catalog-title' },
   { label: 'Mastering Suite', href: 'https://studioziomasteringsuite.vercel.app/' },
   { label: 'Tempo Delay', href: '/', active: true },
   { label: 'Contact', href: 'https://studiozio.vercel.app/contact/' },
 ];
 
 export const MASTERING_SUITE_URL = 'https://studioziomasteringsuite.vercel.app/';
+export const INSTAGRAM_URL = 'https://www.instagram.com/studio_zio_plugin/';
+export const KVR_TEMPO_DELAY_URL =
+  'https://www.kvraudio.com/product/studiozio-tempo-delay-by-studiozio';
 
 /** The macOS installer.
 

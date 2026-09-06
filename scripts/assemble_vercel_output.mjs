@@ -75,10 +75,12 @@ const config = {
   routes: [
     { src: '/(.*)', headers: SECURITY_HEADERS, continue: true },
     { src: '/contact', headers: { Location: 'https://studiozio.vercel.app/contact/' }, status: 308 },
-    { handle: 'filesystem' },
-    { handle: 'miss' },
-    { src: '/(.*)', status: 404, dest: '/404.html' },
+    { handle: 'error' },
+    { src: '^(?!/api).*$', status: 404, dest: '/404' },
   ],
+  overrides: {
+    '404.html': { path: '404' },
+  },
 };
 
 const fail = (detail) => {

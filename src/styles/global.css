@@ -904,7 +904,32 @@ button.chip[aria-pressed="true"], button.chip[aria-selected="true"] {
 /* ---------- footer ------------------------------------------------------ */
 .site-footer { border-top: 1px solid var(--hairline); padding-block: 2.5rem; }
 .site-footer .inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.5rem; }
-.site-footer nav ul { display: flex; flex-wrap: wrap; gap: 0.5rem 1.75rem; }
+.footer-brand { display: inline-flex; align-items: center; gap: 0.8rem; }
+.social-link {
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  color: var(--muted-foreground);
+  border: 1px solid var(--hairline);
+  border-radius: 8px;
+  transition: color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
+}
+.social-link svg { width: 19px; height: 19px; }
+.social-link:hover, .social-link:focus-visible { color: var(--foreground); border-color: var(--border); }
+.kvr-link {
+  display: inline-grid;
+  place-items: center;
+  width: 42px;
+  height: 36px;
+  color: var(--muted-foreground);
+  border: 1px solid var(--hairline);
+  border-radius: 8px;
+  transition: color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
+}
+.kvr-link svg { width: 28px; height: 18px; }
+.kvr-link:hover, .kvr-link:focus-visible { color: var(--foreground); border-color: var(--border); }
+.site-footer nav ul { display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; }
 .site-footer nav a {
   font-family: var(--font-mono);
   font-size: 0.625rem;
