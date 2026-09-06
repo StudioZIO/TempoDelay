@@ -1321,11 +1321,11 @@ const verifyOutput = async (requestedDirectory) => {
   const outputText = textAssets.map(({ text }) => text).join('\n');
   const gtagCommands = [...outputText.matchAll(/\bgtag\s*\(\s*(['"])([^'"]+)\1/g)].map((match) => match[2]);
   /* This used to allow js and config and nothing else, which was right while
-     the site measured no conversions. It now also allows event, and the names
-     those events may carry are fixed: src/analytics.ts declares them as a union
-     type, so an unapproved name fails typecheck, and this list fails the build
-     if the two ever disagree. What the contract is actually for — no ad-tech,
-     no identifiers, no second tag — is unchanged and asserted below. */
+     the site measured no conversions. It now also allows event and consent:
+     event names are fixed by src/analytics.ts, while consent is the shared
+     Consent Mode v2 update emitted by the footer choice. What the contract is
+     actually for — no ad-tech, no identifiers, no second tag — is unchanged
+     and asserted below. */
   const commandTally = gtagCommands.reduce((counts, command) => {
     counts[command] = (counts[command] ?? 0) + 1;
     return counts;
@@ -1333,9 +1333,9 @@ const verifyOutput = async (requestedDirectory) => {
   if (commandTally.js !== 1 || commandTally.config !== 1) {
     fail('GA4_EXACTNESS', `exactly one js and one config call are required; found ${gtagCommands.join(', ') || 'none'}`);
   }
-  const unapprovedCommand = gtagCommands.find((command) => !['js', 'config', 'event'].includes(command));
+  const unapprovedCommand = gtagCommands.find((command) => !['js', 'config', 'event', 'consent'].includes(command));
   if (unapprovedCommand) {
-    fail('GA4_EXACTNESS', `only js, config and event calls are permitted; found ${unapprovedCommand}`);
+    fail('GA4_EXACTNESS', `only js, config, event and consent calls are permitted; found ${unapprovedCommand}`);
   }
   /* Every approved event must still be reachable in the build. Losing one is
      silent: the report simply stops filling in, and nothing distinguishes that

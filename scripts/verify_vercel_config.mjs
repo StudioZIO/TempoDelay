@@ -14,7 +14,7 @@ import path from 'node:path';
    so any drift in either direction fails the build. */
 const EXPECTED_CONTENT_SECURITY_POLICY = [
   "default-src 'self'",
-  "script-src 'self' https://www.googletagmanager.com 'sha256-M02ID3KbezCGA+FyC+C+hXWg1LwiYVw618EB/hHglyk='",
+  "script-src 'self' https://www.googletagmanager.com 'sha256-6FbWSSRB7bscyiMGW2gpAmU5rc7HE50DwzUnu7lpjYo='",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: https://www.googletagmanager.com https://*.google-analytics.com https://*.g.doubleclick.net https://www.google.com",
   "font-src 'self'",
