@@ -150,6 +150,57 @@ what was reviewed, and anyone can read the diff that produced it.
    inside GitHub Actions, so the commit stays attached, and it never targets
    production. It is not an exception to rule 2.
 
+## What a browser is allowed to keep
+
+A deployment is only live for a visitor once their browser actually fetches
+it. A file whose URL never changes and is cached for a day is, for that day,
+a second deployment that nobody promoted.
+
+The rule: **a file whose name carries no fingerprint may not be cached beyond
+revalidation.** Two shapes satisfy that, and a surface must use one of them
+for its CSS and JS:
+
+1. **Fingerprint, then cache forever.** The name contains a hash of the
+   contents, so a change is a new URL and the old one can never be served in
+   its place: `max-age=31536000, immutable`. Tempo Delay gets this from Vite
+   for its whole bundle; the hub does it for its stylesheet
+   (`/assets/styles-<hash>.css`).
+2. **Do not fingerprint, and do not cache.** A hand-authored surface has no
+   build step to rename anything, so its CSS and JS answer
+   `max-age=0, must-revalidate`. That is a conditional request, not a
+   re-download — an unchanged file still answers 304. The Mastering Suite,
+   ZIO, and the hub's own scripts do this.
+
+A surface may mix the two, and the hub does: a fingerprinted stylesheet cached
+for a year, beside scripts that are not fingerprinted and therefore are not
+cached. What it may not do is mix the halves the wrong way round, which is
+the only combination that breaks.
+
+Fingerprinted `/assets/**` — fonts, images, OG cards — keep their long
+immutable cache under either shape. It is the un-fingerprinted files that the
+rule is about.
+
+What the wrong combination does, and why it is worth a section: on
+2026-09-07 the ZIO surface was serving an unfingerprinted `styles.css` with
+`max-age=86400`. A change that added markup and the CSS rule it depends on
+deployed correctly, and did nothing at all for returning visitors: they
+received the new HTML and yesterday's stylesheet, so the new class landed on
+elements with no rule to apply. Nothing errored. The page looked intact. The
+feature was simply absent, and absent longest for the most frequent visitors.
+
+The same window applied to `consent.js`, which draws the cookie banner — a
+stale copy of it is a stale consent UI, which is the version of this bug that
+would have mattered.
+
+Writing the rule down immediately found it a second time. The hub had
+fingerprinted its stylesheet and stopped there: its six scripts — `ab.js`,
+`consent.js`, `contact.js`, `events.js`, `gtag.js`, `notify.js` — ship under
+fixed names and were served the same day-long cache, with a week of
+stale-while-revalidate behind it. Both surfaces were corrected on 2026-09-07.
+
+Check this when adding a surface, and when adding a file to one — not after a
+change appears not to have shipped.
+
 ## Indexing: the URLs that redirect on purpose
 
 Each surface advertises only URLs that answer 200 and canonicalise to
