@@ -27,9 +27,9 @@ two are nonetheless linked in both directions: the Hub declares
 `founder: { '@id': 'https://zio-audio.vercel.app/#person' }` in its structured
 data, and the ZIO site links back to the Hub. The deployment-provenance and
 indexing rules below apply to `zio-audio` exactly as they do to the product
-surfaces. The shared UI and footer contract in the next section does **not**
-extend to it: ZIO carries its own visual identity, and this document does not
-yet define a UI contract for that surface.
+surfaces. The design-system half of the next section does **not** extend to
+it: ZIO carries its own visual identity. What does apply to it is the estate
+minimum, recorded there.
 
 ## Shared UI contract
 
@@ -48,6 +48,40 @@ The footer contract is also shared:
 - The property bridge and Contact link point to the Hub; there is no duplicate
   product-specific contact route.
 - No amber is introduced as a substitute accent.
+
+### ZIO is outside the design system, and inside the estate minimum
+
+Settled on 2026-09-07. ZIO is not held to the Core Design System, and the
+difference is deliberate rather than drift: the artist surface is a separate
+entity from the software brand, and its palette (`#0d0d0d` neutrals with the
+logo red `#d7182a`), its Archivo Black / Inter type, its container and gutter
+tokens and its footer shape are its own. Do not "align" them to the product
+sites. The footer contract above is a product-site contract; KVR in
+particular is a plug-in marketplace and has no meaning on an artist site.
+
+One piece of the UI contract *is* shared, by decision rather than by
+accident: the canonical `.rise` entrance, at the canonical values — 0.7 s,
+the same easing, the 60/120/180 ms stagger. All four surfaces open the same
+way; only ZIO looks different once it has. It is written on ZIO at those
+literal values rather than in terms of that site's own motion tokens, so a
+later change to its interaction timings cannot quietly desynchronise the
+estate's entrance.
+
+Whatever a surface looks like, these five hold everywhere, and a change that
+breaks one of them on any surface is a defect:
+
+1. A property bridge to the Hub, as a real link — the estate's surfaces are
+   reachable from one another.
+2. The cookie choice can be reopened and withdrawn from the footer, on every
+   page that carries the tag.
+3. `prefers-reduced-motion: reduce` is honoured, and honouring it leaves the
+   page at its settled state rather than at an unfinished frame.
+4. Keyboard focus is visible on every interactive control.
+5. The consent banner never shifts the page: it is fixed, and it is not
+   allowed to cost layout stability.
+
+All four surfaces satisfy all five today; this was verified when the rule was
+written, not assumed.
 
 ## Cookie and analytics contract
 
