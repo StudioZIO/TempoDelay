@@ -115,6 +115,40 @@ adding a second executable page script. This preserves the Tempo output
 contract: one fingerprinted first-party module, one Google tag, and one inline
 GA4 initializer pinned by the Content-Security-Policy hash.
 
+### The Google tag and the Content-Security-Policy
+
+Google Analytics shows an "urgent" diagnostic claiming the surfaces' CSP blocks
+resources the Google tag needs, and names three directives. Checked against all
+four surfaces on 2026-09-08: **nothing is missing.** The diagnostic is a false
+positive, and it will keep reappearing, so this is what to check rather than
+re-deriving it each time.
+
+| Google asks for | Where each surface satisfies it |
+| --- | --- |
+| `script-src-elem: www.googletagmanager.com` | `script-src`, which every surface lists it in |
+| `img-src: *.google-analytics.com`, `www.googletagmanager.com` | `img-src` on all four |
+| `connect-src: *.google-analytics.com`, `*.analytics.google.com`, `www.googletagmanager.com` | `connect-src` on all four |
+
+Two CSP rules make the policies correct even though the diagnostic disagrees,
+and a checker that ignores either will report a gap that is not there:
+
+1. **Directive fallback.** No surface declares `script-src-elem`. It does not
+   need to: when it is absent the user agent falls back to `script-src`, and
+   `default-src` after that. Adding a literal `script-src-elem` would satisfy a
+   naive checker while changing nothing a browser does.
+2. **Host wildcards.** `https://*.googletagmanager.com` matches
+   `www.googletagmanager.com`; ZIO writes it that way while the product sites
+   spell the host out. A string comparison marks that as missing. It is not.
+
+So a report of a missing directive is only real once it has been checked with
+the fallback chain and wildcard matching applied. What *would* be real: a
+surface whose `connect-src` omits the analytics collectors entirely — that
+stops measurement outright rather than degrading it.
+
+Vercel preview deployment hostnames are deliberately **not** added to the
+cross-domain list. They change on every deploy, they are not public surfaces,
+and adding them would leave the list full of dead entries.
+
 ## Change and deployment rule
 
 Website changes start in the matching canonical repository, pass its local
