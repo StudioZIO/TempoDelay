@@ -929,7 +929,7 @@ button.chip[aria-pressed="true"], button.chip[aria-selected="true"] {
 }
 .kvr-link svg { width: 28px; height: 18px; }
 .kvr-link:hover, .kvr-link:focus-visible { color: var(--foreground); border-color: var(--border); }
-.site-footer nav ul { display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; }
+.site-footer nav ul { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; }
 .site-footer nav a {
   font-family: var(--font-mono);
   font-size: 0.625rem;
