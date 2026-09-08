@@ -1,6 +1,6 @@
 import { Logo } from './Logo';
 import { useCookieConsent } from './CookieConsent';
-import { INSTAGRAM_URL, KVR_TEMPO_DELAY_URL, NAV_LINKS } from '../data/navigation';
+import { FOOTER_LINKS, INSTAGRAM_URL, KVR_TEMPO_DELAY_URL } from '../data/navigation';
 
 export const SiteFooter = () => {
   const { toggle } = useCookieConsent();
@@ -39,7 +39,7 @@ export const SiteFooter = () => {
 
         <nav aria-label="StudioZIO properties, footer">
           <ul>
-            {NAV_LINKS.map((link) => (
+            {FOOTER_LINKS.map((link) => (
               <li key={link.label}>
                 <a href={link.href} {...(link.active ? { 'aria-current': 'page' as const } : {})}>
                   {link.label}
