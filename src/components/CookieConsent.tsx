@@ -83,7 +83,9 @@ export const CookieConsentProvider = ({ children }: PropsWithChildren) => {
         <div className="consent-banner" role="region" aria-label="Cookie preference">
           <div className="consent-inner">
             <p className="consent-text">
-              This site uses Google Analytics to count visits. No advertising, no profiling.
+              This site uses Google Analytics to count visits and to measure which ads bring
+              people here. You are not added to an advertising audience, and no profile is
+              built about you.
             </p>
             <div className="consent-actions">
               <button

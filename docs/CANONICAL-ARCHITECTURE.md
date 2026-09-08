@@ -107,8 +107,13 @@ again; reporting separates the surfaces by the Hostname dimension:
    discard the stored choice of every returning ZIO visitor.
 4. The footer always exposes a “Cookies” button so the choice can be reopened
    and withdrawn. The button has visible keyboard focus and an action role.
-5. Copy is deliberately plain: Google Analytics counts visits; there is no
-   advertising and no profiling.
+5. Copy is deliberately plain, and it states what actually happens: Google
+   Analytics counts visits and measures which ads bring people here; no visitor
+   is added to an advertising audience and no profile is built. It used to say
+   "no advertising, no profiling", which stopped being accurate once the estate
+   started running Google Ads — and sat oddly beside a banner that asks for
+   `ad_storage` consent. The sentence must keep matching the property's actual
+   settings; if remarketing is ever switched on, this line changes with it.
 
 Tempo Delay implements the same contract in its React/Vite bundle rather than
 adding a second executable page script. This preserves the Tempo output
@@ -145,15 +150,28 @@ to repair. Every surface tells its visitors, in the consent banner and in its
 README, that measurement is Google Analytics only — *no advertising and no
 profiling*. Allowing these hosts would make that sentence untrue.
 
-**Decision, 2026-09-08:** the advertising endpoints stay out of the CSP, and
-Google signals / ads personalization is turned off in the GA4 property instead,
-so the tag stops attempting the pings at all. The remaining ad-adjacent entries
-in the policies (`*.g.doubleclick.net`, `td.doubleclick.net`, `www.google.com`)
-are left as they are — permitting a request the tag no longer makes costs
-nothing, and removing them would only have to be undone if the decision ever
-changes. Do not "fix" this diagnostic by adding the blocked hosts. If the
-estate ever does run Google Ads, that is a deliberate reversal, and the consent
-copy and the four READMEs change in the same commit.
+**Decision, 2026-09-08.** The estate *does* run Google Ads, and the choice made
+here is to use it for **conversion measurement only, not remarketing**:
+
+- Google signals / ads personalization stays **off** in the GA4 property, so
+  the tag never attempts the `ga-audiences` ping and there is nothing for the
+  CSP to block.
+- Ad spend is still measured. Conversions reach Google Ads through the
+  GA4 ↔ Ads account link, with `download_click` imported as a conversion —
+  that path is server-side between Google's own products and needs no browser
+  request, so switching signals off costs no measurement of the campaign.
+- The advertising endpoints stay **out** of the CSP. Do not "fix" this
+  diagnostic by adding them.
+- The remaining ad-adjacent entries (`*.g.doubleclick.net`,
+  `td.doubleclick.net`, `www.google.com`) are left alone — permitting a request
+  the tag no longer makes costs nothing.
+- The consent copy says what this actually is: visits counted, ads measured, no
+  advertising audience, no profile.
+
+Turning remarketing on is a deliberate reversal, not a tidy-up. It requires the
+country-domain hosts in `img-src` on all four surfaces, and the consent copy and
+the READMEs change in the same commit — because at that point the visitor *is*
+being added to an advertising audience, and the banner has to say so.
 
 Two CSP rules make the measurement half correct even though the diagnostic
 disagrees, and a checker that ignores either will report a gap that is not
