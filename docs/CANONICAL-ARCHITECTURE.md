@@ -117,11 +117,13 @@ GA4 initializer pinned by the Content-Security-Policy hash.
 
 ### The Google tag and the Content-Security-Policy
 
-Google Analytics shows an "urgent" diagnostic claiming the surfaces' CSP blocks
-resources the Google tag needs, and names three directives. Checked against all
-four surfaces on 2026-09-08: **nothing is missing.** The diagnostic is a false
-positive, and it will keep reappearing, so this is what to check rather than
-re-deriving it each time.
+Google's Tag diagnostics shows an "urgent" item, "Your website's security
+settings are blocking measurement". Checked against all four surfaces on
+2026-09-08, the answer has two halves, and only the first was recorded here
+initially.
+
+**Measurement is not blocked.** Every host the tag needs to count a visit is
+allowed on all four surfaces:
 
 | Google asks for | Where each surface satisfies it |
 | --- | --- |
@@ -129,8 +131,33 @@ re-deriving it each time.
 | `img-src: *.google-analytics.com`, `www.googletagmanager.com` | `img-src` on all four |
 | `connect-src: *.google-analytics.com`, `*.analytics.google.com`, `www.googletagmanager.com` | `connect-src` on all four |
 
-Two CSP rules make the policies correct even though the diagnostic disagrees,
-and a checker that ignores either will report a gap that is not there:
+**Advertising endpoints are blocked, on purpose.** Three hosts the tag can
+reach for are allowed nowhere in the estate, and all three belong to Google
+signals and remarketing rather than to measurement:
+
+| Blocked | What it is |
+| --- | --- |
+| `www.google.<ccTLD>` — `www.google.com.tr`, `www.google.de`, … | the `ga-audiences` remarketing pixel, on a country-specific Google domain. Only `www.google.com` is allowed, so a Turkish or German visitor's ping is refused |
+| `pagead2.googlesyndication.com` | the advertising conversion script |
+
+This is the half the diagnostic is most likely reporting, and it is not a fault
+to repair. Every surface tells its visitors, in the consent banner and in its
+README, that measurement is Google Analytics only — *no advertising and no
+profiling*. Allowing these hosts would make that sentence untrue.
+
+**Decision, 2026-09-08:** the advertising endpoints stay out of the CSP, and
+Google signals / ads personalization is turned off in the GA4 property instead,
+so the tag stops attempting the pings at all. The remaining ad-adjacent entries
+in the policies (`*.g.doubleclick.net`, `td.doubleclick.net`, `www.google.com`)
+are left as they are — permitting a request the tag no longer makes costs
+nothing, and removing them would only have to be undone if the decision ever
+changes. Do not "fix" this diagnostic by adding the blocked hosts. If the
+estate ever does run Google Ads, that is a deliberate reversal, and the consent
+copy and the four READMEs change in the same commit.
+
+Two CSP rules make the measurement half correct even though the diagnostic
+disagrees, and a checker that ignores either will report a gap that is not
+there:
 
 1. **Directive fallback.** No surface declares `script-src-elem`. It does not
    need to: when it is absent the user agent falls back to `script-src`, and
@@ -141,9 +168,16 @@ and a checker that ignores either will report a gap that is not there:
    spell the host out. A string comparison marks that as missing. It is not.
 
 So a report of a missing directive is only real once it has been checked with
-the fallback chain and wildcard matching applied. What *would* be real: a
-surface whose `connect-src` omits the analytics collectors entirely — that
-stops measurement outright rather than degrading it.
+the fallback chain and wildcard matching applied — the first pass over this
+reported ZIO as missing two entries purely because it compared strings and its
+policy spells the tag host as a wildcard. What *would* be real: a surface whose
+`connect-src` omits the analytics collectors entirely — that stops measurement
+outright rather than degrading it.
+
+The check is worth re-running as written rather than by eye: read each
+surface's `Content-Security-Policy` out of its `vercel.json`, resolve the
+fallback chain for any absent directive, and match host sources with wildcard
+semantics (`*.a.com` matches `x.a.com`, and does not match `a.com`).
 
 Vercel preview deployment hostnames are deliberately **not** added to the
 cross-domain list. They change on every deploy, they are not public surfaces,
