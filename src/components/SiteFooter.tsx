@@ -54,7 +54,7 @@ export const SiteFooter = () => {
           </ul>
         </nav>
 
-        <p className="copy">© 2026 StudioZIO</p>
+        <p className="copy">© 2026</p>
       </div>
     </footer>
   );
