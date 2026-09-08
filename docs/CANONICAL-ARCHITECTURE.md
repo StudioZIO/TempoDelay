@@ -48,6 +48,23 @@ The footer contract is also shared:
 - The property bridge and Contact link point to the Hub; there is no duplicate
   product-specific contact route.
 - No amber is introduced as a substitute accent.
+- **The footer link list is identical on all three product sites**, in this
+  order: Hub, Products, Mastering Suite, Tempo Delay, Notes, Contact, Press
+  kit, ZIO. Settled on 2026-09-08. The point is that any menu is reachable
+  from any surface: before it, the Mastering Suite and Tempo Delay footers
+  carried five entries and neither linked to Notes or the press kit, so three
+  notes written about Tempo Delay had no link from the Tempo Delay site.
+  Changing the list means changing it on every surface in the same commit — a
+  footer that differs between properties is how a page ends up with nothing
+  pointing at it.
+- The header stays at six and does **not** match the footer. The press kit is
+  for journalists, who go looking for it; ZIO is the artist surface rather
+  than a product. Neither belongs in a product header, and the hub, the
+  Mastering Suite site and Tempo Delay all keep that split.
+- The ZIO entry also repairs a claim that had nothing behind it: the hub's
+  Organization graph names ZIO as `founder` by `@id`, and two comments in
+  `site.mjs` said a crawlable footer link was what made that reference
+  resolvable. No such link existed anywhere on the site until this change.
 
 ### ZIO is outside the design system, and inside the estate minimum
 
