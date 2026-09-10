@@ -30,7 +30,6 @@ export const Download = () => (
           account. The installer download is 12.1 MB and needs 150 MB of free disk space once
           installed. Check it against this SHA-256 before you open it.
         </p>
-        <p className="sha mt-2 text-muted-foreground">{MACOS_SHA256}</p>
       </div>
 
       <div className="actions">
@@ -46,6 +45,25 @@ export const Download = () => (
         </a>
       </div>
     </div>
+
+    <dl className="spec-grid mt-6">
+      <div>
+        <dt>Installer</dt>
+        <dd><code>StudioZIOTempoDelay-v4.0.1-macOS-arm64.pkg</code></dd>
+      </div>
+      <div>
+        <dt>Release record</dt>
+        <dd>
+          <a href="https://github.com/StudioZIO/StudioZIO-Releases/releases/tag/tempo-delay-v4.0.1" className="accent-text">
+            tempo-delay-v4.0.1
+          </a>
+        </dd>
+      </div>
+      <div>
+        <dt>SHA-256</dt>
+        <dd className="sha">{MACOS_SHA256}</dd>
+      </div>
+    </dl>
 
     <div className="panel download-row mt-6">
       <div>
