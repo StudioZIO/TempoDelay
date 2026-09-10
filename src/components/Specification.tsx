@@ -10,7 +10,7 @@ import { Section } from './Section';
  */
 const SPECIFICATION: { key: string; value: string }[] = [
   { key: 'Release', value: '4.0.1 (Schema 8)' },
-  { key: 'Formats', value: 'Audio Unit (AUv2), VST3, Standalone' },
+  { key: 'Formats', value: 'Audio Unit (AUv2), VST3, AAX, Standalone' },
   { key: 'Price', value: 'Free' },
   { key: 'Platform', value: 'macOS 12+, Apple Silicon (arm64)' },
   { key: 'Windows', value: 'Planned, no date announced' },

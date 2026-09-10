@@ -41,7 +41,7 @@ export const Hero = () => (
           </div>
 
           <div className="chip-row mt-6">
-            <Chip>AU · VST3</Chip>
+            <Chip>AU · VST3 · AAX · Standalone</Chip>
             <Chip tone="flag" dot>
               Notarized
             </Chip>
