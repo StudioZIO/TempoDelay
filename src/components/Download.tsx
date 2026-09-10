@@ -3,7 +3,7 @@ import { MACOS_DOWNLOAD_URL, MASTERING_SUITE_URL } from '../data/navigation';
 import { track } from '../analytics';
 
 const MACOS_SHA256 =
-  'adae51020ee920d607f04e15c8db3c044c8dadd7bf3e01762dd56cc1c70072c7';
+  '4e919c509cca196e178a0a991d24c02eb7e1ba81c5890e0f4fce16aba94ec055';
 
 export const Download = () => (
   <section id="download" className="section scroll-mt-24" aria-labelledby="download-title">
@@ -12,7 +12,7 @@ export const Download = () => (
         <div>
           <p className="eyebrow">OFFICIAL macOS INSTALLER</p>
           <h2 id="download-title">Tempo Delay 4.0.1</h2>
-          <p className="lede">Version 4.0.1 &middot; Audio Unit (AU) &middot; VST3 &middot; Standalone</p>
+          <p className="lede">Version 4.0.1 &middot; Audio Unit (AU) &middot; VST3 &middot; AAX &middot; Standalone &middot; Pro Tools verified</p>
 
           <div className="chip-row mt-3 mb-3">
             <Chip>Free</Chip>
@@ -48,12 +48,12 @@ export const Download = () => (
       <dl className="spec-grid mt-6">
         <div>
           <dt>Installer</dt>
-          <dd><code>StudioZIOTempoDelay-v4.0.1-macOS-arm64.pkg</code></dd>
+          <dd><code>StudioZIOTempoDelay-v4.0.1-macOS-arm64-AAX.pkg</code></dd>
         </div>
         <div>
           <dt>Release record</dt>
           <dd>
-            <a href="https://github.com/StudioZIO/StudioZIO-Releases/releases/tag/tempo-delay-v4.0.1" className="accent-text">
+            <a href="https://github.com/StudioZIO/StudioZIO-Releases/releases/tag/tempo-delay-v4.0.1-aax-2026.09.10" className="accent-text">
               tempo-delay-v4.0.1
             </a>
           </dd>

@@ -57,4 +57,4 @@ export const KVR_TEMPO_DELAY_URL =
     the JSON-LD disagree. The release entry, for maintainers, is the same path
     with `/releases/tag/`. */
 export const MACOS_DOWNLOAD_URL =
-  'https://github.com/StudioZIO/StudioZIO-Releases/releases/download/tempo-delay-v4.0.1/StudioZIOTempoDelay-v4.0.1-macOS-arm64.pkg';
+  'https://github.com/StudioZIO/StudioZIO-Releases/releases/download/tempo-delay-v4.0.1-aax-2026.09.10/StudioZIOTempoDelay-v4.0.1-macOS-arm64-AAX.pkg';
