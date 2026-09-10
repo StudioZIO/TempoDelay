@@ -1178,3 +1178,12 @@ button.chip[aria-pressed="true"], button.chip[aria-selected="true"] {
   text-transform: uppercase;
   color: var(--muted-foreground);
 }
+
+/* ---------- download component parity ---------- */
+.download-spec-grid {
+  margin-top: 1.5rem;
+}
+
+.download-release-link {
+  color: var(--primary-text);
+}

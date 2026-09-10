@@ -45,7 +45,7 @@ export const Download = () => (
         </div>
       </div>
 
-      <dl className="spec-grid mt-6">
+      <dl className="spec-grid download-spec-grid">
         <div>
           <dt>Installer</dt>
           <dd><code>StudioZIOTempoDelay-v4.0.1-macOS-arm64-AAX.pkg</code></dd>
@@ -53,8 +53,8 @@ export const Download = () => (
         <div>
           <dt>Release record</dt>
           <dd>
-            <a href="https://github.com/StudioZIO/StudioZIO-Releases/releases/tag/tempo-delay-v4.0.1-aax-2026.09.10" className="accent-text">
-              tempo-delay-v4.0.1
+            <a href="https://github.com/StudioZIO/StudioZIO-Releases/releases/tag/tempo-delay-v4.0.1-aax-2026.09.10" className="download-release-link">
+              tempo-delay-v4.0.1-aax-2026.09.10
             </a>
           </dd>
         </div>
