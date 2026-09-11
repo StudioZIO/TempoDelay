@@ -5,6 +5,7 @@ import { Download } from './components/Download';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { HearIt } from './components/HearIt';
 import { Hero } from './components/Hero';
+import { Install } from './components/Install';
 import { InteractiveVisualizer } from './components/InteractiveVisualizer';
 import { ParameterGuide } from './components/ParameterGuide';
 import { SiteFooter } from './components/SiteFooter';
@@ -30,6 +31,7 @@ export const App = () => (
         <Difference />
         <Specification />
         <Download />
+        <Install />
       </main>
       <SiteFooter />
     </ErrorBoundary>
