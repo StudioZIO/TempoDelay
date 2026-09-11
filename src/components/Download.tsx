@@ -26,7 +26,7 @@ export const Download = () => (
           </div>
           <p className="text-sm text-muted-foreground mt-3">
             Free to download and use &mdash; a signed, notarized .pkg, with no licence key and no
-            account. The installer download is 12.1 MB and needs 150 MB of free disk space once
+            account. The installer download is 15.9 MB and needs 150 MB of free disk space once
             installed. Check it against this SHA-256 before you open it.
           </p>
         </div>
