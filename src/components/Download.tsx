@@ -26,8 +26,9 @@ export const Download = () => (
           </div>
           <p className="text-sm text-muted-foreground mt-3">
             Free to download and use &mdash; a signed, notarized .pkg, with no licence key and no
-            account. The installer download is 15.9 MB and needs 150 MB of free disk space once
-            installed. Check it against this SHA-256 before you open it.
+            account. Free to use in personal and commercial music productions. The installer
+            download is 15.9 MB and needs 150 MB of free disk space once installed. Check it against
+            this SHA-256 before you open it.
           </p>
         </div>
 
@@ -38,6 +39,9 @@ export const Download = () => (
             onClick={() => track('download_click', { product: 'tempo-delay', version: '4.0.1' })}
           >
             Download for macOS
+          </a>
+          <a className="btn" href="#install">
+            Installation guide
           </a>
           <a className="btn" href="#parameters">
             Parameter guide
