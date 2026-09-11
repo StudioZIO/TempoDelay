@@ -14,14 +14,15 @@ export const NAV_LINKS: NavLink[] = [
   { label: 'Mastering Suite', href: 'https://studioziomasteringsuite.vercel.app/' },
   { label: 'Tempo Delay', href: '/', active: true },
   { label: 'Notes', href: 'https://studiozio.vercel.app/notes/' },
+  { label: 'Community', href: 'https://studiozio.vercel.app/community/' },
   { label: 'Contact', href: 'https://studiozio.vercel.app/contact/' },
 ];
 
 /** The footer carries the estate's full index, identical on all four
     surfaces, so that any menu is reachable from any site. The header does not:
     the press kit is for journalists, who go looking for it, and ZIO is the
-    artist surface rather than a product — neither belongs in a six-item
-    product header.
+    artist surface rather than a product — neither belongs in the product
+    header.
 
     This list is shared state. It is the same eight entries on the hub, the
     Mastering Suite site and here, and changing it means changing it
