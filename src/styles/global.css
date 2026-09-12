@@ -270,6 +270,27 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .nav-links a[aria-current="page"] { color: var(--foreground); }
 
 /* compact nav: native disclosure, works without JavaScript */
+
+/* The search box that sits in the header. It carries what is typed to the
+   hub's search page and does nothing else; the estate's index lives there.
+   Enter rather than a <form>, because form-action is 'none'. Two copies
+   ship, one in the row and one in the compact menu, so the box is there on a
+   phone as well. */
+.header-search { flex: none; width: 150px; }
+.header-search .header-search-field {
+  min-height: 38px;
+  padding: 0.4rem 0.7rem;
+  font-size: 0.8125rem;
+}
+.header-search .header-search-field::placeholder {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.header-search--panel { width: auto; padding: 0.85rem; border-bottom: 1px solid var(--hairline); }
+.header-search--bar { display: none; }
+
 .nav-compact { position: relative; }
 .nav-compact > summary {
   display: grid;
@@ -315,6 +336,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 
 @media (min-width: 860px) {
   .nav-links { display: block; }
+  .header-search--bar { display: block; }
   .nav-compact { display: none; }
 }
 
