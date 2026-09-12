@@ -7,9 +7,11 @@ export type NavLink = {
 
 /** The estate's two lists, identical on every StudioZIO surface.
 
-    The header is one entry per property plus the shared desks: following a
-    product link never drops a destination. MixRack sits beside the other two
-    products, pointing at its own site.
+    The header is the shared desks only. The three product sites left it: with
+    the search box beside them, eight entries folded onto a second row, and the
+    owner's call was that the products belong behind Products, where the
+    catalogue describes them. Anyone who knows a product name types it in the
+    box.
 
     The footer is the shared index minus the product links. It used to repeat
     them, and with three products it would have listed the same destinations
@@ -23,9 +25,6 @@ const HUB = 'https://studiozio.vercel.app';
 export const NAV_LINKS: NavLink[] = [
   { label: 'Hub', href: `${HUB}/` },
   { label: 'Products', href: `${HUB}/#catalog-title` },
-  { label: 'Mastering Suite', href: 'https://studioziomasteringsuite.vercel.app/' },
-  { label: 'Tempo Delay', href: '/', active: true },
-  { label: 'MixRack', href: 'https://studioziomixrack.vercel.app/' },
   { label: 'Notes', href: `${HUB}/notes/` },
   { label: 'Community', href: `${HUB}/community/` },
   { label: 'Contact', href: `${HUB}/contact/` }
