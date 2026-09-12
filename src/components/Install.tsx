@@ -14,7 +14,7 @@ import { Section } from './Section';
  * the destinations. They match release-truth/tempo-delay-4.0.1.yaml in
  * StudioZIO/StudioZIO-Releases. Change them only together with a new artifact.
  *
- * Host rows keep the hub's distinction (studiozio.vercel.app/community/
+ * Host rows keep the hub's distinction (www.studiozio.tech/community/
  * compatibility/): REAPER, Logic Pro and Pro Tools carry StudioZIO Verified;
  * every other host is listed by format support only, not by test evidence.
  */
@@ -68,9 +68,9 @@ const HOSTS: { host: string; format: string; status: string }[] = [
   { host: 'No host', format: 'Standalone application', status: 'Runs on its own' },
 ];
 
-const COMPATIBILITY_URL = 'https://studiozio.vercel.app/community/compatibility/';
+const COMPATIBILITY_URL = 'https://www.studiozio.tech/community/compatibility/';
 const SUPPORT_URL = 'https://github.com/StudioZIO/Support/issues';
-const CONTACT_URL = 'https://studiozio.vercel.app/contact/';
+const CONTACT_URL = 'https://www.studiozio.tech/contact/';
 
 export const Install = () => (
   <Section

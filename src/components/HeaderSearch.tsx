@@ -1,6 +1,6 @@
 import type { KeyboardEvent } from 'react';
 
-const HUB_SEARCH = 'https://studiozio.vercel.app/search/';
+const HUB_SEARCH = 'https://www.studiozio.tech/search/';
 
 /**
  * The header's search box, the same one every StudioZIO site carries.
