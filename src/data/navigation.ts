@@ -5,46 +5,39 @@ export type NavLink = {
   active?: boolean;
 };
 
-/** One flat Products bridge, one link per StudioZIO property, then the shared
-    support desk. No submenus. Contact points at the one form rather than each
-    site keeping its own. */
-/** One entry per StudioZIO property plus the shared support desk. The footer
-    is built from this list; the header adds Community to it. Keeping the two
-    apart is what lets the header match the hub's seven entries while the
-    footer stays the estate's eight, which is the shape the hub and the
-    Mastering Suite site also ship. */
-const PROPERTY_LINKS: NavLink[] = [
-  { label: 'Hub', href: 'https://studiozio.vercel.app/' },
-  { label: 'Products', href: 'https://studiozio.vercel.app/#catalog-title' },
+/** The estate's two lists, identical on every StudioZIO surface.
+
+    The header is one entry per property plus the shared desks: following a
+    product link never drops a destination. MixRack sits beside the other two
+    products, pointing at its own site.
+
+    The footer is the shared index minus the product links. It used to repeat
+    them, and with three products it would have listed the same destinations
+    twice on one screen; the owner asked for the shorter list, and the hub,
+    the Mastering Suite site and the MixRack site now all carry it. Changing
+    either list means changing it on every surface in the same commit — a menu
+    that differs between properties is how a page ends up with nothing linking
+    to it. */
+const HUB = 'https://studiozio.vercel.app';
+
+export const NAV_LINKS: NavLink[] = [
+  { label: 'Hub', href: `${HUB}/` },
+  { label: 'Products', href: `${HUB}/#catalog-title` },
   { label: 'Mastering Suite', href: 'https://studioziomasteringsuite.vercel.app/' },
   { label: 'Tempo Delay', href: '/', active: true },
-  { label: 'Notes', href: 'https://studiozio.vercel.app/notes/' },
-  { label: 'Contact', href: 'https://studiozio.vercel.app/contact/' }
+  { label: 'MixRack', href: 'https://studioziomixrack.vercel.app/' },
+  { label: 'Notes', href: `${HUB}/notes/` },
+  { label: 'Community', href: `${HUB}/community/` },
+  { label: 'Contact', href: `${HUB}/contact/` }
 ];
 
-/** The header is the same seven entries on every StudioZIO surface, so that
-    following a product link never drops a destination. Community sits between
-    Notes and Contact, as it does on the hub. */
-export const NAV_LINKS: NavLink[] = [
-  ...PROPERTY_LINKS.slice(0, 5),
-  { label: 'Community', href: 'https://studiozio.vercel.app/community/' },
-  ...PROPERTY_LINKS.slice(5)
-];
-
-/** The footer carries the estate's full index, identical on all four
-    surfaces, so that any menu is reachable from any site. The header does not:
-    the press kit is for journalists, who go looking for it, and ZIO is the
-    artist surface rather than a product — neither belongs in the product
-    header.
-
-    This list is shared state. It is the same eight entries on the hub, the
-    Mastering Suite site and here, and changing it means changing it
-    everywhere in the same commit; a footer that differs between properties is
-    how a page ends up with nothing linking to it. */
 export const FOOTER_LINKS: NavLink[] = [
-  ...PROPERTY_LINKS,
-  { label: 'Press kit', href: 'https://studiozio.vercel.app/press/' },
-  { label: 'ZIO', href: 'https://zio-audio.vercel.app/' },
+  { label: 'Hub', href: `${HUB}/` },
+  { label: 'Products', href: `${HUB}/#catalog-title` },
+  { label: 'Notes', href: `${HUB}/notes/` },
+  { label: 'Contact', href: `${HUB}/contact/` },
+  { label: 'Press kit', href: `${HUB}/press/` },
+  { label: 'ZIO', href: 'https://zio-audio.vercel.app/' }
 ];
 
 export const MASTERING_SUITE_URL = 'https://studioziomasteringsuite.vercel.app/';
