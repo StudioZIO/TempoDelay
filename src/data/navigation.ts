@@ -20,7 +20,7 @@ export type NavLink = {
     either list means changing it on every surface in the same commit — a menu
     that differs between properties is how a page ends up with nothing linking
     to it. */
-const HUB = 'https://studiozio.vercel.app';
+const HUB = 'https://www.studiozio.tech';
 
 export const NAV_LINKS: NavLink[] = [
   { label: 'Hub', href: `${HUB}/` },

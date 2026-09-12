@@ -14,7 +14,7 @@ import path from 'node:path';
    so any drift in either direction fails the build. */
 const EXPECTED_CONTENT_SECURITY_POLICY = [
   "default-src 'self'",
-  "script-src 'self' https://www.googletagmanager.com 'sha256-6FbWSSRB7bscyiMGW2gpAmU5rc7HE50DwzUnu7lpjYo='",
+  "script-src 'self' https://www.googletagmanager.com 'sha256-Ir/MtUEXQVQQdaUkEANzNQdbF3ojd3F1+E8JSL1Xq8E='",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: https://www.googletagmanager.com https://*.google-analytics.com https://*.g.doubleclick.net https://www.google.com",
   "font-src 'self'",
@@ -40,7 +40,7 @@ const expectedConfig = {
   version: 3,
   routes: [
     { src: '/(.*)', headers: EXPECTED_SECURITY_HEADERS, continue: true },
-    { src: '/contact', headers: { Location: 'https://studiozio.vercel.app/contact/' }, status: 308 },
+    { src: '/contact', headers: { Location: 'https://www.studiozio.tech/contact/' }, status: 308 },
     { handle: 'error' },
     { src: '^(?!/api).*$', status: 404, dest: '/404' },
   ],
@@ -219,7 +219,7 @@ const verifyProductionHeaderParity = async () => {
   }
 
   const offsite = redirects.filter((r) => /^https?:\/\//.test(r.destination ?? ''));
-  const approved = new Set([`${CANONICAL_HOST}/$1`, 'https://studiozio.vercel.app/contact/']);
+  const approved = new Set([`${CANONICAL_HOST}/$1`, 'https://www.studiozio.tech/contact/']);
   for (const r of offsite) {
     if (!approved.has(r.destination)) {
       fail('VERCEL_DUPLICATE_HOST', `unapproved off-site redirect to ${r.destination}`);

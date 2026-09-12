@@ -11,7 +11,7 @@ rather than left to be inferred.
 
 | Surface | Canonical repository | Production Vercel project | Public URL |
 | --- | --- | --- | --- |
-| Hub | `StudioZIO/StudioZIO-Web` | `studiozio` | `https://studiozio.vercel.app/` |
+| Hub | `StudioZIO/StudioZIO-Web` | `studiozio` | `https://www.studiozio.tech/` |
 | Mastering Suite | `StudioZIO/StudioZIO-Mastering-Suite-Site` | `studiozio_mastering_suite` | `https://studioziomasteringsuite.vercel.app/` |
 | Tempo Delay | `StudioZIO/TempoDelay` | `tempo-delay` | `https://www.tempodelay.tech/` |
 | ZIO (artist) | `StudioZIO/zio-artist-site` | `zio-audio` | `https://zio-audio.vercel.app/` |
@@ -318,9 +318,11 @@ Around that list a few URLs redirect **by design**:
 | --- | --- | --- |
 | `https://tempodelay.tech/` | 308 → `https://www.tempodelay.tech/` | `www` is the canonical host; the apex consolidates onto it |
 | `http://…` on any surface | 308 → the `https://` form | HSTS and the platform's TLS redirect |
-| `https://www.tempodelay.tech/contact` | 308 → `https://studiozio.vercel.app/contact/` | The route was retired on 2026-09-02; one support desk serves the estate |
+| `https://www.tempodelay.tech/contact` | 308 → `https://www.studiozio.tech/contact/` | The route was retired on 2026-09-02; one support desk serves the estate |
 | `https://tempo-delay-virid.vercel.app/*` | 308 → `https://www.tempodelay.tech/*` | Duplicate host consolidated onto the canonical domain |
-| `https://studiozio.vercel.app/products/mastering-suite/` | 308 → the Mastering Suite site | The catalogue entry points at the product's own surface |
+| `https://www.studiozio.tech/products/mastering-suite/` | 308 → the Mastering Suite site | The catalogue entry points at the product's own surface |
+| `https://studiozio.tech/*` | 308 → `https://www.studiozio.tech/*` | `www` is the canonical host; the apex consolidates onto it |
+| `https://studiozio.vercel.app/*` | 308 → `https://www.studiozio.tech/*` | The hub moved to its own domain on 2026-09-12; the platform host consolidates onto it |
 
 Google Search Console reports every one of these under **Page indexing → Page
 with redirect**, with the note "These pages aren't indexed or served on

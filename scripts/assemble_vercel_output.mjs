@@ -33,7 +33,7 @@ const CONTENT_SECURITY_POLICY = [
   // The one inline script on the page is Google's gtag bootstrap. It is pinned
   // by hash rather than allowed with 'unsafe-inline', so the policy still
   // refuses every other inline script, including any an injection would add.
-  "script-src 'self' https://www.googletagmanager.com 'sha256-6FbWSSRB7bscyiMGW2gpAmU5rc7HE50DwzUnu7lpjYo='",
+  "script-src 'self' https://www.googletagmanager.com 'sha256-Ir/MtUEXQVQQdaUkEANzNQdbF3ojd3F1+E8JSL1Xq8E='",
   // The prerender inlines the whole stylesheet into a <style> block, and React
   // server-renders six style attributes (the live meter and progress fills).
   // A hash cannot pin these: the CSS changes with every build.
@@ -74,7 +74,7 @@ const config = {
   version: 3,
   routes: [
     { src: '/(.*)', headers: SECURITY_HEADERS, continue: true },
-    { src: '/contact', headers: { Location: 'https://studiozio.vercel.app/contact/' }, status: 308 },
+    { src: '/contact', headers: { Location: 'https://www.studiozio.tech/contact/' }, status: 308 },
     { handle: 'error' },
     { src: '^(?!/api).*$', status: 404, dest: '/404' },
   ],
