@@ -12,7 +12,7 @@ const ts = require('@vercel/node/node_modules/typescript');
 // download journey is one session. This site reported to G-9LS1G2PR3R until the
 // consolidation; that property keeps its history as a read-only archive.
 const measurementId = 'G-VL8Z542XMP';
-// The five hosts the one property measures. The same list is entered in the
+// The six hosts the one property measures. The same list is entered in the
 // GA4 console under the data stream's configured domains, which is what drives
 // referral exclusion; this copy is what makes the session survive the hop.
 // The conversions this site reports. Kept identical to the EventName union in
@@ -23,6 +23,7 @@ const networkDomains = [
   'studiozio.vercel.app',
   'studioziomasteringsuite.vercel.app',
   'www.tempodelay.tech',
+  'studioziomixrack.vercel.app',
   'zio-audio.vercel.app',
 ];
 const jsBudgetBytes = 100 * 1024;
@@ -1222,9 +1223,9 @@ const verifyOutput = async (requestedDirectory) => {
     if (occurrences !== 1) fail('GA4_EXACTNESS', `${label} must occur exactly once; found ${occurrences}`);
   }
 
-  /* A linker that lists four of the five hosts is worse than none: the missing
+  /* A linker that lists five of the six hosts is worse than none: the missing
      host silently keeps starting fresh sessions and blaming its predecessor,
-     and the gap is invisible in reporting because the other four look right. */
+     and the gap is invisible in reporting because the other five look right. */
   for (const domain of networkDomains) {
     if (!gaInitializer.includes(`'${domain}'`)) {
       fail('GA4_EXACTNESS', `the cross-domain linker omits ${domain}; that host would start a new session on arrival`);
