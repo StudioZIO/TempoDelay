@@ -1,3 +1,5 @@
+import { HUB_URL } from '../data/navigation';
+
 type LogoProps = {
   /** Optional mono uppercase product suffix, e.g. "Tempo Delay". */
   product?: string;
@@ -14,8 +16,12 @@ type LogoProps = {
  * and Mastering Suite draw, byte for byte. This site used to draw a smooth sine
  * instead, which read as a second mark when you moved between the properties.
  * The stroke takes currentColor so the tile's colour lives in one CSS rule.
+ *
+ * The wordmark says StudioZIO, so it goes to StudioZIO: the hub, from every
+ * property. It used to jump to this page's own main content, which meant the
+ * same mark did a different thing here than on the other sites.
  */
-export const Logo = ({ product, size = 'md', href = '#main-content' }: LogoProps) => (
+export const Logo = ({ product, size = 'md', href = HUB_URL }: LogoProps) => (
   <a href={href} className={size === 'sm' ? 'logo logo--sm' : 'logo'} aria-label={`StudioZIO${product ? ` ${product}` : ''}`}>
     <span className="logo-mark" aria-hidden="true">
       <svg viewBox="0 0 24 24" fill="none" role="presentation" focusable="false">

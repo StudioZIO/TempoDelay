@@ -183,7 +183,7 @@ export const InteractiveVisualizer = () => {
             <span className="notice-label">Educational interactive visualization</span>
             <p>
               This diagram demonstrates DSP signal routing mechanics: ping-pong cross feedback, delay
-              times and feedback filters. It is not the native plugin interface.
+              times and feedback filters. It is not the native plug-in interface.
             </p>
           </div>
         </div>

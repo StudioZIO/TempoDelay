@@ -13,6 +13,12 @@ export type NavLink = {
     catalogue describes them. Anyone who knows a product name types it in the
     box.
 
+    Products points at /products/, the catalogue page itself, not at the home
+    page's catalogue section. The catalogue is where every product has a card,
+    and it is the page the hub's own tests keep linked from every header and
+    footer; sending this site's visitors to a section of a different page left
+    two of the four properties pointing somewhere else.
+
     The footer is the shared index minus the product links. It used to repeat
     them, and with three products it would have listed the same destinations
     twice on one screen; the owner asked for the shorter list, and the hub,
@@ -20,11 +26,14 @@ export type NavLink = {
     either list means changing it on every surface in the same commit — a menu
     that differs between properties is how a page ends up with nothing linking
     to it. */
-const HUB = 'https://www.studiozio.tech';
+/** The hub's origin. The wordmark and the two lists all resolve against it,
+    so the estate's address is written down once. */
+export const HUB_URL = 'https://www.studiozio.tech';
+const HUB = HUB_URL;
 
 export const NAV_LINKS: NavLink[] = [
   { label: 'Hub', href: `${HUB}/` },
-  { label: 'Products', href: `${HUB}/#catalog-title` },
+  { label: 'Products', href: `${HUB}/products/` },
   { label: 'Notes', href: `${HUB}/notes/` },
   { label: 'Community', href: `${HUB}/community/` },
   { label: 'Contact', href: `${HUB}/contact/` }
@@ -32,7 +41,7 @@ export const NAV_LINKS: NavLink[] = [
 
 export const FOOTER_LINKS: NavLink[] = [
   { label: 'Hub', href: `${HUB}/` },
-  { label: 'Products', href: `${HUB}/#catalog-title` },
+  { label: 'Products', href: `${HUB}/products/` },
   { label: 'Notes', href: `${HUB}/notes/` },
   { label: 'Contact', href: `${HUB}/contact/` },
   { label: 'Press kit', href: `${HUB}/press/` },

@@ -31,7 +31,7 @@ export const Specification = () => (
     id="specification"
     eyebrow="Specification"
     title="What ships in the build"
-    lede="The numbers below are the ones the plugin itself reports to the host."
+    lede="The numbers below are the ones the plug-in itself reports to the host."
   >
     <dl className="spec-grid">
       {SPECIFICATION.map((entry) => (
