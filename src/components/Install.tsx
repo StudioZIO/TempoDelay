@@ -7,11 +7,11 @@ import { Section } from './Section';
  * anchor, #install, linked from the download panel.
  *
  * Every path below is read from the frozen release artifact, not written from
- * memory: StudioZIOTempoDelay-v4.0.1-macOS-arm64-AAX.pkg, release
- * tempo-delay-v4.0.1-aax-2026.09.10, SHA-256 4e919c50…c055. Its Distribution
+ * memory: StudioZIOTempoDelay-v4.1.0-macOS-arm64.pkg, release
+ * tempo-delay-v4.1.0-clean-packaging-2026.09.16, SHA-256 fa16f0c9…910d. Its Distribution
  * declares four components, hostArchitectures="arm64" and macOS 12.0 minimum;
  * each component's PackageInfo install-location and payload bundle name give
- * the destinations. They match release-truth/tempo-delay-4.0.1.yaml in
+ * the destinations. They match release-truth/tempo-delay-4.1.0-clean-packaging-2026.09.16.yaml in
  * StudioZIO/StudioZIO-Releases. Change them only together with a new artifact.
  *
  * Host rows keep the hub's distinction (www.studiozio.tech/community/
@@ -23,7 +23,7 @@ const STEPS: { title: string; body: string }[] = [
   {
     title: 'Download the installer',
     body:
-      'Get StudioZIOTempoDelay-v4.0.1-macOS-arm64-AAX.pkg from the download panel above. It comes from the StudioZIO release registry, and the panel lists its SHA-256; to check your copy, run shasum -a 256 on the file in Terminal and compare the two.',
+      'Get StudioZIOTempoDelay-v4.1.0-macOS-arm64.pkg from the download panel above. It comes from the StudioZIO release registry, and the panel lists its SHA-256; to check your copy, run shasum -a 256 on the file in Terminal and compare the two.',
   },
   {
     title: 'Open the package',

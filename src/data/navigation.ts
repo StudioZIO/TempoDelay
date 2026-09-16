@@ -53,14 +53,19 @@ export const KVR_TEMPO_DELAY_URL =
     build; the asset in the TempoDelay repository is marked superseded by its
     own release notes.
 
-    4.0.1 is final and the artifact is named for it. The release it was cut as,
-    tempo-delay-v4.0.1-RC1, is still published and still downloadable — its
-    asset is byte-identical to this one, so nothing that already links to it
-    breaks — but this is the one the site points at.
+    The product is 4.0.1 — that is what the plug-ins report in every host, and
+    what this site states everywhere. The installer file and the release tag
+    carry 4.1.0, the number the four-component package topology uses; it is an
+    installer detail, not a plug-in version, and the release notes say so. So
+    the version on this page and the number inside the URL below differ on
+    purpose. Do not "fix" one to match the other.
+
+    Earlier 4.0.1 releases stay published and downloadable, so nothing that
+    already links to one breaks; this is the build the site points at.
 
     Change this together with the SHA-256 on the download panel and the JSON-LD
     downloadUrl in index.html; verify_dist.mjs fails the build if the URL and
     the JSON-LD disagree. The release entry, for maintainers, is the same path
     with `/releases/tag/`. */
 export const MACOS_DOWNLOAD_URL =
-  'https://github.com/StudioZIO/StudioZIO-Releases/releases/download/tempo-delay-v4.0.1-aax-2026.09.10/StudioZIOTempoDelay-v4.0.1-macOS-arm64-AAX.pkg';
+  'https://github.com/StudioZIO/StudioZIO-Releases/releases/download/tempo-delay-v4.1.0-clean-packaging-2026.09.16/StudioZIOTempoDelay-v4.1.0-macOS-arm64.pkg';

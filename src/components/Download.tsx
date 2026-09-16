@@ -3,7 +3,7 @@ import { MACOS_DOWNLOAD_URL, MASTERING_SUITE_URL } from '../data/navigation';
 import { track } from '../analytics';
 
 const MACOS_SHA256 =
-  '4e919c509cca196e178a0a991d24c02eb7e1ba81c5890e0f4fce16aba94ec055';
+  'fa16f0c9f04f5f56e446ae06074a0f3b0a8e193fa21089e0bf92c486d197910d';
 
 export const Download = () => (
   <section id="download" className="section scroll-mt-24" aria-labelledby="download-title">
@@ -52,13 +52,13 @@ export const Download = () => (
       <dl className="spec-grid download-spec-grid">
         <div>
           <dt>Installer</dt>
-          <dd><code>StudioZIOTempoDelay-v4.0.1-macOS-arm64-AAX.pkg</code></dd>
+          <dd><code>StudioZIOTempoDelay-v4.1.0-macOS-arm64.pkg</code></dd>
         </div>
         <div>
           <dt>Release record</dt>
           <dd>
-            <a href="https://github.com/StudioZIO/StudioZIO-Releases/releases/tag/tempo-delay-v4.0.1-aax-2026.09.10" className="download-release-link">
-              tempo-delay-v4.0.1-aax-2026.09.10
+            <a href="https://github.com/StudioZIO/StudioZIO-Releases/releases/tag/tempo-delay-v4.1.0-clean-packaging-2026.09.16" className="download-release-link">
+              tempo-delay-v4.1.0-clean-packaging-2026.09.16
             </a>
           </dd>
         </div>
