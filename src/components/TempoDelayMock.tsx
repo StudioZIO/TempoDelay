@@ -38,7 +38,7 @@ export const TempoDelayMock = () => (
           <span className="dot" aria-hidden="true" />
           Tempo Delay
         </span>
-        <span className="chip chip--bare">Release 4.0.1</span>
+        <span className="chip chip--bare">Release 4.0.3</span>
       </div>
 
       <div className="mock-body">

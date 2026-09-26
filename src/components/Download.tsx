@@ -3,7 +3,7 @@ import { MACOS_DOWNLOAD_URL, MASTERING_SUITE_URL } from '../data/navigation';
 import { track } from '../analytics';
 
 const MACOS_SHA256 =
-  'fa16f0c9f04f5f56e446ae06074a0f3b0a8e193fa21089e0bf92c486d197910d';
+  '6ba310fadf4435a2929675035298b27da534d7215e2370c6b50075ab52d60330';
 
 export const Download = () => (
   <section id="download" className="section scroll-mt-24" aria-labelledby="download-title">
@@ -11,8 +11,8 @@ export const Download = () => (
       <div className="panel-float download-row">
         <div>
           <p className="eyebrow">OFFICIAL macOS INSTALLER</p>
-          <h2 id="download-title">Tempo Delay 4.0.1</h2>
-          <p className="lede">Version 4.0.1 &middot; Audio Unit (AU) &middot; VST3 &middot; AAX &middot; Standalone &middot; Pro Tools verified</p>
+          <h2 id="download-title">Tempo Delay 4.0.3</h2>
+          <p className="lede">Version 4.0.3 &middot; Audio Unit (AU) &middot; VST3 &middot; AAX &middot; Standalone &middot; Pro Tools verified</p>
 
           <div className="chip-row mt-3 mb-3">
             <Chip>Free</Chip>
@@ -36,7 +36,7 @@ export const Download = () => (
           <a
             className="btn btn-primary"
             href={MACOS_DOWNLOAD_URL}
-            onClick={() => track('download_click', { product: 'tempo-delay', version: '4.0.1' })}
+            onClick={() => track('download_click', { product: 'tempo-delay', version: '4.0.3' })}
           >
             Download for macOS
           </a>
@@ -52,13 +52,13 @@ export const Download = () => (
       <dl className="spec-grid download-spec-grid">
         <div>
           <dt>Installer</dt>
-          <dd><code>StudioZIOTempoDelay-v4.1.0-macOS-arm64.pkg</code></dd>
+          <dd><code>StudioZIOTempoDelay-v4.0.3-macOS-arm64.pkg</code></dd>
         </div>
         <div>
           <dt>Release record</dt>
           <dd>
-            <a href="https://github.com/StudioZIO/StudioZIO-Releases/releases/tag/tempo-delay-v4.1.0-clean-packaging-2026.09.16" className="download-release-link">
-              tempo-delay-v4.1.0-clean-packaging-2026.09.16
+            <a href="https://github.com/StudioZIO/StudioZIO-Releases/releases/tag/tempo-delay-v4.0.3" className="download-release-link">
+              tempo-delay-v4.0.3
             </a>
           </dd>
         </div>

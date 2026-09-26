@@ -14,7 +14,7 @@ export const Hero = () => (
     <div className="shell">
       <div className="hero-grid">
         <div className="rise">
-          <p className="eyebrow">Time Effect · v4.0.1</p>
+          <p className="eyebrow">Time Effect · v4.0.3</p>
 
           <h1>
             Independent stereo delay,{' '}
@@ -31,7 +31,7 @@ export const Hero = () => (
             <a
               className="btn btn-primary"
               href={MACOS_DOWNLOAD_URL}
-              onClick={() => track('download_click', { product: 'tempo-delay', version: '4.0.1' })}
+              onClick={() => track('download_click', { product: 'tempo-delay', version: '4.0.3' })}
             >
               Download for macOS
             </a>
