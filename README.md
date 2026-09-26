@@ -1,4 +1,4 @@
-# StudioZIO Tempo Delay (Release 4.0.1 - Schema 8)
+# StudioZIO Tempo Delay (Release 4.0.3 - Schema 8)
 
 ![Plugin Formats](https://img.shields.io/badge/Formats-AUv2%20%7C%20VST3%20%7C%20Standalone-22D3EE?style=for-the-badge&logo=apple)
 ![Platform Support](https://img.shields.io/badge/Platform-macOS%20Apple%20Silicon%20(arm64)-F5A524?style=for-the-badge&logo=apple)
@@ -14,7 +14,7 @@
 
 **StudioZIO Tempo Delay** is a modern stereo delay available as native Audio Unit (AUv2), VST3, and Standalone application for macOS Apple Silicon (arm64) systems.
 
-- **Current Release**: 4.0.1 (Schema 8)
+- **Current Release**: 4.0.3 (Schema 8)
 - **Validated Operating System**: macOS 12+ (Apple Silicon arm64: M1 / M2 / M3 / M4)
 - **Validated DAWs**: Logic Pro, REAPER
 - **APVTS Parameters**: 32 automatable parameters

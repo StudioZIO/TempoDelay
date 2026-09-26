@@ -10,7 +10,7 @@ export const TempoDelayInterface = () => (
   >
     <div className="interface-shots">
       <PluginShot
-        name="StudioZIO Tempo Delay 4.0.1 — Tone & Filters"
+        name="StudioZIO Tempo Delay 4.0.3 — Tone & Filters"
         caption="The Default Stereo Delay preset, running in the standalone app with real audio driving the meters and tempo sync off, which is why both delays read in milliseconds. These are the preset's values; the plug-in's own defaults are listed in the parameter guide below. Cropped to the GUI only."
       >
         <img
@@ -24,7 +24,7 @@ export const TempoDelayInterface = () => (
       </PluginShot>
 
       <PluginShot
-        name="StudioZIO Tempo Delay 4.0.1 — Advanced & Routing"
+        name="StudioZIO Tempo Delay 4.0.3 — Advanced & Routing"
         caption="The same preset and the same audio-active session, with the complete routing and gain page visible."
       >
         <img
