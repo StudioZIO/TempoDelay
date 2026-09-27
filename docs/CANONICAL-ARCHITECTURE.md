@@ -3,9 +3,20 @@
 This document is the source-of-truth record for the public StudioZIO web
 estate. It lives in the canonical Tempo Delay repository so a future website
 change has one place to check before touching a product or plugin repository.
-Three of the four surfaces are product sites; the fourth, ZIO, is the artist
-surface, and where a rule applies to it differently that is stated explicitly
-rather than left to be inferred.
+Four of the five surfaces are StudioZIO sites (the hub and three product
+sites); the fifth, ZIO, is the artist surface, and where a rule applies to it
+differently that is stated explicitly rather than left to be inferred.
+
+The MixRack site is the fifth surface. It was split out of the hub before this
+document was updated to name it, so several sections below were written, and
+verified, when the estate had four surfaces; where a section says "all four",
+it records what was checked on that date. The MixRack site follows the same
+contracts: the Core Design System (its stylesheet is the hub's), the header
+and footer lists below, the Google tag `G-VL8Z542XMP` with the same consent
+architecture and the `studiozio-consent` key, the estate's CSP without
+`unsafe-inline`, and the cache rule (fingerprinted stylesheet cached for a
+year, un-fingerprinted scripts at `max-age=0, must-revalidate`) — each read
+from that repository on 2026-09-27.
 
 ## Canonical repositories and production surfaces
 
@@ -14,6 +25,7 @@ rather than left to be inferred.
 | Hub | `StudioZIO/StudioZIO-Web` | `studiozio` | `https://www.studiozio.tech/` |
 | Mastering Suite | `StudioZIO/StudioZIO-Mastering-Suite-Site` | `studiozio_mastering_suite` | `https://studioziomasteringsuite.vercel.app/` |
 | Tempo Delay | `StudioZIO/TempoDelay` | `tempo-delay` | `https://www.tempodelay.tech/` |
+| MixRack | `StudioZIO/StudioZIO-MixRack-Site` | `studioziomixrack` | `https://studioziomixrack.vercel.app/` |
 | ZIO (artist) | `StudioZIO/zio-artist-site` | `zio-audio` | `https://zio-audio.vercel.app/` |
 
 Each production surface is deployed from its own canonical repository. The
@@ -33,7 +45,7 @@ minimum, recorded there.
 
 ## Shared UI contract
 
-The three product sites share the StudioZIO Core Design System v1: the dark
+The hub and the three product sites share the StudioZIO Core Design System v1: the dark
 blue-black surface ramp, cyan primary, Space Grotesk display face, Inter Tight
 body face,
 JetBrains Mono labels, no amber accents, the same shell/gutter tokens, and the
@@ -48,19 +60,29 @@ The footer contract is also shared:
 - The property bridge and Contact link point to the Hub; there is no duplicate
   product-specific contact route.
 - No amber is introduced as a substitute accent.
-- **The footer link list is identical on all three product sites**, in this
-  order: Hub, Products, Mastering Suite, Tempo Delay, Notes, Contact, Press
-  kit, ZIO. Settled on 2026-09-08. The point is that any menu is reachable
-  from any surface: before it, the Mastering Suite and Tempo Delay footers
-  carried five entries and neither linked to Notes or the press kit, so three
-  notes written about Tempo Delay had no link from the Tempo Delay site.
-  Changing the list means changing it on every surface in the same commit — a
-  footer that differs between properties is how a page ends up with nothing
-  pointing at it.
-- The header stays at six and does **not** match the footer. The press kit is
-  for journalists, who go looking for it; ZIO is the artist surface rather
-  than a product. Neither belongs in a product header, and the hub, the
-  Mastering Suite site and Tempo Delay all keep that split.
+- **The footer link list is identical on every StudioZIO site** (hub,
+  Mastering Suite, Tempo Delay, MixRack), in this order: Hub, Products, Notes,
+  Contact, Press kit, ZIO. It carries no product links: with MixRack added
+  the footer would have listed the same product destinations twice on one
+  screen, and the owner chose the shorter list. The hub's own footer adds its
+  local Early Access and Privacy entries before ZIO. The point is still that
+  any menu is reachable from any surface. Changing the list means changing it
+  on every surface in the same commit — a footer that differs between
+  properties is how a page ends up with nothing pointing at it.
+  (History: on 2026-09-08 the list was eight entries, Hub, Products,
+  Mastering Suite, Tempo Delay, Notes, Contact, Press kit, ZIO; before that
+  the Mastering Suite and Tempo Delay footers carried five entries and
+  neither linked to Notes or the press kit.)
+- **The header is identical on every StudioZIO site**: Hub, Products, Notes,
+  Community, Contact, followed by the search box. Products goes to the hub's
+  `/products/` page, where the catalogue describes each product; the product
+  sites left the header because eight destinations and the search box did not
+  fit on one row. The header does **not** match the footer: the press kit is
+  for journalists, who go looking for it, and ZIO is the artist surface
+  rather than a product. On the product sites the StudioZIO mark links to the
+  hub. (Read from `HEADER_NAVIGATION` / `FOOTER_LINKS` in the hub and MixRack
+  `src/site.mjs`, `src/data/navigation.ts` here, and the Mastering Suite
+  `index.html` on 2026-09-27.)
 - The ZIO entry also repairs a claim that had nothing behind it: the hub's
   Organization graph names ZIO as `founder` by `@id`, and two comments in
   `site.mjs` said a crawlable footer link was what made that reference

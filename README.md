@@ -1,6 +1,6 @@
 # StudioZIO Tempo Delay (Release 4.0.3 - Schema 8)
 
-![Plugin Formats](https://img.shields.io/badge/Formats-AUv2%20%7C%20VST3%20%7C%20Standalone-22D3EE?style=for-the-badge&logo=apple)
+![Plugin Formats](https://img.shields.io/badge/Formats-AU%20%7C%20VST3%20%7C%20AAX%20%7C%20Standalone-22D3EE?style=for-the-badge&logo=apple)
 ![Platform Support](https://img.shields.io/badge/Platform-macOS%20Apple%20Silicon%20(arm64)-F5A524?style=for-the-badge&logo=apple)
 ![License](https://img.shields.io/badge/License-Proprietary-gray?style=for-the-badge)
 
@@ -12,7 +12,7 @@
 
 ## 🎵 Product Baseline & Verified Capabilities
 
-**StudioZIO Tempo Delay** is a modern stereo delay available as native Audio Unit (AUv2), VST3, and Standalone application for macOS Apple Silicon (arm64) systems.
+**StudioZIO Tempo Delay** is a modern stereo delay available as native Audio Unit (AUv2), VST3, AAX, and Standalone application for macOS Apple Silicon (arm64) systems.
 
 - **Current Release**: 4.0.3 (Schema 8)
 - **Validated Operating System**: macOS 12+ (Apple Silicon arm64: M1 / M2 / M3 / M4)
@@ -75,12 +75,21 @@ Use `npm run dev` for local development and `npm run preview` to serve the gener
 
 ### Vercel Deployment
 
-The production workflow installs the committed lockfile, typechecks and builds the application, then verifies both `dist/` and the static payload created by the pinned Vercel CLI. CI uploads that exact `.vercel/output` as a commit-addressed artifact. A source-free deployment job downloads and publishes only that verified artifact with `vercel deploy --prebuilt`; it does not install dependencies or rebuild the application. The repository root and raw TypeScript source are not public deployment artifacts.
+**Production is deployed by the Vercel Git integration, from `main`, and by nothing else.** The Vercel project `tempo-delay` runs the `buildCommand` in `vercel.json` (`npm run typecheck && npm run build && npm run verify:dist`) and serves `dist/`. Every production deployment must name the commit it was built from. Do not run `vercel deploy` or `vercel --prod` from a workstation; to re-deploy without a content change, use Redeploy on the latest `main` deployment in the Vercel dashboard. The rule for every StudioZIO surface is in [`docs/CANONICAL-ARCHITECTURE.md`](docs/CANONICAL-ARCHITECTURE.md).
+
+Before merging, run the full local gate:
+
+```bash
+npm run typecheck && npm run build && npm run verify:dist && npm run verify:a11y \
+  && npm run assemble:vercel && npm run verify:vercel-config
+```
+
+`.github/workflows/deploy.yml` is a separate, manually triggered **preview** workflow. It installs the committed lockfile, typechecks and builds the application, verifies both `dist/` and the static payload created by the pinned Vercel CLI, uploads that exact `.vercel/output` as a commit-addressed artifact, and publishes it with `vercel deploy --prebuilt --target=preview`. It never targets production. The repository root and raw TypeScript source are not public deployment artifacts.
 
 ---
 
 ## 📜 Attribution
 
-**StudioZIO** is an independent audio software company founded by producer and recording artist **[ZIO](https://zio.audio)**.
+**StudioZIO** is an independent audio software company founded by producer and recording artist **[ZIO](https://zio-audio.vercel.app/)**.
 
 © 2026 **StudioZIO**. All rights reserved.
