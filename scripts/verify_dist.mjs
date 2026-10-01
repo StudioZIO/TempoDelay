@@ -1433,7 +1433,7 @@ const EARLY_ACCESS_CONSENT_VERSION = '2026-09-21';
 const EARLY_ACCESS_SOURCE = 'www.tempodelay.tech/';
 const EARLY_ACCESS_CONSENT_TEXT =
   'I want to receive StudioZIO Early Access emails about product updates, release news and testing opportunities. I can unsubscribe at any time.';
-const EARLY_ACCESS_FORM_COUNT = 2;
+const EARLY_ACCESS_FORM_COUNT = 1;
 
 const verifyEarlyAccessForms = async (indexHtml) => {
   const contract = 'EARLY_ACCESS_FORM';
@@ -1443,7 +1443,7 @@ const verifyEarlyAccessForms = async (indexHtml) => {
     fail(contract, 'found an unparseable or unterminated form element');
   }
   if (forms.length !== EARLY_ACCESS_FORM_COUNT) {
-    fail(contract, `expected ${EARLY_ACCESS_FORM_COUNT} Early Access forms, one under each download box; found ${forms.length}`);
+    fail(contract, `expected ${EARLY_ACCESS_FORM_COUNT} Early Access forms, under the download box; found ${forms.length}`);
   }
 
   const ids = [...indexHtml.matchAll(/\sid="([^"]+)"/g)].map((match) => match[1]);

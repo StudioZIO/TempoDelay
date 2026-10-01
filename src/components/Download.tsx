@@ -88,7 +88,6 @@ export const Download = () => (
         </div>
       </div>
 
-      <EarlyAccessSignup idPrefix="ea-suite" />
     </div>
   </section>
 );
