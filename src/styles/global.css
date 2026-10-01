@@ -273,7 +273,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 
 /* The search box that sits in the header. It carries what is typed to the
    hub's search page and does nothing else; the estate's index lives there.
-   Enter rather than a <form>, because form-action is 'none'. Two copies
+   Enter rather than a <form>, because form-action admits only Buttondown. Two copies
    ship, one in the row and one in the compact menu, so the box is there on a
    phone as well. */
 .header-search { flex: none; width: 150px; }
@@ -772,6 +772,33 @@ button.chip[aria-pressed="true"], button.chip[aria-selected="true"] {
   white-space: nowrap;
 }
 .form-result { display: grid; justify-items: start; padding: 2rem; }
+
+/* ---------- Early Access sign-up --------------------------------------- */
+/* Under every download box, the same form as the hub's /early-access/.
+   .panel-float brings no padding, so this supplies it as .download-row does. */
+.early-access-form { display: grid; gap: 1.25rem; padding: 2rem; }
+.early-access-form .eyebrow,
+.early-access-form h3,
+.early-access-form .lede { margin: 0; }
+.early-access-form .lede { font-size: 0.9375rem; }
+.early-access-form .form-row { max-width: 34rem; }
+.form-check { display: grid; grid-template-columns: auto 1fr; gap: 0.75rem; align-items: start; max-width: var(--measure); }
+.form-check input[type="checkbox"] { width: 1.25rem; height: 1.25rem; margin: 0.15rem 0 0; accent-color: var(--primary); }
+.form-check input[type="checkbox"]:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+.form-check label { font-size: 0.9375rem; line-height: 1.5; color: var(--foreground); }
+.form-check .req {
+  margin-left: 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--primary-text);
+}
+.early-access-form .form-hint { margin: 0; max-width: var(--measure); }
+.early-access-form .form-hint a { color: var(--primary-text); }
+.form-status { margin: 0; font-size: 0.9375rem; color: var(--muted-foreground); }
+.form-status:empty { display: none; }
+.form-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; }
 
 .link-card { display: block; text-decoration: none; color: inherit; }
 .link-card:hover { border-color: var(--border); }

@@ -18,7 +18,7 @@ const EXPECTED_CONTENT_SECURITY_POLICY = [
   "object-src 'none'",
   "frame-ancestors 'none'",
   "base-uri 'self'",
-  "form-action 'none'",
+  "form-action https://buttondown.com",
 ].join('; ');
 
 const EXPECTED_SECURITY_HEADERS = {

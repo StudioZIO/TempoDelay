@@ -58,7 +58,10 @@ const CONTENT_SECURITY_POLICY = [
   "object-src 'none'",
   "frame-ancestors 'none'",
   "base-uri 'self'",
-  "form-action 'none'",
+  // The StudioZIO Early Access sign-up under each download box posts natively
+  // to Buttondown (its embed endpoint rules out fetch). Exactly that host and
+  // nothing wider; it was 'none' while the page carried no form.
+  "form-action https://buttondown.com",
 ].join('; ');
 
 const SECURITY_HEADERS = {

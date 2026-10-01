@@ -17,7 +17,7 @@ const measurementId = 'G-VL8Z542XMP';
 // referral exclusion; this copy is what makes the session survive the hop.
 // The conversions this site reports. Kept identical to the EventName union in
 // src/analytics.ts, which is what stops a new name being added by accident.
-const approvedEvents = ['download_click', 'ab_toggle'];
+const approvedEvents = ['download_click', 'ab_toggle', 'early_access_submit'];
 const networkDomains = [
   'www.studiozio.tech',
   'studiozio.vercel.app',
@@ -1061,6 +1061,7 @@ const verifyOutput = async (requestedDirectory) => {
   const indexHtml = await readFile(indexPath, 'utf8');
 
   await verifySeoContract(rootDirectory, indexHtml);
+  await verifyEarlyAccessForms(indexHtml);
   const scriptTags = [...indexHtml.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)]
     .map((match) => ({ attributes: parseAttributes(match[1]), content: match[2] }));
   const linkTags = [...indexHtml.matchAll(/<link\b([^>]*)>/gi)]
@@ -1419,6 +1420,84 @@ const verifyOutput = async (requestedDirectory) => {
     + `css_gzip=${cssGzipBytes}B(${(cssGzipBytes / 1024).toFixed(2)}KiB) `
     + `ga4=${measurementId}`,
   );
+};
+
+/* The StudioZIO Early Access sign-up sits under every download box. It is the
+   only form the page may carry, it must post natively to Buttondown (the embed
+   endpoint rejects fetch), and the CSP's form-action must admit exactly that
+   host and nothing wider. Consent is opt-in: a required, unticked box with the
+   versioned wording, and the privacy policy one click away. The download link
+   is never inside a form, so the installer is never gated by it. */
+const EARLY_ACCESS_ENDPOINT = 'https://buttondown.com/api/emails/embed-subscribe/studiozio';
+const EARLY_ACCESS_CONSENT_VERSION = '2026-09-21';
+const EARLY_ACCESS_SOURCE = 'www.tempodelay.tech/';
+const EARLY_ACCESS_CONSENT_TEXT =
+  'I want to receive StudioZIO Early Access emails about product updates, release news and testing opportunities. I can unsubscribe at any time.';
+const EARLY_ACCESS_FORM_COUNT = 1;
+
+const verifyEarlyAccessForms = async (indexHtml) => {
+  const contract = 'EARLY_ACCESS_FORM';
+  const forms = [...indexHtml.matchAll(/<form\b([^>]*)>([\s\S]*?)<\/form\s*>/gi)]
+    .map((match) => ({ attributes: parseAttributes(match[1]), body: match[2] }));
+  if (forms.length !== countMatches(indexHtml, /<form\b/gi)) {
+    fail(contract, 'found an unparseable or unterminated form element');
+  }
+  if (forms.length !== EARLY_ACCESS_FORM_COUNT) {
+    fail(contract, `expected ${EARLY_ACCESS_FORM_COUNT} Early Access forms, under the download box; found ${forms.length}`);
+  }
+
+  const ids = [...indexHtml.matchAll(/\sid="([^"]+)"/g)].map((match) => match[1]);
+  const duplicateId = ids.find((id, index) => ids.indexOf(id) !== index);
+  if (duplicateId) fail(contract, `duplicate id ${duplicateId}; each sign-up copy needs its own ids`);
+
+  for (const { attributes, body } of forms) {
+    if (attributes.get('action') !== EARLY_ACCESS_ENDPOINT) {
+      fail(contract, `a form posts to ${attributes.get('action') ?? '(nowhere)'}, not ${EARLY_ACCESS_ENDPOINT}`);
+    }
+    if ((attributes.get('method') ?? '').toLowerCase() !== 'post') {
+      fail(contract, 'the Early Access form must be a native POST; Buttondown\'s embed endpoint requires one');
+    }
+    if (!(attributes.get('class') ?? '').split(/\s+/).includes('early-access-form')) {
+      fail(contract, 'the form is not the Early Access sign-up');
+    }
+    const inputs = [...body.matchAll(/<input\b([^>]*)>/gi)].map((match) => parseAttributes(match[1]));
+    const hidden = (name) => inputs.find((a) => a.get('type') === 'hidden' && a.get('name') === name)?.get('value');
+    if (hidden('metadata__consent_version') !== EARLY_ACCESS_CONSENT_VERSION) {
+      fail(contract, `metadata__consent_version must be ${EARLY_ACCESS_CONSENT_VERSION}`);
+    }
+    if (hidden('metadata__source') !== EARLY_ACCESS_SOURCE) {
+      fail(contract, `metadata__source must be ${EARLY_ACCESS_SOURCE}`);
+    }
+    const email = inputs.find((a) => a.get('name') === 'email');
+    if (!email || email.get('type') !== 'email' || !email.has('required')) {
+      fail(contract, 'the email field must be a required type="email" input named email');
+    }
+    const consent = inputs.find((a) => a.get('name') === 'metadata__consent');
+    if (!consent || consent.get('type') !== 'checkbox' || !consent.has('required')) {
+      fail(contract, 'the consent box must be a required checkbox named metadata__consent');
+    }
+    if (consent.has('checked')) fail(contract, 'the consent box must start unticked');
+    if (!body.includes(EARLY_ACCESS_CONSENT_TEXT)) {
+      fail(contract, 'the consent wording differs from the versioned text; change the text, change the version');
+    }
+    if (!body.includes('href="https://www.studiozio.tech/privacy/"')) {
+      fail(contract, 'the sign-up must link the privacy policy');
+    }
+    if (!/<p\b[^>]*class="form-status"[^>]*role="status"/.test(body)) {
+      fail(contract, 'the sign-up must carry a status element');
+    }
+    if (/\.pkg\b|download_click/.test(body)) {
+      fail(contract, 'the download must never sit inside the sign-up form');
+    }
+  }
+
+  const manifest = JSON.parse(await readFile(path.join(process.cwd(), 'vercel.json'), 'utf8'));
+  const block = (manifest.headers ?? []).find((entry) => entry.source === '/(.*)');
+  const policy = block?.headers?.find((h) => h.key.toLowerCase() === 'content-security-policy')?.value ?? '';
+  const formAction = policy.split(';').map((d) => d.trim()).find((d) => d.startsWith('form-action'));
+  if (formAction !== 'form-action https://buttondown.com') {
+    fail(contract, `the CSP must say form-action https://buttondown.com exactly; found ${formAction ?? '(none)'}`);
+  }
 };
 
 /* The Content-Security-Policy allows exactly one inline script, by hash. If the

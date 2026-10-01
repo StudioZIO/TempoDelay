@@ -10,9 +10,9 @@ const HUB_SEARCH = 'https://www.studiozio.tech/search/';
  * which is why the box behaves identically wherever a visitor happens to be
  * standing.
  *
- * The jump is made on Enter rather than by a <form>, because every site sets
- * form-action 'none' in its CSP: a form would look right, submit nothing and
- * report nothing. Two copies ship, one in the row and one inside the compact
+ * The jump is made on Enter rather than by a <form>, because the CSP's
+ * form-action admits only Buttondown (the Early Access sign-up): a search form
+ * would look right, submit nothing and report nothing. Two copies ship, one in the row and one inside the compact
  * menu, since the row is put away on a phone and the box should not be.
  */
 export const HeaderSearch = ({ variant }: { variant: 'bar' | 'panel' }) => {
