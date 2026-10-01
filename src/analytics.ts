@@ -10,7 +10,7 @@
    survives the page going away, so holding a download click back to "make sure
    the hit lands" would cost every visitor latency for nothing. Consent is not
    re-checked either: the tag applies Consent Mode before this can run. */
-type EventName = 'download_click' | 'ab_toggle';
+type EventName = 'download_click' | 'ab_toggle' | 'early_access_submit';
 
 type Gtag = (command: 'event', name: EventName, params: Record<string, string>) => void;
 

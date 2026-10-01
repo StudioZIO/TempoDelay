@@ -1,6 +1,7 @@
 import { Chip } from './Chip';
 import { MACOS_DOWNLOAD_URL, MASTERING_SUITE_URL } from '../data/navigation';
 import { track } from '../analytics';
+import { EarlyAccessSignup } from './EarlyAccessSignup';
 
 const MACOS_SHA256 =
   '6ba310fadf4435a2929675035298b27da534d7215e2370c6b50075ab52d60330';
@@ -49,6 +50,10 @@ export const Download = () => (
         </div>
       </div>
 
+      {/* The Early Access sign-up sits directly under every download box,
+          after the download and never in front of it. */}
+      <EarlyAccessSignup idPrefix="ea-tempo" />
+
       <dl className="spec-grid download-spec-grid">
         <div>
           <dt>Installer</dt>
@@ -82,6 +87,8 @@ export const Download = () => (
           </a>
         </div>
       </div>
+
+      <EarlyAccessSignup idPrefix="ea-suite" />
     </div>
   </section>
 );
